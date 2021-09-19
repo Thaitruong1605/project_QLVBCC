@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- head -->
+<%- include('./../../layouts/head'); %>
+<body>
+    <%- include('./../../partials/header.ejs'); %>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- sitebar -->
+            <%- include('./../../partials/sitebar.ejs'); %>
+            <div class="col-md-9 col-lg-10">
+                <div class="row">
+                    <h1>Cập nhật loại cây</h1>
+                    <hr />
+                </div>
+                <div class="row">
+                    <form class="col" action="" name="frmUpdateUser" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="username">Tên đăng nhập</label>
+                                    <input type="text" name="username" id="username" value="<%= row[0].username %>" class="form-control" readonly />
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email: </label>
+                                    <input name="email" id="email" value="<%= row[0].email %>" class="form-control" />
+                                </div>  
+                                <div class="form-group">
+                                    <label for="name">Họ tên của bạn:</label>
+                                    <input type="text" name="name" id="name" value="<%= row[0].name %>" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label for="phoneNumber">Số điện thoại: </label>
+                                        <input name="phoneNumber" id="phoneNumber" value="<%= row[0].phoneNumber %>" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="is_admin">Quyền: </label>
+                                        <select name="is_admin" id="is_admin" class="form-control">
+                                            <option value="0" <% if(row[0].is_admin != 1 ){%>selected<% } %>>Khách hàng</option>
+                                            <option value="1" <% if(row[0].is_admin == 1 ){%>selected<% } %>>Quản trị</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="isMale">Giới tính:</label>
+                                            <select name="isMale" id="isMale" class="form-control" >
+                                                <option value="1" <% if(row[0].isMale == 1 ){%>selected<% } %>>Nam</option>
+                                                <option value="0" <% if(row[0].isMale != 1 ){%>selected<% } %>>Nữ</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            <label for="birthday">Ngày sinh:</label>
+                                            <input type="date" id="birthday" name="birthday" value="<%= moment(row[0].birthday).format('YYYY-MM-DD') %>" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Địa chỉ:</label>
+                                    <textarea id="address" name="address" class="form-control"><%= row[0].address %></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" name="btnSave" class="btn btn-primary" >Cập nhật</button>
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer -->
+</body>
+</html>

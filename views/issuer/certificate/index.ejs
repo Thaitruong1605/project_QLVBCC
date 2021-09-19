@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danh sách chứng chỉ</title>
+  <%- include('../../layouts/styles'); %>
+
+</head>
+
+<body>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Tên file</th>
+        <th scope="col">Người nhận</th>
+        <th scope="col">Trạng thái</th>
+        <th scope="col">IPFS</th>
+        <th scope="col">Ngày tạo</th>
+        <th scope="col">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% i=1; %>
+      <% cert_list.forEach(function(cert){ %>
+        <tr>
+          <th scope="row"><%= i++; %></th>
+          <td><%= moment(cert.createtime).format('DD-MM-YYYY, h:mm:ss a'); %></td>
+          <td><%= (cert.student_id) ? cert.student_id : "Empty" %></td>
+          <td><%= cert.status %></td>
+          <td><%= (cert.ipfs_hash) ? cert.ipfs_hash : "Empty" %>
+            </td>
+          <td><%= cert.filename; %></td>
+          <td>
+            <a class="btn btn-primary" href="/issuer/certificate/detail?number=<%= cert.number %>">Xem</a>
+            <a class="btn btn-warning" href="/issuer/certificate/edit?number=v<%= cert.number %>">Sửa</a>
+            <a class="btn btn-danger" href="/issuer/certificate/delete?number=<%= cert.number; %>">Xoá</a>
+          </td>
+        </tr>
+        <% }); %>
+            
+    </tbody>
+  </table>
+
+  <%- include('../../layouts/scripts.ejs'); %>
+</body>
+
+</html>

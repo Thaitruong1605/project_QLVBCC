@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title; %>
+  </title>
+  <!-- styles from vendors  -->
+  <%- include('../../layouts/styles.ejs'); %>
+</head>
+
+<body>
+  <div class="row">
+    <%- include('../../partials/sitebar.ejs'); %>
+      <div class="col-10">
+        <form action="/admin/issuer/create" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+          <div class="form-group">
+            <label for="issuer_code">Mã đơn vị</label>
+            <input type="text" class="form-control" id="issuer_code" name="issuer_code" value="">
+          </div>
+          <div class="form-group">
+            <label for="issuer_name">Tên đơn vị</label>
+            <input type="text" class="form-control" id="issuer_name" name="issuer_name" value="">
+          </div>
+          <div class="form-group">
+            <label for="issuer_address">Địa chỉ</label>
+            <input type="text" class="form-control" id="issuer_address" name="issuer_address" value="">
+          </div>
+          <div class="form-group">
+            <label for="issuer_phone">Số điện thoại</label>
+            <input type="text" class="form-control" id="issuer_phone" name="issuer_phone" value="">
+          </div>
+          <div class="form-group">
+            <label for="issuer_fax">Fax</label>
+            <input type="text" class="form-control" id="issuer_fax" name="issuer_fax" value="">
+          </div>
+          <div class="form-group">
+            <label for="issuer_email">Email</label>
+            <input type="text" class="form-control" id="issuer_email" name="issuer_email" value="">
+          </div>
+          <button class="btn btn-primary" name="btnSave">Tạo mới</button>
+        </form>
+      </div>
+  </div>
+
+  <!-- script form vendor -->
+  <%- include('../../layouts/scripts.ejs'); %>
+
+    <!-- Page's scripts -->
+
+</body>
+
+</html>

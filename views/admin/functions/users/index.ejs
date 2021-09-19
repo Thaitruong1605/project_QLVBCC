@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- head -->
+<%- include('./../../layouts/head'); %>
+<body>
+    <%- include('../../partials/header.ejs'); %>
+    <!-- sitebar -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('./../../partials/sitebar.ejs'); %>
+            <div class="col">
+                <h1>Danh sách người dùng</h1>
+                <hr />
+                <div class="table-responsive">
+                    <table class="table">
+                        <caption>List of users</caption> 
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Tên</th>
+                            <th scope="col">Tài khoản</th>
+                            <th scope="col">Thông tin liên lạc</th>
+                            <th scope="col">Giới tính</th>
+                            <th scope="col">Ngày sinh</th>
+                            <th scope="col">Loại</th>
+                            <th scope="col">Hành động</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% let i=1 ;%>
+                          <% list_user.forEach(function(user){ %>
+                          <tr>
+                            <th scope="row"><%= i++; %></th>
+                            <td><%= user.name %> </td>
+                            <td><%= user.username %> </td>
+                            <td>
+                              <u>Điện thoại:</u>  <%= user.phoneNumber %> <br />
+                              <u>Email:</u>  <%= user.email %> <br />
+                              <u>Địa chỉ:</u>  <%= user.address %>
+                            </td>
+                            <td><% if (user.isMale == 1){ %>Nam<%} else {%>Nữ<%}%></td>
+                            <td><%= moment(user.birthday).format('DD-MM-YYYY') %> </td>
+                            <td><% if (user.is_admin == 1){ %><p class="text-warning font-weight-bold">Quản trị</p><%} else {%>Khách hàng<%}%></td>
+                            <td>
+                              <a href="/backend/users/update?username=<%= user.username %>" class="btn btn-warning">
+                                  <span data-feather="edit">Sửa</span>
+                              </a>
+                              <a href="/backend/users/delete?username=<%= user.username %>" class="btn btn-danger">
+                                  <span data-feather="delete">Xóa</span>
+                              </a>
+                            </td>
+                          </tr>
+                          <% }); %>
+                        </tbody>
+                    </table>
+                  </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

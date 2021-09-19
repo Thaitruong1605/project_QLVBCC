@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký</title>
+</head>
+
+<body>
+    <% if(error && error.length > 0 ){ %>
+        <div class="alert alert-danger" role="alert">
+        <% error.forEach(function(elt){%>
+            <%= elt;%><br />
+        <% }); %>
+        </div>
+    <% } %>
+    Bạn đang kết nối netmark với tài khoản: <b id="NetmarkAddress"></b>
+    <form name="frmSignup" id="frmSignup" action="/signup" method="POST">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" name="account_address" id="account_address"/>
+                <div class="form-group">
+                    <label for="email">Email: </label>
+                    <input name="email" id="email" value="" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="new-password" name="password" id="password" value="" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="repassword">Nhập lại mật khẩu</label>
+                    <input type="new-password" name="repassword" id="repassword" value="" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Số điện thoại: </label>
+                <input name="phoneNumber" id="phoneNumber" value="" class="form-control" />
+            </div>
+            <div class="form-group">
+        </div>
+        <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
+    </form>
+    <script src="/vendors/jquery.min.js"></script>
+    
+    <script src="/js/signup.js"></script>
+</body>
+</html>
