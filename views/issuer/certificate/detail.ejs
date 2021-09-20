@@ -12,68 +12,34 @@
 <body>
   <div class="container">
     <div class="row">
-      <form action="/issuer/create_certificate" method="POST" >
-        <div class="row">
-          <div class="col-6">
-            <div class="mb-3">
-              <label for="number" class="form-label">Số hiệu</label>
-              <input type="text" class="form-control" id="number" name="number" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="cert_name" class="form-label">Tên chứng chỉ</label>
-              <input type="text" class="form-control" id="cert_name" name="cert_name" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="course_name" class="form-label">Tên khoá học</label>
-              <input type="text" class="form-control" id="course_name" name="course_name" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="student_name" class="form-label">Họ tên người nhận chứng chỉ</label>
-              <input type="text" class="form-control" id="student_name" name="student_name" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="student_gender" class="form-label">Giới tính</label>
-              <input type="text" class="form-control" id="student_gender" name="student_gender" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="student_dayofbirth" class="form-label">Ngày sinh</label>
-              <input type="text" class="form-control" id="student_dayofbirth" name="student_dayofbirth" value="test" />
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="mb-3">
-              <label for="student_placeofbirth" class="form-label">Nơi sinh</label>
-              <input type="text" class="form-control" id="student_placeofbirth" name="student_placeofbirth" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="duration" class="form-label">Thời gian đào tạo</label>
-              <input type="text" class="form-control" id="duration" name="duration" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="testday" class="form-label">Ngày kiểm tra</label>
-              <input type="text" class="form-control" id="testday" name="testday" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="classification" class="form-label">Xếp loại</label>
-              <input type="text" class="form-control" id="classification" name="classification" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="signday" class="form-label">Ngày ký</label>
-              <input type="text" class="form-control" id="signday" name="signday" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="regno" class="form-label">Số vào sổ</label>
-              <input type="text" class="form-control" id="regno" name="regno" value="test" />
-            </div>
-            <div class="mb-3">
-              <label for="director" class="form-label">Giám đốc</label>
-              <input type="text" class="form-control" id="director" name="director" value="test" />
-            </div>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Tạo chứng chỉ</button>
-
-      </form>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">header</th>
+            <th scope="col">info</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% %>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td colspan="2">Larry the Bird</td>
+            <td>@twitter</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <%- include('../../layouts/scripts.ejs'); %>
