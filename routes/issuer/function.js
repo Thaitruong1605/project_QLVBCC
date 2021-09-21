@@ -4,6 +4,7 @@ const router = express.Router();
 const fs = require("fs");
 const moment = require("moment");
 const certModel = require("../../models/certificateModel");
+const request = require("request");
 
 const ipfsClient = require("ipfs-http-client");
 const { Certificate } = require("crypto");
@@ -49,15 +50,27 @@ router.get("/certificate/edit", (req, res) => {
 
 router.get("/certificate/detail", (req, res) => {
   // lay du lieu
-  let cert_info;
   try {
     certModel.select_byNumber(req.query.number).then(async function (data) {
       var filename = data[0].filename;
-      if (filename != null ){
-        var file  = fs.readFileSync('./public/cert/'+filename);
-        cert_info = JSON.parse(file);
-      }else{
-        
+      if (filename != null) {
+        data = JSON.parse(fs.readFileSync("./public/cert/" + filename));
+        console.log(data);
+        res.render('./issuer/certificate/detail',{cert_info: data});
+      } else {
+        var url = "https://ipfs.io/ipfs/" + data[0].ipfs_hash;
+        request(
+          {
+            url: url,
+            json: true,
+          },
+          function (error, response, data) {
+            if (!error && response.statusCode === 200) {
+              console.log(data);
+              res.render('./issuer/certificate/detail',{cert_info: data});
+            }
+          }
+        );
       }
     });
   } catch (err) {
