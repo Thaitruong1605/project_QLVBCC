@@ -1,20 +1,10 @@
 const loginModel = require("../models/loginModel");
-const bcrypt = require("bcrypt");
 
-let checkUser = (email, password) => {
+let checkUser = (account_address) => {
     return new Promise (async (resolve,reject) => {
         try {
-            let user = await loginModel.findUser(email).then();
-            if (user){
-                bcrypt.compare(password, user.password). then( isMatch => {
-                    if (isMatch){
-                        console.log(isMatch);
-                        resolve(user);
-                    }else {
-                        reject("Sai mật khẩu!");
-                    }
-                })
-            }else 
+            let user = await loginModel.findUser(account_address).then();
+            if (user) resolve(user);
             reject("Không tìm thấy người dùng");
         }catch(err){
             reject(err);

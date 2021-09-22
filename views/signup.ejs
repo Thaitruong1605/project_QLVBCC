@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('./layouts/styles.ejs')%>
     <title>Đăng ký</title>
 </head>
 
@@ -16,34 +17,37 @@
         <% }); %>
         </div>
     <% } %>
-    Bạn đang kết nối netmark với tài khoản: <b id="NetmarkAddress"></b>
-    <form name="frmSignup" id="frmSignup" action="/signup" method="POST">
+    <div class="container">
         <div class="row">
-            <div class="col-md-6">
-                <input type="hidden" name="account_address" id="account_address"/>
-                <div class="form-group">
-                    <label for="email">Email: </label>
-                    <input name="email" id="email" value="" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label for="password">Mật khẩu</label>
-                    <input type="new-password" name="password" id="password" value="" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label for="repassword">Nhập lại mật khẩu</label>
-                    <input type="new-password" name="repassword" id="repassword" value="" class="form-control" />
-                </div>
+            <div class="col">
+                <form name="frmSignup" id="frmSignup" action="/signup" method="POST">
+                    <input type="hidden" name="account_address" id="account_address"/>
+                    <div class="form-group">
+                        <label for="student_email">Email: </label>
+                        <input name="student_email" id="student_email" value="" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="student_name">Họ tên: </label>
+                        <input name="student_name" id="student_name" value="" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="student_address">Địa chỉ: </label>
+                        <input name="student_address" id="student_address" value="" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="student_birth">Ngày sinh: </label>
+                        <input name="student_birth" id="student_birth" value="" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="student_phone">Số điện thoại: </label>
+                        <input name="student_phone" id="student_phone" value="" class="form-control" />
+                    </div>
+                    <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="phoneNumber">Số điện thoại: </label>
-                <input name="phoneNumber" id="phoneNumber" value="" class="form-control" />
-            </div>
-            <div class="form-group">
         </div>
-        <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
-    </form>
-    <script src="/vendors/jquery.min.js"></script>
-    
+    </div>
+    <%- include('./layouts/scripts.ejs')%>
     <script src="/js/signup.js"></script>
 </body>
 </html>

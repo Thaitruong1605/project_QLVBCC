@@ -1,22 +1,21 @@
 const conn = require("../dbconnect");
 
-let findUser = (email) => {
+let findUser = (account_address) => {
     return new Promise((resolve, reject) => {
         try {
             conn.query(
-                'SELECT email, password, kindOfUser FROM users WHERE email = "'+ email +'"',
+                'SELECT * FROM account WHERE account_address = ? ',
+                account_address,
                 function (err, result) {
-                    console.log(this.sql);
-                    if (err) { reject(err); }
+                    if (err) { 
+                        console.log(this.sql);
+                        reject(err); 
+                    }
                     else if (result.length > 0) {
-                        let user = {
-                            email: result[0].email,
-                            password: result[0].password,
-                            kindOfUser: result[0].kindOfUser
-                        };
+                        let user = result[0];
                         resolve(user);
                     } else
-                        reject("Tài khoản chưa được đăng ký.");
+                        reject("Tài khoản chưa được đăng ký");
                 }
             );
         } catch (err) {
