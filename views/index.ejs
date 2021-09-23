@@ -5,8 +5,27 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trang chủ</title>
+  <%- include('./layouts/styles.ejs')%>
 </head>
 <body>
-  Hello, index
+  <%- include('./partials/header.ejs') %>
+  <!-- FLASH  -->
+  <div class="container">
+    <div class="row">
+      
+    </div>
+  </div>
+  <%- include('./layouts/scripts.ejs') %>
+  <script>
+    $(document).ready( async function(){
+      if(typeof ethereum == "undefined") {
+        alert("Vui lòng kết nối với netmark");
+      }else {
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        $('#account_address').attr('value', accounts);
+        $('#NetmarkAddress').text(accounts);
+      }
+    })
+  </script>
 </body>
 </html>

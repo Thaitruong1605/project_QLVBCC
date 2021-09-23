@@ -7,7 +7,7 @@ const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
 
-var setUpPassport = require("./setuppassport"); // tao passport cho nguoi dung
+var setUpPassport = require("./setuppassport");
 var isAuthenticated = require('./auth').ensureAuthenticated; // kiem tra trang thai dang nhap
 
 var app = express() // khoi tao ung dung
@@ -19,6 +19,7 @@ app.set("view engine", "ejs") // render giao dien
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser());
+
 app.use(session({
     secret:"sad123hn412u3h@213",
     resave:false,
@@ -27,11 +28,12 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
-app.use(flash());// Thong bao
-app.use(express.static('./assets'));// PUBLIC folder 
-app.use(express.static('./public/'));// PUBLIC folder 
-app.use(express.static('./src/'));// PUBLIC folder 
+app.use(express.static('./assets'));
+app.use(express.static('./public/'));
+app.use(express.static('./src/'));
+
 // ROUTES
 app.use("/", require("./routes"));
 app.use("/admin",isAuthenticated, require("./routes/admin"));

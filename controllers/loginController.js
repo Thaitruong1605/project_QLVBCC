@@ -1,10 +1,11 @@
 const loginModel = require("../models/loginModel");
 
-let checkUser = (account_address) => {
+let checkAccount = (account_address) => {
     return new Promise (async (resolve,reject) => {
         try {
-            let user = await loginModel.findUser(account_address).then();
-            if (user) resolve(user);
+            let account = await loginModel.findAccount(account_address).then();
+            console.log(account);
+            if (account) resolve(account);
             reject("Không tìm thấy người dùng");
         }catch(err){
             reject(err);
@@ -12,5 +13,5 @@ let checkUser = (account_address) => {
     });
 }
 module.exports = {
-    checkUser: checkUser
+    checkAccount
 }

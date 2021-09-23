@@ -1,14 +1,15 @@
 const conn = require("../dbconnect");
 
-let findUser = (account_address) => {
+let findAccount = (account_address) => {
+    console.log(account_address);
     return new Promise((resolve, reject) => {
         try {
             conn.query(
-                'SELECT * FROM account WHERE account_address = ? ',
-                account_address,
+                'SELECT * FROM accounts WHERE account_address = ? ',
+                [account_address],
                 function (err, result) {
+                    console.log(this.sql);
                     if (err) { 
-                        console.log(this.sql);
                         reject(err); 
                     }
                     else if (result.length > 0) {
@@ -24,5 +25,5 @@ let findUser = (account_address) => {
     });
 }
 module.exports = {
-    findUser: findUser
+    findAccount
 }

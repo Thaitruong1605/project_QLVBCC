@@ -14,7 +14,7 @@ let createUser = async (req, res) => {
       // add user to database
       try {
           await signupModel.add_Student(student);
-        //   return res.redirect("/login");
+          return res.redirect("/student");
       } catch (err) {
           req.flash("error", err);
           return res.redirect(req.get('referer'));
