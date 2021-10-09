@@ -14,6 +14,7 @@ SystemContract.setProvider(provider);
 
 router.use('/issuer', require('./functions/issuer'));
 router.use('/student', require('./functions/student'));
+router.use('/account', require('./functions/account'));
 
 let get_issuer = async () => {
   var issuer;

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title + " - " + page; %>
+  </title>
+  <!-- styles from vendors  -->
+  <%- include('../../layouts/styles.ejs'); %>
+</head>
+
+<body>
+  <%- include('../../partials/navbar.ejs') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 px-0">
+        <%- include('../../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col-md-10 px-0">
+        <div class="container">
+        <!-- main content -->
+        <h3 class = "pt-3">Chình sửa thông tin trường</h3>
+        <hr >
+        <div class="col-10">
+          <form action="/admin/account/create" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+            <input type="hidden" name="account_id" value="<%= account.account_id %>">
+            <div class="form-group">
+              <label for="account_code">Mã đơn vị</label>
+              <input type="text" class="form-control" id="account_code" name="account_code" value="<%= account.account_code %>">
+            </div>
+            <div class="form-group">
+              <label for="account_name">Tên đơn vị</label>
+              <input type="text" class="form-control" id="account_name" name="account_name" value="<%= account.account_name %>">
+            </div>
+            <div class="form-group">
+              <label for="account_address">Địa chỉ</label>
+              <input type="text" class="form-control" id="account_address" name="account_address" value="<%= account.account_address %>">
+            </div>
+            <div class="form-group">
+              <label for="account_phone">Số điện thoại</label>
+              <input type="text" class="form-control" id="account_phone" name="account_phone" value="<%= account.account_phone %>">
+            </div>
+            <div class="form-group">
+              <label for="account_fax">Fax</label>
+              <input type="text" class="form-control" id="account_fax" name="account_fax" value="<%= account.account_fax %>">
+            </div>
+            <div class="form-group">
+              <label for="account_email">Email</label>
+              <input type="text" class="form-control" id="account_email" name="account_email" value="<%= account.account_email %>">
+            </div>
+            <button class="btn btn-primary" name="btnSave">Lưu</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- script form vendor -->
+  <%- include('../../layouts/scripts.ejs'); %>
+
+    <!-- Page's scripts -->
+
+</body>
+
+</html>

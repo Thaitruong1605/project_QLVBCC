@@ -7,7 +7,7 @@ let select = () => {
       conn.query(
         'SELECT student_id, student_name, student_address, student_birth, student_phone, student_email FROM students',
         function(error, results){
-          if (error) {reject(err);}
+          if (error) {reject(error);}
           resolve(results);
         }
       )
@@ -21,8 +21,22 @@ let select_byId = (student_id) => {
         'SELECT student_id, student_name, student_address, student_birth, student_phone, student_email FROM students WHERE student_id= ?',
         [student_id],
         function(error, results){
-          if (error) {reject(err);}
+          if (error) {reject(error);}
           resolve(results[0]);
+        }
+      )
+    }catch(err){console.log(err)}
+  })
+}
+let insert = (student_info)=>{
+  return new Promise((resolve, reject)=> {
+    try{
+      conn.query(
+        'INSERT INTO students SET ?',
+        student_info,
+        function(error){
+          if (error) {reject(error);}
+          resolve("A row has been created");
         }
       )
     }catch(err){console.log(err)}
@@ -35,7 +49,7 @@ let update = (student_id, student_info)=>{
         'UPDATE students SET ? WHERE student_id= ?',
         [student_info, student_id],
         function(error){
-          if (error) {reject(err);}
+          if (error) {reject(error);}
           resolve("A row has been updated");
         }
       )
@@ -46,5 +60,6 @@ let update = (student_id, student_info)=>{
 module.exports = {
   select,
   select_byId,
+  insert,
   update
 }

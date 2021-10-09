@@ -3,7 +3,7 @@ const passport = require("passport");
 const router = express.Router();
 const moment = require('moment');
 const StudentModel = require("../../../models/studentModel");
-const StudentController = require("../../../controllers/studentController");
+const studentController = require("../../../controllers/studentController");
 
 router.get('/', (req, res) => {
   // Lay du lieu student
@@ -30,6 +30,9 @@ router.get('/update', (req, res) => {
     }
   }
 })
+router.get('/create', (req, res) => {
+  res.render('./admin/functions/student/create',{title:"student", page:"Thêm mới"})
+})
 // router.get('/delete', (req, res) => {
 //   if( typeof req.query.id !== 'undefined'){
 //     try{
@@ -42,10 +45,11 @@ router.get('/update', (req, res) => {
 //     }
 //   }
 // })
+// POST -----------------------------------------
 router.post('/create', (req, res) => {
-  studentController.student_checkUpdate(req,res);
+  studentController.create(req, res);
 })
 router.post('/update', (req, res) => {
-  studentController.student_checkUpdate(req,res);
+  studentController.update(req, res);
 })
 module.exports = router;

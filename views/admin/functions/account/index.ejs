@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title + " - " + page; %>
+  </title>
+  <!-- styles from vendors  -->
+  <%- include('../../layouts/styles.ejs'); %>
+
+</head>
+
+<body>
+  <%- include('../../partials/navbar.ejs') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 px-0">
+        <%- include('../../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col-md-10 px-0">
+        <div class="container">
+          <!-- main content -->
+          <h3 class = "pt-3">Danh sách trường học</h3>
+          <hr >
+          <div class="table-responsive">
+            <table class="table">
+              <caption>List of accounts</caption>
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">ID</th>
+                  <th scope="col">Mã trường</th>
+                  <th scope="col">Tên trường</th>
+                  <th scope="col">Địa chỉ</th>
+                  <th scope="col">Thông tin liên lạc</th>
+                  <th scope="col">Ngày cập nhật</th>
+                  <th scope="col">Ngày tạo</th>
+                  <th scope="col">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% let i=1 ;%>
+                  <% account_list.forEach(function(account){ %>
+                    <tr>
+                      <th scope="row">
+                        <%= i++; %>
+                      </th>
+                      <th scope="row">
+                        <%= account.account_id %>
+                      </th>
+                      <th scope="row">
+                        <%= account.account_code %>
+                      </th>
+                      <td>
+                        <%= account.account_name %>
+                      </td>
+                      <td>
+                        <%= account.account_address %>
+                      </td>
+                      <td>
+                        <!-- Thong tin lien lac-->
+                        <u>Phone:</u> <%= account.account_phone %> <br />
+                        <u>Fax:</u> <%= account.account_fax %> <br />
+                        <u>Email:</u> <%= account.account_email %>
+                      </td>
+                      <td>
+                        <%= moment(account.account_modifieddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                      </td>
+                      <td>
+                        <%= moment(account.account_createddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                      </td>
+                      <td>
+                        <!-- Action -->
+                        <a href="/admin/account/update?id=<%= account.account_id %>" class="btn btn-warning">
+                          <span data-feather="update">Sửa</span>
+                        </a>
+                        <a href="/admin/account/delete?id=<%= account.account_id %>" class="btn btn-danger">
+                          <span data-feather="delete">Xóa</span>
+                        </a>
+                      </td>
+                    </tr>
+                    <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- script form vendor -->
+  <%- include('../../layouts/scripts.ejs'); %>
+  <!-- Page's scripts -->
+  
+  <script>
+  </script>
+</body>
+
+</html>
