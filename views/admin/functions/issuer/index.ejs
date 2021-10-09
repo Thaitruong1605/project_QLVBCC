@@ -6,79 +6,91 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>
-    <%= title; %>
+    <%= title + " - " + page; %>
   </title>
   <!-- styles from vendors  -->
   <%- include('../../layouts/styles.ejs'); %>
+
 </head>
 
 <body>
-  <div class="row">
-    <%- include('../../partials/sitebar.ejs'); %>
-    <div class="col-10">
-      <div class="table-responsive">
-        <table class="table">
-          <caption>List of issuers</caption>
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">ID</th>
-              <th scope="col">Mã trường</th>
-              <th scope="col">Tên trường</th>
-              <th scope="col">Địa chỉ</th>
-              <th scope="col">Thông tin liên lạc</th>
-              <th scope="col">Ngày cập nhật</th>
-              <th scope="col">Ngày tạo</th>
-              <th scope="col">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% let i=1 ;%>
-              <% issuer_list.forEach(function(issuer){ %>
+  <%- include('../../partials/navbar.ejs') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 px-0">
+        <%- include('../../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col-md-10 px-0">
+        <div class="container">
+          <!-- main content -->
+          <h3 class = "pt-3">Danh sách trường học</h3>
+          <hr >
+          <div class="table-responsive">
+            <table class="table">
+              <caption>List of issuers</caption>
+              <thead>
                 <tr>
-                  <th scope="row">
-                    <%= i++; %>
-                  </th>
-                  <th scope="row">
-                    <%= issuer.issuer_id %>
-                  </th>
-                  <th scope="row">
-                    <%= issuer.issuer_code %>
-                  </th>
-                  <td>
-                    <%= issuer.issuer_name %>
-                  </td>
-                  <td>
-                    <%= issuer.issuer_address %>
-                  </td>
-                  <td>
-                    <!-- Thong tin lien lac-->
-                    <u>Phone:</u> <%= issuer.issuer_phone %> <br />
-                    <u>Fax:</u> <%= issuer.issuer_fax %> <br />
-                    <u>Email:</u> <%= issuer.issuer_email %>
-                  </td>
-                  <td>
-                    <%= moment(issuer.issuer_modifieddate).format('DD-MM-YYYY, h:mm:ss a'); %>
-                  </td>
-                  <td>
-                    <%= moment(issuer.issuer_createddate).format('DD-MM-YYYY, h:mm:ss a'); %>
-                  </td>
-                  <td>
-                    <!-- Action -->
-                    <a href="/admin/issuer/update?id=<%= issuer.issuer_id %>" class="btn btn-warning">
-                      <span data-feather="update">Sửa</span>
-                    </a>
-                    <a href="/admin/issuer/delete?id=<%= issuer.issuer_id %>" class="btn btn-danger">
-                      <span data-feather="delete">Xóa</span>
-                    </a>
-                  </td>
+                  <th scope="col">#</th>
+                  <th scope="col">ID</th>
+                  <th scope="col">Mã trường</th>
+                  <th scope="col">Tên trường</th>
+                  <th scope="col">Địa chỉ</th>
+                  <th scope="col">Thông tin liên lạc</th>
+                  <th scope="col">Ngày cập nhật</th>
+                  <th scope="col">Ngày tạo</th>
+                  <th scope="col">Hành động</th>
                 </tr>
-                <% }); %>
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                <% let i=1 ;%>
+                  <% issuer_list.forEach(function(issuer){ %>
+                    <tr>
+                      <th scope="row">
+                        <%= i++; %>
+                      </th>
+                      <th scope="row">
+                        <%= issuer.issuer_id %>
+                      </th>
+                      <th scope="row">
+                        <%= issuer.issuer_code %>
+                      </th>
+                      <td>
+                        <%= issuer.issuer_name %>
+                      </td>
+                      <td>
+                        <%= issuer.issuer_address %>
+                      </td>
+                      <td>
+                        <!-- Thong tin lien lac-->
+                        <u>Phone:</u> <%= issuer.issuer_phone %> <br />
+                        <u>Fax:</u> <%= issuer.issuer_fax %> <br />
+                        <u>Email:</u> <%= issuer.issuer_email %>
+                      </td>
+                      <td>
+                        <%= moment(issuer.issuer_modifieddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                      </td>
+                      <td>
+                        <%= moment(issuer.issuer_createddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                      </td>
+                      <td>
+                        <!-- Action -->
+                        <a href="/admin/issuer/update?id=<%= issuer.issuer_id %>" class="btn btn-warning">
+                          <span data-feather="update">Sửa</span>
+                        </a>
+                        <a href="/admin/issuer/delete?id=<%= issuer.issuer_id %>" class="btn btn-danger">
+                          <span data-feather="delete">Xóa</span>
+                        </a>
+                      </td>
+                    </tr>
+                    <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  
 
   <!-- script form vendor -->
   <%- include('../../layouts/scripts.ejs'); %>

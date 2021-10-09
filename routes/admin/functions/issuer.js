@@ -9,8 +9,7 @@ router.get('/', (req, res) => {
   // Lay du lieu issuer
   try{
     require('../../../models/issuerModel').issuer_select().then(function(data){
-      
-      return res.render('./admin/functions/issuer/',{title:"Issuer - table", issuer_list:data, moment });
+      return res.render('./admin/functions/issuer/',{title:"Issuer", issuer_list:data, moment, page:"Danh sách"});
     })
   }catch(err){
     console.log(err);
@@ -19,18 +18,18 @@ router.get('/', (req, res) => {
   }
 })
 router.get('/create', (req, res) => {
-  res.render('./admin/functions/issuer/create',{title:"Create - Issuer"})
+  res.render('./admin/functions/issuer/create',{title:"Issuer",page:"Thêm mới"})
 })
 router.get('/update', (req, res) => {
   if( typeof req.query.id !== 'undefined'){
     try{
       require('../../../models/issuerModel').issuer_selectbyId(req.query.id).then(function(data){
-        return res.render('./admin/functions/issuer/update',{title:"Issuer - table", issuer:data[0]});
+        return res.render('./admin/functions/issuer/update',{title:"Issuer",page: "Cập nhật", issuer:data[0], moment});
       })
     }catch(err){
       console.log(err);
       req.flash("error",err);
-      return res.redirect("/admin");
+      return res.redirect("/student");
     }
   }
 })

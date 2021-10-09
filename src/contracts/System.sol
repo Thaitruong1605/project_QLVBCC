@@ -2,17 +2,14 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "./Ownable.sol";
 import "./Student.sol";
-import "./Issuer.sol";
 
 contract System is Ownable{
   address[] public issuerAddresses;
   address[] public studentAddresses;
-  Student student;
-  Issuer issuer;
 
   mapping (address => address) public mapIssuer;
   mapping (address => address) public mapStudent;
-  
+
   constructor() public{
     transferOwnership(msg.sender);
   } 
@@ -23,7 +20,8 @@ contract System is Ownable{
   event addedStudent(  
     address newStudent
   );
-
+  event changedIssuerContract(address _issuerAddr,address _contractAddr);
+  event changedStudentContract(address _studentAddr,address _contractAddr);
 // issuer
   function addIssuer (address _issuerAddr) public onlyOwner(){
     _addIssuer(_issuerAddr);
@@ -33,10 +31,15 @@ contract System is Ownable{
     emit addedIssuer(_issuerAddr);
     issuerAddresses.push(_issuerAddr);
   }
-  function changeIssuerContract(address _oldAddr, address _newAddr) public onlyOwner(){
-    require(mapIssuer[_oldAddr] != address(0));
-    mapIssuer[_newAddr] = mapIssuer[_oldAddr];
-    mapIssuer[_oldAddr] = address(0);
+
+  function changeIssuerContract(address _issuerAddr, address _contractAddr) public onlyOwner(){
+    for(uint i = 0 ; i< issuerAddresses.length; i++){
+      if (issuerAddresses[i] == _issuerAddr){
+        mapIssuer[_issuerAddr] = _contractAddr;
+        emit changedIssuerContract(_issuerAddr, _contractAddr);
+        break;
+      }
+    }
   }
 // student
   function addStudent(address _studentAddr) public onlyOwner(){
@@ -44,12 +47,20 @@ contract System is Ownable{
   }
   function _addStudent (address _studentAddr) internal {
     require(_studentAddr != address(0));
-    emit addedIssuer(_studentAddr);
+    emit addedStudent(_studentAddr);
     studentAddresses.push(_studentAddr);
   }
-  function changeStudentContract(address studentAddr, address contractAddr) public onlyOwner(){
-    mapStudent[studentAddr] = contractAddr;
-    student = Student(msg.sender);
-    student.transfer(studentAddr);
+  function changeStudentContract(address _studentAddr, address _contractAddr) public onlyOwner(){
+    for (uint i = 0 ; i< studentAddresses.length; i++){
+      if (studentAddresses[i] == _studentAddr) {
+        mapStudent[_studentAddr] = _contractAddr;
+        emit changedStudentContract(_studentAddr, _contractAddr);
+        break;
+      }
+    }
+  }
+  function addCerf(address _studentAddress, address _issuerAddress, bytes32 _hashedCert) public onlyOwner(){
+    InterfaceStudent stu = InterfaceStudent(mapStudent[_studentAddress]);
+    stu.addCertificates(_issuerAddress,_hashedCert);
   }
 } 

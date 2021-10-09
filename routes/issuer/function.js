@@ -5,7 +5,9 @@ const fs = require("fs");
 const moment = require("moment");
 const certModel = require("../../models/certificateModel");
 const request = require("request");
-
+const hash = require('object-hash');
+const CryptoJS = require('crypto-js');
+const excel = require('excel');
 const ipfsClient = require("ipfs-http-client");
 const { Certificate } = require("crypto");
 
@@ -44,8 +46,9 @@ router.get("/certificate", (req, res) => {
     // res.redirect("/issuer");
   }
 });
-router.get("/certificate/edit", (req, res) => {
-  res.render("./issuer/certificate/edit");
+router.get("/certificate/update", (req, res) => {
+  var number = req.query.number;
+  res.render("./issuer/certificate/update");
 });
 
 router.get("/certificate/detail", (req, res) => {
@@ -129,39 +132,49 @@ router.get("/certificate/up_to_ipfs", async (req, res) => {
     console.log(err);
   }
 });
-
+router.post("/certificate/excel", async (req, res) => {
+  qs                                      
+})
 router.post("/certificate/create", async (req, res) => {
   var data = req.body;
-  var fname = "cert_" + data.number + "_" + Date.now() + ".json";
-  // Tạo file - them vao CSDL - put ipfs
-  var cert = {
-    number: data.number,
-    issuer_id: "ISR0001",
-    filename: fname,
-    status: "Đang kiểm tra",
-  };
+  // console.log(data);
+  var hashed_data = CryptoJS.SHA256(Object.toString(data), {asBytes: true});
+  console.log(hashed_data);
+  console.log(hashed_data.toString(CryptoJS.enc.Hex));
+ 
 
-  fs.appendFile(
-    "./public/cert/" + fname,
-    JSON.stringify(data),
-    async function (err) {
-      if (err) {
-        console.log(err);
-      } else {
-        res.redirect("/issuer/certificate");
-        try {
-          certModel.insert(cert);
-          res.redirect("/issuer/certificate");
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    }
-  );
-  try {
-  } catch (err) {
-    console.log(err);
-  }
+  
+  // var fname = "cert_" + data.number + "_" + Date.now() + ".json";
+  // // Tạo file - them vao CSDL - put ipfs
+  // var cert = {
+  //   number: data.number,
+  //   issuer_id: "ISR0001",
+  //   filename: fname,
+  //   status: "Đang kiểm tra",
+  //   hash: hashed_data
+  // };
+
+  // fs.appendFile(
+  //   "./public/cert/" + fname,
+  //   JSON.stringify(data),
+  //   async function (err) {
+  //     if (err) {
+  //       console.log(err);
+  //     } else {
+  //       res.redirect("/issuer/certificate");
+  //       try {
+  //         certModel.insert(cert);
+  //         res.redirect("/issuer/certificate");
+  //       } catch (err) {
+  //         console.log(err);
+  //       }
+  //     }
+  //   }
+  // );
+  // try {
+  // } catch (err) {
+  //   console.log(err);
+  // }
 });
 
 module.exports = router;

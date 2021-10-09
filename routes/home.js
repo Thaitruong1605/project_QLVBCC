@@ -19,9 +19,12 @@ router.post('/login',
       failureFlash: true
   })
 );
-router.get('/asd',isStudent,(req,res) => {
-  res.send('connected');
-})
+
+router.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
 router.get('/', function (req, res) {
   
   res.render('./', { page_name: 'Trang chủ' });

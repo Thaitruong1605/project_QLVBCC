@@ -36,9 +36,9 @@ app.use(express.static('./src/'));
 
 // ROUTES
 app.use("/", require("./routes"));
-app.use("/admin",isAuthenticated, require("./routes/admin"));
-app.use("/student",isAuthenticated, require("./routes/student"));
-app.use("/issuer",isAuthenticated, require("./routes/issuer"));
+app.use("/admin", require("./routes/admin"));
+app.use("/student", require("./routes/student"));
+app.use("/issuer", require("./routes/issuer"));
 
 app.listen(app.get("port"), () => {
     console.log("Server started on port "+app.get("port")); // thong bao server duoc khoi dong

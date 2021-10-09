@@ -3,7 +3,7 @@ const conn = require("../dbconnect");
 let issuer_select = () => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "SELECT issuer_id, issuer_code, issuer_name, issuer_address, issuer_phone, issuer_email, issuer_fax, issuer_modifieddate, issuer_createddate FROM issuers",
+      "SELECT issuer_id, issuer_website, issuer_code, issuer_name, issuer_address, issuer_phone, issuer_email, issuer_fax, issuer_modifieddate, issuer_createddate FROM issuers",
       function (err, results) {
         if (err) {
           reject(err);
@@ -18,7 +18,7 @@ let issuer_select = () => {
 let issuer_selectbyId = (id) => {
   return new Promise(async (resolve, reject) => {
     conn.query(
-      "SELECT issuer_id, issuer_code, issuer_name, issuer_address, issuer_phone, issuer_fax, issuer_email FROM issuers WHERE issuer_id = ?",
+      "SELECT issuer_id, issuer_website, issuer_code, issuer_name, issuer_address, issuer_phone, issuer_fax, issuer_email FROM issuers WHERE issuer_id = ?",
       id, 
       function (err, results) {
         if (err) {

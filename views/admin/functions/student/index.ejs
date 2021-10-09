@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title + " - " + page; %>
+  </title>
+  <!-- styles from vendors  -->
+  <%- include('../../layouts/styles.ejs'); %>
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 ps-0">
+        <%- include('../../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col-md-10">
+        <!-- main content -->
+        <h3 class = "pt-3">Danh sách học viên</h3>
+        <hr >
+        <div class="table-responsive">
+          <table class="table">
+            <caption>List of students</caption>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
+                <th scope="col">Mã trường</th>
+                <th scope="col">Tên trường</th>
+                <th scope="col">Địa chỉ</th>
+                <th scope="col">Thông tin liên lạc</th>
+                <th scope="col">Ngày cập nhật</th>
+                <th scope="col">Ngày tạo</th>
+                <th scope="col">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% let i=1 ;%>
+                <% student_list.forEach(function(student){ %>
+                  <tr>
+                    <th scope="row">
+                      <%= i++; %>
+                    </th>
+                    <th scope="row">
+                      <%= student.student_id %>
+                    </th>
+                    <th scope="row">
+                      <%= student.student_code %>
+                    </th>
+                    <td>
+                      <%= student.student_name %>
+                    </td>
+                    <td>
+                      <%= student.student_address %>
+                    </td>
+                    <td>
+                      <!-- Thong tin lien lac-->
+                      <u>Phone:</u> <%= student.student_phone %> <br />
+                      <u>Fax:</u> <%= student.student_fax %> <br />
+                      <u>Email:</u> <%= student.student_email %>
+                    </td>
+                    <td>
+                      <%= moment(student.student_modifieddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                    </td>
+                    <td>
+                      <%= moment(student.student_createddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                    </td>
+                    <td>
+                      <!-- Action -->
+                      <a href="/admin/student/update?id=<%= student.student_id %>" class="btn btn-warning">
+                        <span data-feather="update">Sửa</span>
+                      </a>
+                      <a href="/admin/student/delete?id=<%= student.student_id %>" class="btn btn-danger">
+                        <span data-feather="delete">Xóa</span>
+                      </a>
+                    </td>
+                  </tr>
+                  <% }); %>
+            </tbody>
+          </table>
+        </div>
+      
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- script form vendor -->
+  <%- include('../../layouts/scripts.ejs'); %>
+  <!-- Page's scripts -->
+  
+  <script>
+  </script>
+</body>
+
+</html>

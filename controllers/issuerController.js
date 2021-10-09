@@ -1,9 +1,16 @@
 const { detroy } = require("../dbconnect");
 const issuerModel = require("../models/issuerModel");
 
+
+// get System contract 
+
+let create_issuer = async (req, res) => {
+  var error = [];
+
+}
+
 let issuer_checkUpdate = async (req, res) => {
   var error = [];
-  console.log(req.body.issuer_id);
   var issuer = {
     issuer_code: req.body.issuer_code,
     issuer_name: req.body.issuer_name,
