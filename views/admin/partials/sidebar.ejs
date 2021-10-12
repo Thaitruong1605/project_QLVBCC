@@ -30,7 +30,7 @@
       <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="<%= (title == "Account")? "true":"flase" %>">
         Account
       </button>
-      <div class="collapse <%= (title == "Account")? "true":"flase" %>" id="account-collapse">
+      <div class="collapse <%= (title == "Account")? "show":"" %>" id="account-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a href="/admin/account/" class="link-dark rounded">Danh sách</a></li>
           <li><a href="/admin/account/create" class="link-dark rounded">Thêm mới</a></li>

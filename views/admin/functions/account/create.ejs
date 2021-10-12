@@ -22,23 +22,11 @@
       <div class="col-md-10 px-0">
         <div class="container">
         <!-- main content -->
-        <h3 class = "pt-3">Thêm trường mới</h3>
+        <h3 class = "pt-3">Thêm tài khoản mới</h3>
         <hr >
         <div class="col-10">
           <form action="/admin/account/create" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
             <input type="hidden" name="account_id" value="">
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="account_code">Mã đơn vị</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="account_code" name="account_code" value="">
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="account_name">Tên đơn vị</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="account_name" name="account_name" value="">
-              </div>
-            </div>
             <div class="mb-3 row">
               <label class="col-sm-2" for="account_address">Địa chỉ</label>
               <div class="col-sm-10">
@@ -46,24 +34,48 @@
               </div>
             </div>
             <div class="mb-3 row">
-              <label class="col-sm-2" for="account_phone">Số điện thoại</label>
+              <label class="col-sm-2" for="account_status">Trạng thái</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="account_phone" name="account_phone" value="">
+                <select class="form-control" id="account_status" name="account_status">
+                  <option value="active">Hoạt động</option>
+                  <option value="lock">Khoá</option>
+                </select>
               </div>
             </div>
             <div class="mb-3 row">
-              <label class="col-sm-2" for="account_fax">Fax</label>
+              <label class="col-sm-2" for="account_type">Loại tài khoản</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="account_fax" name="account_fax" value="">
+                <select class="form-control" id="account_type" name="account_type">
+                  <option value="admin">Admin</option>
+                  <option value="issuer" id="selector_issuer">Trường</option>
+                  <option value="student" id="selector_student">Học viên</option>
+                </select>
+              </div>
+            </div>
+            <h5 class="ps-3 mb-3 border-start border-3">Gán tài khoản cho:</h5>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="student_id">Sinh viên</label>
+              <div class="col-sm-10">
+                <select class="form-control" id="student_id" name="student_id" disabled>
+                  <option value=""></option>
+                  <% student.forEach(function (elt) {%>
+                  <option value="<%= elt.student_id %>"><%= elt.student_id %> - <%= elt.student_name %> - <%= elt.student_email %> </option>
+                  <% }) %>
+                </select>
               </div>
             </div>
             <div class="mb-3 row">
-              <label class="col-sm-2" for="account_email">Email</label>
+              <label class="col-sm-2" for="issuer_id">Trường học</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="account_email" name="account_email" value="">
+                <select class="form-control" id="issuer_id" name="issuer_id" disabled>
+                  <option value=""></option>
+                  <% issuer.forEach(function (elt) {%>
+                  <option value="<%= elt.issuer_id %>"><%= elt.issuer_id %> - <%= elt.issuer_name %></option>
+                  <% }) %>
+                </select>
               </div>
             </div>
-            <button class="btn btn-primary" name="btnSave">Tạo trường mới</button>
+            <button class="btn btn-primary" name="btnSave">Thêm tài khoản</button>
           </form>
         </div>
       </div>
@@ -74,7 +86,26 @@
   <%- include('../../layouts/scripts.ejs'); %>
 
     <!-- Page's scripts -->
+<script>
+  $(document).ready(function(){
 
+    $('#account_type').on('change', function() {
+      $('#issuer_id').attr('disabled',true);
+      $('#student_id').attr('disabled',true);
+      $('#issuer_id option').attr('selected',false);
+      $('#student_id option').attr('selected',false);
+      $('#issuer_id option[value=""]').attr('selected',true);
+      $('#student_id option[value=""]').attr('selected',true);
+
+      if( this.value == 'student'){
+        $('#student_id').removeAttr('disabled');
+      }else if( this.value == 'issuer'){
+        $('#issuer_id').removeAttr('disabled');
+      }
+
+    });
+  })
+</script>
 </body>
 
 </html>

@@ -25,42 +25,64 @@ let selectbyaddress = (account_address) => {
         )
     });
 }
-
-let get_accountdetail = (id) => {
-    return new Promise ((resolve, reject) =>{
-        var type = id.sub(0, 3);
-        if (type == "STU"){
-            try {
-                'SELECT * FROM students WHERE student_id = ?',
-                [type],
-                function(error, results){
-                    if (error) reject (error);
-                    resovle (results);
-                }
-            }catch(err){ reject(err)}
-        }else if(type == "ISR"){
-            try {
-                'SELECT * FROM issuers WHERE issuer_id = ?',
-                [type],
-                function(error, results){
-                    if (error) reject (error);
-                    resovle (results);
-                }
-            }catch(err){ reject(err)}
-        }
-        reject("Sai id!");
-    })
+let get_studentInfo = (id) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            'SELECT account_address, account_type, account_status, a.student_id, student_name, student_address, student_birth, student_phone, student_email FROM accounts a JOIN students s ON a.student_id = s.student_id WHERE a.student_id = ?',
+            [id],
+            function (err, results) {
+                if (err) { reject(err); }
+                resolve(results);
+            }
+        )
+    });
+}
+let get_issuerInfo = (id) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            'SELECT account_address, account_type, account_status, a.issuer_id, issuer_code, issuer_website, issuer_name, issuer_address, issuer_phone, issuer_fax, issuer_email, issuer_modifieddate, issuer_createddate FROM accounts a JOIN issuers i ON a.issuer_id = i.issuer_id WHERE a.issuer_id = ?',
+            [id],
+            function (err, results) {
+                if (err) { reject(err); }
+                resolve(results);
+            }
+        )
+    });
 }
 
-let update = (email, user_inf) => {
+
+let create = (account_inf) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
-            'UPDATE users SET ? WHERE username= ? ', 
-            [user_inf, email],
+            'INSERT INTO accounts SET ?', 
+            account_inf,
             function(err){
-                console.log(this.sql);
                 if (err) { reject(err);}
-                resolve("A new user has been created!");
+                resolve("A new account has been created!");
+            }
+        )
+    });
+};
+let update = (account_address, account_inf) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'UPDATE accounts SET ? WHERE account_address=?', 
+            [account_inf, account_address],
+            function(err){
+                if (err) { reject(err);}
+                resolve("A new account has been updated!");
+            }
+        )
+    });
+};
+let remove = (account_address) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'DELETE FROM accounts WHERE account_address=?', 
+            [account_address],
+            function(err){
+                if (err) { reject(err);}
+                resolve("A new account has been deleted!");
             }
         )
     });
@@ -69,6 +91,9 @@ let update = (email, user_inf) => {
 module.exports = {
     select,
     selectbyaddress,
-    get_accountdetail,
-    update
+    get_studentInfo,
+    get_issuerInfo,
+    create,
+    update,
+    remove
 }

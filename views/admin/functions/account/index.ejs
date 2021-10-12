@@ -31,13 +31,9 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">ID</th>
-                  <th scope="col">Mã trường</th>
-                  <th scope="col">Tên trường</th>
                   <th scope="col">Địa chỉ</th>
-                  <th scope="col">Thông tin liên lạc</th>
-                  <th scope="col">Ngày cập nhật</th>
-                  <th scope="col">Ngày tạo</th>
+                  <th scope="col">Loại tài khoản</th>
+                  <th scope="col">Trạng thái</th>
                   <th scope="col">Hành động</th>
                 </tr>
               </thead>
@@ -48,36 +44,28 @@
                       <th scope="row">
                         <%= i++; %>
                       </th>
-                      <th scope="row">
-                        <%= account.account_id %>
-                      </th>
-                      <th scope="row">
-                        <%= account.account_code %>
-                      </th>
-                      <td>
-                        <%= account.account_name %>
-                      </td>
                       <td>
                         <%= account.account_address %>
+                        
                       </td>
                       <td>
-                        <!-- Thong tin lien lac-->
-                        <u>Phone:</u> <%= account.account_phone %> <br />
-                        <u>Fax:</u> <%= account.account_fax %> <br />
-                        <u>Email:</u> <%= account.account_email %>
+                        <%= account.account_type %>
                       </td>
                       <td>
-                        <%= moment(account.account_modifieddate).format('DD-MM-YYYY, h:mm:ss a'); %>
-                      </td>
-                      <td>
-                        <%= moment(account.account_createddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                        <%= account.account_status %>
                       </td>
                       <td>
                         <!-- Action -->
-                        <a href="/admin/account/update?id=<%= account.account_id %>" class="btn btn-warning">
+                        <% if (account.account_type !== 'admin' ) {%>
+              
+                          <a href="/admin/account/detail-<%= account.account_type %>?id=<%= account.student_id %><%= account.issuer_id %>" class="btn btn-primary">
+                            <span data-feather="detail">Chi tiết</span>
+                          </a>
+                          <% } %>
+                        <a href="/admin/account/update?account_address=<%= account.account_address %>" class="btn btn-warning">
                           <span data-feather="update">Sửa</span>
                         </a>
-                        <a href="/admin/account/delete?id=<%= account.account_id %>" class="btn btn-danger">
+                        <a href="/admin/account/delete?account_address=<%= account.account_address %>" class="btn btn-danger">
                           <span data-feather="delete">Xóa</span>
                         </a>
                       </td>
