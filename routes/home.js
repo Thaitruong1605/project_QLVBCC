@@ -26,8 +26,11 @@ router.get('/logout', function(req, res){
 });
 
 router.get('/', function (req, res) {
-  
   res.render('./', { page_name: 'Trang chủ' });
+});
+router.get('/asd', function (req, res) {
+  req.flash("alert",'adasdasd')
+  res.redirect('/issuer');
 });
 
 module.exports = router;

@@ -6,16 +6,19 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Danh sách chứng chỉ</title>
-  <%- include('../../layouts/styles'); %>
+  <%- include('../layouts/styles'); %>
 
 </head>
 
 <body>
-  <div class="container-fluid">
+  <%- include('../../partials/header') %>
+
+  <div class="container">
     <div class="row">
-      <%- include("../partials/sitebar.ejs"); %>
-      <div class="col-10">
-        
+      <div class="col-2">
+        <%- include("../partials/sidebar.ejs"); %>
+      </div>
+      <div class="col">
         <table class="table">
           <thead>
             <tr>
@@ -58,7 +61,7 @@
     </div>
   </div>
 
-  <%- include('../../layouts/scripts.ejs'); %>
+  <%- include('../layouts/scripts.ejs'); %>
   
 </body>
 

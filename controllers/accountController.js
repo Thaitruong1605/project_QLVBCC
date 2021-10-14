@@ -1,4 +1,3 @@
-const { detroy } = require("../dbconnect");
 const accountModel = require("../models/accountModel");
 const validator = require('validator');
 const moment = require('moment')
@@ -11,7 +10,7 @@ let create = async (req, res) => {
     account_type: req.body.account_type, 
     account_status: req.body.account_status, 
     student_id: (req.body.student_id)? req.body.student_id:null,
-    issuer_id: (req.body.student_id)? req.body.student_id:null,
+    issuer_id: (req.body.issuer_id)? req.body.issuer_id:null,
   };
   if (
     account.account_address == ""

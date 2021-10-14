@@ -1,0 +1,29 @@
+<% if(msg && msg.length > 0 ){ %>
+  <div class="modal fade" id="alert-modal" tabindex="-1" aria-labelledby="asdasd" aria-hidden="true">
+    <div class="modal-dialog rounded">
+      <div class="alert alert-success fade show" role="alert">
+        <strong><%= msg; %></strong>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<% if(error && error.length > 0 ){ %>
+  <div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="asdasd" aria-hidden="true">
+    <div class="modal-dialog rounded">
+      <div class="alert alert-danger fade show" role="alert">
+        <strong><%= error; %></strong>
+      </div>
+    </div>
+  </div>
+<% } %>
+  
+<% if(alert && alert.length > 0 ){ %>
+  <div class="modal fade" id="alert-modal" tabindex="-1" aria-labelledby="asdasd" aria-hidden="true">
+    <div class="modal-dialog rounded">
+      <div class="alert alert-warning fade show" role="alert">
+        <strong><%= alert; %></strong>
+      </div>
+    </div>
+  </div>
+<% } %>

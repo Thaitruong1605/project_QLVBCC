@@ -10,24 +10,31 @@
 </head>
 
 <body>
+  <%- include('../../partials/header') %>
+
   <div class="container">
     <div class="row">
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">header</th>
-            <th scope="col">info</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% Object.keys(cert_info).forEach(function(key) { %>
+      <div class="col-md-2">
+        <%- include('../partials/sidebar') %>
+      </div>
+      <div class="col-md-10">
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= key %></td>
-              <td><%= cert_info[key] %></td>
+              <th scope="col">header</th>
+              <th scope="col">info</th>
             </tr>
-         <% }); %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% Object.keys(cert_info).forEach(function(key) { %>
+              <tr>
+                <td><%= key %></td>
+                <td><%= cert_info[key] %></td>
+              </tr>
+           <% }); %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <%- include('../../layouts/scripts.ejs'); %>

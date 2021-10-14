@@ -18,6 +18,7 @@ module.exports = function () {
     async function (username, password, done) {
       try{
         await loginController.checkAccount(username).then(function(data){
+          console.log(data);
           return done(null, data);
         });
       }catch(err){        

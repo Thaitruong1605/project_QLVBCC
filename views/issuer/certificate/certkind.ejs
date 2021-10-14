@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles'); %>
+</head>
+
+<body>
+  <%- include('../../partials/header') %>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <%- include('../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col">
+        <div class="row">
+          <%- include('../../partials/alert.ejs') %>
+        </div>
+        <span class='h3'> Danh sách tên chứng chỉ - </span>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"> Thêm </button>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Mã loại chứng chỉ</th>
+              <th scope="col">Loại chứng chỉ</th>
+              <th scope="col">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% i=1; %>
+            <% data.forEach(function(elt){ %>
+              <tr>
+                <th scope="row"><%= i++; %></th>
+                <td><%= elt.ck_id; %></td>
+                <td><%= elt.ck_name; %></td>
+                <td>
+                  <button type="button" ck_id="<%= elt.ck_id; %>" ck_name="<%= elt.ck_name; %>" class="btn btn-warning btn-update" data-bs-toggle="modal" data-bs-target="#updateModal">Sửa</button>
+                  <a class="btn btn-danger" href="/issuer/certificate/certkind/remove?id=<%= elt.ck_id; %>">Xoá</a>  
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <!-- Thêm mới -->
+  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createModalLabel">Thêm tên chứng chỉ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/issuer/certificate/certkind/create" method="POST">
+          <div class="modal-body">
+          <div class="mb-3 row">
+            <input type="text" class="form-control" id="ck_name" name="ck_name" placeholder="Nhập tên chứng chỉ"/>
+          </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Thêm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Sửa -->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Sửa tên chứng chỉ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/issuer/certificate/certkind/update" method="POST" >
+          <div class="modal-body">
+          <div class="mb-3 row">
+            <input type="hidden" class="form-control" id="upd_ck_id" name="ck_id" value=""/>
+            <input type="text" class="form-control" id="upd_ck_name" name="ck_name" value=""/>
+          </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <%- include('../layouts/scripts.ejs'); %>
+  <script type="text/javascript">
+    $(window).on('load', function() {
+        $('#msg-modal').modal('show');
+        $('#alert-modal').modal('show');
+        $('#error-modal').modal('show');
+
+        $('.btn-update').on('click',function(){
+          $('#upd_ck_id').val($(this).attr('ck_id')) ;
+          $('#upd_ck_name').val($(this).attr('ck_name')) ;
+        })
+    });
+  </script>
+</body>
+
+</html>

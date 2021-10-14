@@ -8,7 +8,7 @@ const session = require("express-session");
 const passport = require("passport");
 
 var setUpPassport = require("./setuppassport");
-var isAuthenticated = require('./auth').ensureAuthenticated; // kiem tra trang thai dang nhap
+// var Auth = require('./auth'); // kiem tra trang thai dang nhap
 
 var app = express() // khoi tao ung dung
 setUpPassport();
@@ -34,11 +34,7 @@ app.use(express.static('./assets'));
 app.use(express.static('./public/'));
 app.use(express.static('./src/'));
 
-// ROUTES
 app.use("/", require("./routes"));
-app.use("/admin", require("./routes/admin"));
-app.use("/student", require("./routes/student"));
-app.use("/issuer", require("./routes/issuer"));
 
 app.listen(app.get("port"), () => {
     console.log("Server started on port "+app.get("port")); // thong bao server duoc khoi dong
