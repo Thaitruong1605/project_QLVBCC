@@ -47,7 +47,7 @@
               <div class="col-sm-10">
                 <select class="form-control" id="account_type" name="account_type">
                   <option value="admin">Admin</option>
-                  <option value="issuer" id="selector_issuer">Trường</option>
+                  <option value="school" id="selector_school">Trường</option>
                   <option value="student" id="selector_student">Học viên</option>
                 </select>
               </div>
@@ -65,12 +65,12 @@
               </div>
             </div>
             <div class="mb-3 row">
-              <label class="col-sm-2" for="issuer_id">Trường học</label>
+              <label class="col-sm-2" for="school_id">Trường học</label>
               <div class="col-sm-10">
-                <select class="form-control" id="issuer_id" name="issuer_id" disabled>
+                <select class="form-control" id="school_id" name="school_id" disabled>
                   <option value=""></option>
-                  <% issuer.forEach(function (elt) {%>
-                  <option value="<%= elt.issuer_id %>"><%= elt.issuer_id %> - <%= elt.issuer_name %></option>
+                  <% school.forEach(function (elt) {%>
+                  <option value="<%= elt.school_id %>"><%= elt.school_id %> - <%= elt.school_name %></option>
                   <% }) %>
                 </select>
               </div>
@@ -90,17 +90,17 @@
   $(document).ready(function(){
 
     $('#account_type').on('change', function() {
-      $('#issuer_id').attr('disabled',true);
+      $('#school_id').attr('disabled',true);
       $('#student_id').attr('disabled',true);
-      $('#issuer_id option').attr('selected',false);
+      $('#school_id option').attr('selected',false);
       $('#student_id option').attr('selected',false);
-      $('#issuer_id option[value=""]').attr('selected',true);
+      $('#school_id option[value=""]').attr('selected',true);
       $('#student_id option[value=""]').attr('selected',true);
 
       if( this.value == 'student'){
         $('#student_id').removeAttr('disabled');
-      }else if( this.value == 'issuer'){
-        $('#issuer_id').removeAttr('disabled');
+      }else if( this.value == 'school'){
+        $('#school_id').removeAttr('disabled');
       }
 
     });

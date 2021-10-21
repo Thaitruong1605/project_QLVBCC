@@ -1,10 +1,10 @@
 const conn = require("../dbconnect");
 
-let select_byissuer = (issuer_id) => {
+let select_byissuer = (school_id) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "SELECT * FROM certificates WHERE issuer_id=?",
-      issuer_id,
+      "SELECT * FROM certificates WHERE school_id=?",
+      school_id,
       function (err, results) {
         if (err) {
           reject(err);
@@ -35,7 +35,6 @@ let create = (data) => {
   return new Promise((resolve, reject) => {
     conn.query("INSERT INTO certificates SET ?", data, function (err) {
       if (err) {
-        console.log(this.sql);
         reject(err);
       } else {
         resolve("A new row has been created!");
@@ -44,11 +43,11 @@ let create = (data) => {
   });
 };
 
-let update = (number, issuer_id, data) => {
+let update = (number, school_id, data) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "UPDATE certificates SET ? WHERE issuer_id=? and number=?",
-      [data, issuer_id, number],
+      "UPDATE certificates SET ? WHERE school_id=? and number=?",
+      [data, school_id, number],
       function (err) {
         if (err) {
           reject(err);
@@ -122,14 +121,13 @@ let certname_get = (id) => {
     );
   })
 };
-let certname_getbyissuer = (id, issuer_id) => { 
-  sql = "SELECT cn_id, cn_name FROM certname WHERE issuer_id='"+issuer_id+"'"; 
+let certname_getbyissuer = (school_id, id) => { 
+  sql = "SELECT cn_id, cn_name FROM certname WHERE school_id='"+school_id+"'"; 
   sql += (id)? "' cn_id = '"+id+"'":'';
   return new Promise((resolve, reject) =>{
     conn.query(
       sql,
       function(err, results){
-        console.log(this.sql);
         if (err){
           console.log(err);
           reject(err);
@@ -145,7 +143,6 @@ let certname_update = (id,name) => {
       "UPDATE certname SET cn_name=? WHERE cn_id=?",
       [name,id],
       function(err, results){
-        console.log(this.sql);
         if (err){
           console.log(err);
           reject(err);
@@ -155,11 +152,11 @@ let certname_update = (id,name) => {
     );
   })
 };
-let certname_create = (name, issuer_id) => { 
+let certname_create = (school_id, name) => { 
   return new Promise((resolve, reject) =>{
     conn.query(
-      "INSERT INTO certname (cn_name,issuer_id) VALUES (?,?)",
-      [name,issuer_id],
+      "INSERT INTO certname (cn_name,school_id) VALUES (?,?)",
+      [name,school_id],
       function(err, results){
         if (err){
           console.log(err);
@@ -170,11 +167,11 @@ let certname_create = (name, issuer_id) => {
     );
   })
 };
-let certname_remove = (id) => { 
+let certname_remove = (school_id, id) => { 
   return new Promise((resolve, reject) =>{
     conn.query(
-      "DELETE FROM certname WHERE cn_id= ?",
-      [id],
+      "DELETE FROM certname WHERE cn_id= ? AND school_id= ?",
+      [id,school_id],
       function(err, results){
         if (err){
           console.log(err);
@@ -202,8 +199,8 @@ let certkind_get = (id) => {
     );
   })
 };
-let certkind_getbyissuer = (id, issuer_id) => { 
-  sql = "SELECT ck_id, ck_name FROM certkind WHERE issuer_id='"+issuer_id+"'"; 
+let certkind_getbyissuer = (school_id, id ) => { 
+  sql = "SELECT ck_id, ck_name FROM certkind WHERE school_id='"+school_id+"'"; 
   sql += (id)? "' ck_id = '"+id+"'":'';
   return new Promise((resolve, reject) =>{
     conn.query(
@@ -233,11 +230,11 @@ let certkind_update = (id,name) => {
     );
   })
 };
-let certkind_create = (name, issuer_id) => { 
+let certkind_create = (school_id, name) => { 
   return new Promise((resolve, reject) =>{
     conn.query(
-      "INSERT INTO certkind (ck_name,issuer_id) VALUES (?,?)",
-      [name,issuer_id],
+      "INSERT INTO certkind (ck_name,school_id) VALUES (?,?)",
+      [name,school_id],
       function(err, results){
         if (err){
           console.log(err);
@@ -251,8 +248,8 @@ let certkind_create = (name, issuer_id) => {
 let certkind_remove = (id) => { 
   return new Promise((resolve, reject) =>{
     conn.query(
-      "DELETE FROM certkind WHERE ck_id= ?",
-      [id],
+      "DELETE FROM certkind WHERE ck_id= ? AND school_id= ?",
+      [id,school_id],
       function(err, results){
         if (err){
           console.log(err);

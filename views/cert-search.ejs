@@ -10,22 +10,27 @@
 <body>
   <%- include('./partials/header.ejs') %>
   <%- include('./partials/alert.ejs') %>
-  <!-- FLASH  -->
+
   <div class="container">
     <div class="row">
+      <div class="col">
+        <form method="get" action="/cert-detail">
+          <div class="mp-3">
+            <label class="form-label">Nhập số chứng chỉ</label>
+            <input type=text class="form-control" name="number" />
+          </div>
+          <button type="submit" class="btn btn-primary pull-right">Tìm</button>
+        </form>
+      </div>
     </div>
   </div>
+
   <%- include('./layouts/scripts.ejs') %>
-  <script>
-    $(document).ready( async function(){
-      if(typeof ethereum == "undefined") {
-        alert("Vui lòng kết nối với netmark");
-      } else {
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        $('#account_address').attr('value', accounts);
-        $('#NetmarkAddress').text(accounts);
-      }
-    })
+  <script type="module">
+    import QrScanner from 'path/to/qr-scanner.min.js';
+    // do something with QrScanner
+
   </script>
+
 </body>
 </html>

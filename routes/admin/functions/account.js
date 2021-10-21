@@ -3,13 +3,13 @@ const router = express.Router();
 const moment = require('moment');
 const accountModel = require("../../../models/accountModel");
 const accountController = require("../../../controllers/accountController");
-const issuerModel =require("../../../models/issuerModel");
+const schoolModel =require("../../../models/schoolModel");
 const studentModel =require("../../../models/studentModel");
 router.get('/', (req, res) => {
   // Lay du lieu account
   try{
     accountModel.select().then(function(data){
-      return res.render('./admin/functions/account/',{title:"Account", account_list:data, moment, page:"Danh sách"});
+      return res.render('./admin/functions/account/',{title:"Danh sách tài khoản", account_list:data, moment, page:"User"});
     })
   }catch(err){
     console.log(err);
@@ -21,7 +21,7 @@ router.get('/detail-student', (req, res) => {
   if (typeof req.query.id !== 'undefined'){
     try {
       accountModel.get_studentInfo(req.query.id).then(function(data){
-        res.render('./admin/functions/student/detail',{title:"Account", studentInfo:data[0], moment, page:"Chi tiết sinh viên"})
+        res.render('./admin/functions/student/detail',{title:"Chi tiết tài khoản", studentInfo:data[0], moment, page:"User"})
       })
     }catch(err){
       res.flash('error', err);
@@ -30,26 +30,26 @@ router.get('/detail-student', (req, res) => {
   }
 })
 
-router.get('/create',async (req, res) => {
-  var student,issuer;
-  try{
-    await studentModel.select().then(function(data){
-      return student = data;
-    })
-  }catch (err){
-    console.log(err);
-  }
-  try{
-    await issuerModel.issuer_select().then(function(data){
-      return issuer = data;
-    })
-  }catch (err){
-    console.log(err);
-  }
-  res.render('./admin/functions/account/create',{title:"Account", student, issuer, page:"Thêm mới"})
-})
+// router.get('/create',async (req, res) => {
+//   var student,school;
+//   try{
+//     await studentModel.select().then(function(data){
+//       return student = data;
+//     })
+//   }catch (err){
+//     console.log(err);
+//   }
+//   try{
+//     await schoolModel.school_select().then(function(data){
+//       return school = data;
+//     })
+//   }catch (err){
+//     console.log(err);
+//   }
+//   res.render('./admin/functions/account/create',{title:"Account", student, school, page:"Thêm mới"})
+// })
 router.get('/update',async (req, res) => {
-  var student,issuer,account;
+  var student,school,account;
   try{
     await accountModel.selectbyaddress(req.query.account_address).then(function(data){
       return account = data[0];
@@ -65,13 +65,13 @@ router.get('/update',async (req, res) => {
     console.log(err);
   }
   try{
-    await issuerModel.issuer_select().then(function(data){
-      return issuer = data;
+    await schoolModel.school_select().then(function(data){
+      return school = data;
     })
   }catch (err){
     console.log(err);
   }
-  res.render('./admin/functions/account/update',{title:"Account", account, student, issuer, page:"Thêm mới"})
+  res.render('./admin/functions/account/update',{title:"Cập nhật tài khoản", account, student, school, page:"User"})
 })
 router.get('/delete', async (req, res) => {
   try{

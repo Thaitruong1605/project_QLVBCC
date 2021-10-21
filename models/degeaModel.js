@@ -1,10 +1,10 @@
 const conn = require("../dbconnect");
 
-let select_byissuer = (issuer_id) => {
+let select_byissuer = (school_id) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "SELECT * FROM degree WHERE issuer_id=?",
-      issuer_id,
+      "SELECT * FROM degree WHERE school_id=?",
+      school_id,
       function (err, results) {
         if (err) {
           reject(err);
@@ -44,11 +44,11 @@ let insert = (data) => {
   });
 };
 
-let update = (number, issuer_id, data) => {
+let update = (number, school_id, data) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "UPDATE degree SET ? WHERE issuer_id=? and number=?",
-      [data, issuer_id, number],
+      "UPDATE degree SET ? WHERE school_id=? and number=?",
+      [data, school_id, number],
       function (err) {
         if (err) {
           reject(err);

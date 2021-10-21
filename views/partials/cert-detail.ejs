@@ -1,0 +1,65 @@
+<table class="table table-borderless" >
+  <tbody>
+    <tr >
+      <th colspan="2"><h4 class="pb-3 border-bottom">THÔNG TIN CHI TIẾT CỦA CHỨNG CHỈ</h4></th>
+    </tr>
+    <tr>
+      <th class="col-md-3">Số hiệu</th>
+      <td><%= cert_info.number %></td>
+    </tr>
+    <tr>
+      <th>Tên chứng chỉ</th>
+      <td><%= cert_info.certname %></td>
+    </tr>
+    <tr>
+      <th>Loại</th>
+      <td><%= cert_info.certkind %></td>
+    </tr>
+    <tr >
+      <th colspan="2"><h6 class="ps-3 border-start">THÔNG TIN NGƯỜI NHẬN CHƯNG CHỈ</h6></th>
+    </tr>
+    <tr>
+      <th>Họ tên</th>
+      <td><%= cert_info.student_name %></td>
+    </tr>
+    <tr>
+      <th>Giới tính</th>
+      <td><%= cert_info.student_gender %></td>
+    </tr>
+    <tr>
+      <th>Ngày sinh</th>
+      <td><%= cert_info.student_dayofbirth %></td>
+    </tr>
+    <tr>
+      <th>Nơi sinh</th>
+      <td><%= cert_info.student_placeofbirth %></td>
+    </tr>
+    <tr >
+      <th colspan="2"><h6 class="ps-3 pb-2 border-start">KẾT QUẢ KHOÁ HỌC</h6></th>
+    </tr>
+    <tr>
+      <th>Tên khoá học</th>
+      <td><%= cert_info.course_name %></td>
+    </tr>
+    <tr>
+      <th>Thời gian đào tạo</th>
+      <td><%= cert_info.duration %></td>
+    </tr>
+    <tr>
+      <th>Ngày kiểm tra</th>
+      <td><%= cert_info.testday %></td>
+    </tr>
+    <tr>
+      <th>Xếp loại</th>
+      <td><%= cert_info.classification %></td>
+    </tr>
+    <tr>
+      <th>Ngày ký</th>
+      <td><%= cert_info.signday %></td>
+    </tr>
+    <tr>
+      <th>Số vào sổ </th>
+      <td><%= cert_info.regno %></td>
+    </tr>
+  </tbody>
+</table>

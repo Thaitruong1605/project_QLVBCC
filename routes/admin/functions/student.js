@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const moment = require('moment');
-const StudentModel = require("../../../models/studentModel");
+const studentModel = require("../../../models/studentModel");
 const studentController = require("../../../controllers/studentController");
 
 router.get('/', (req, res) => {
   // Lay du lieu student
   try{
-    StudentModel.select().then(function(data){
-      return res.render('./admin/functions/student/',{title:"Student", student_list:data, moment, page:"Danh sách"});
+    studentModel.select().then(function(data){
+      return res.render('./admin/functions/student/',{title:"Danh sách sinh viên", student_list:data, moment, page:"User"});
     })
   }catch(err){
     console.log(err);
@@ -20,7 +20,7 @@ router.get('/update', (req, res) => {
   if( typeof req.query.id !== 'undefined'){
     try{
       require('../../../models/studentModel').select_byId(req.query.id).then(function(data){
-        return res.render('./admin/functions/student/update',{title:"student", student:data, moment, page:"Cập nhật"});
+        return res.render('./admin/functions/student/update',{title:"Cập nhật sinh viên", student:data, moment, page:"User"});
       })
     }catch(err){
       console.log(err);
@@ -28,9 +28,6 @@ router.get('/update', (req, res) => {
       return res.redirect("/admin");
     }
   }
-})
-router.get('/create', (req, res) => {
-  res.render('./admin/functions/student/create',{title:"student", page:"Thêm mới"})
 })
 // router.get('/delete', (req, res) => {
 //   if( typeof req.query.id !== 'undefined'){

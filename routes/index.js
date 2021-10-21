@@ -14,6 +14,6 @@ router.use("/", require('./home'));
 // router.use("/issuer", require('./issuer/function'));
 router.use("/admin", require("./admin/function"));
 router.use("/student", require("./student/function"));
-router.use("/issuer", require("./issuer/function"));
+router.use("/school", require("./school/function"));
 
 module.exports = router;

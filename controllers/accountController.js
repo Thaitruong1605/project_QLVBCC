@@ -10,7 +10,7 @@ let create = async (req, res) => {
     account_type: req.body.account_type, 
     account_status: req.body.account_status, 
     student_id: (req.body.student_id)? req.body.student_id:null,
-    issuer_id: (req.body.issuer_id)? req.body.issuer_id:null,
+    school_id: (req.body.school_id)? req.body.school_id:null,
   };
   if (
     account.account_address == ""
@@ -39,7 +39,7 @@ let update = async (req, res) => {
     account_type: req.body.account_type, 
     account_status: req.body.account_status, 
     student_id: (req.body.student_id)? req.body.student_id:null,
-    issuer_id: (req.body.student_id)? req.body.student_id:null,
+    school_id: (req.body.student_id)? req.body.student_id:null,
   };
   if(error != "") {
     req.flash("error", error);

@@ -1,53 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%- include('./layouts/styles.ejs')%>
-    <title>Đăng ký</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang chủ</title>
+  <%- include('./layouts/styles.ejs')%>
 </head>
-
 <body>
-    <% if(error && error.length > 0 ){ %>
-        <div class="alert alert-danger" role="alert">
-        <% error.forEach(function(elt){%>
-            <%= elt;%><br />
-        <% }); %>
-        </div>
-    <% } %>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <form name="frmSignup" id="frmSignup" action="/signup" method="POST">
-                    <input type="hidden" name="account_address" id="account_address"/>
-                    <div class="form-group">
-                        <label for="student_email">Email: </label>
-                        <input name="student_email" id="student_email" value="" class="form-control" />
+  <%- include('./partials/header.ejs') %>
+  <%- include('./partials/alert.ejs') %>
+  <!-- FLASH  -->
+  <div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h5 class="text-center ">Thông tin cá nhân sinh viên</h5>
+            <form name="frmSignup" id="frmSignup" action="/signup" method="POST" >
+                <!-- <input type="text" type="hidden" name="account_address" id="account_address"/> -->
+                <div class="mb-3">
+                    <label for="account_address">Địa chỉ tài khoản: </label>
+                    <input type="text" name="account_address" id="account_address" value="" class="form-control" readonly/>
+                </div>
+                <div class="mb-3">
+                    <label for="account_username">Tên đăng nhập: </label>
+                    <input type="text" name="account_username" id="account_username" value="" class="form-control" />
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="mb-3">
+                            <label for="account_password">Mật khẩu: </label>
+                            <input type="password" name="account_password" id="account_password" value="" class="form-control" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="student_name">Họ tên: </label>
-                        <input name="student_name" id="student_name" value="" class="form-control" />
+                    <div class="col-md">
+                        <div class="mb-3">
+                            <label for="account_password2">Nhập lại mật khẩu: </label>
+                            <input type="password" name="account_password2" id="account_password2" value="" class="form-control" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="student_address">Địa chỉ: </label>
-                        <input name="student_address" id="student_address" value="" class="form-control" />
+                </div>
+                <h6 class="border-start border-3 ps-3">Đăng ký tài khoản sinh viên</h6>
+                <div class="mb-3">
+                    <label for="student_name">Họ tên: </label>
+                    <input type="text" name="student_name" id="student_name" value="" class="form-control" />
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="student_email">Email: </label>
+                            <input type="text" name="student_email" id="student_email" value="" class="form-control" />
+                        </div>
+
                     </div>
-                    <div class="form-group">
-                        <label for="student_birth">Ngày sinh: </label>
-                        <input name="student_birth" id="student_birth" value="" class="form-control" />
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="student_phoneNumber">Số điện thoại: </label>
+                            <input type="text" name="student_phoneNumber" id="student_phoneNumber" value="" class="form-control" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="student_phone">Số điện thoại: </label>
-                        <input name="student_phone" id="student_phone" value="" class="form-control" />
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="mb-3">
+                            <label for="student_idNumber">Số căn cước công dân: </label>
+                            <input type="text" name="student_idNumber" id="student_idNumber" value="" class="form-control" />
+                        </div>
                     </div>
-                    <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
-                </form>
-            </div>
+                    <div class="col-md">
+                        <div class="mb-3">
+                            <label for="student_birth">Ngày sinh: </label>
+                            <input type="text" name="student_birth" id="student_birth" value="03/09/1999" class="form-control" autocomplete="off"/>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="mb-3">
+                            <label for="student_birth">Giới tính: </label>
+                            <select class="form-control" name="student_gender">
+                                <option value="1" selected>Nam</option>
+                                <option value="0">Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="student_placeAddress">Địa chỉ: </label>
+                    <input type="text" name="student_placeAddress" id="student_placeAddress" value="" class="form-control" />
+                </div>
+                <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
+            </form>
         </div>
     </div>
-    <%- include('./layouts/scripts.ejs')%>
-    <script src="/js/signup.js"></script>
+  </div>
+  <%- include('./layouts/scripts.ejs') %>
+  <script>
+    $(document).ready( async function(){
+      if(typeof ethereum == "undefined") {
+        alert("Vui lòng kết nối với netmark");
+      } else {
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        $('#account_address').attr('value', accounts);
+        $('#NetmarkAddress').text(accounts);
+      }
+    $( "#student_birth" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: "03/09/1999"
+    });
+    })
+  </script>
 </body>
 </html>

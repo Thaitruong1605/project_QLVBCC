@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danh sách chứng chỉ</title>
+  <%- include('../layouts/styles'); %>
+
+</head>
+
+<body>
+  <%- include('../../partials/header') %>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <%- include("../partials/sidebar.ejs"); %>
+      </div>
+      <div class="col">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Số chứng chỉ</th>
+              <th scope="col">Tên</th>
+              <th scope="col">Loại</th>
+              <th scope="col">Người nhận</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col">Ngày tạo</th>
+              <th scope="col">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% i=1; %>
+            <% certlist.forEach(function(cert){ %>
+              <tr id="row_<%= i %>">
+                <th scope="row"><%= i++; %></th>
+                <td id="tb-name"><%= cert.number; %></td>
+                <td id="tb-cn_name">
+                  <% namelist.forEach(function(name){ %>
+                    <%= (name.cn_id == cert.cn_id)? name.cn_name:'' %>
+                  <% }) %>
+                </td>
+                <td id="tb-ck_name">
+                  <% kindlist.forEach(function (kind){ %>
+                    <%= (kind.ck_id == cert.ck_id)? kind.ck_name:'' %>
+                  <% }) %>
+                </td>
+                <td id="tb-student_id"><%= (cert.student_id) ? cert.student_id : "Chưa có"%></td>
+                <td id="tb-status"><%= cert.status %></td> %> 
+                
+                <td id="tb-createtime"><%= moment(cert.createtime).format('DD-MM-YYYY, h:mm:ss a'); %></td>
+                <td>
+                  <a class="btn btn-primary" href="/issuer/certificate/detail?number=<%= cert.number %>">Xem</a>
+                  <a class="btn btn-warning" href="/issuer/certificate/update?number=<%= cert.number %>">Sửa</a>
+                  <a class="btn btn-danger" href="/issuer/certificate/delete?number=<%= cert.number; %>">Xoá</a>
+                  <% if(cert.ipfs_hash == null){ %>
+                    <a class="btn btn-primary" href="/issuer/certificate/up_to_ipfs?number=<%= cert.number %>">Up to ifps</a>
+                  <% } %>
+                </td>
+              </tr>
+              <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <%- include('../layouts/scripts.ejs'); %>
+  
+</body>
+
+</html>

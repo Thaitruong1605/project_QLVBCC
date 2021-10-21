@@ -3,7 +3,7 @@ const conn = require('../dbconnect');
 let select = () => {
     return new Promise( (resolve, reject) => {
         conn.query(
-            'SELECT account_address, account_type, account_status, student_id, issuer_id FROM accounts',
+            'SELECT account_address, account_type, account_status, student_id, school_id FROM accounts',
             function (err, results) {
                 if (err) { reject(err); }
                 else {
@@ -16,7 +16,7 @@ let select = () => {
 let selectbyaddress = (account_address) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT account_address, account_type, account_status, student_id, issuer_id FROM accounts WHERE account_address = ?',
+            'SELECT account_address, account_type, account_status, student_id, school_id FROM accounts WHERE account_address = ?',
             [account_address],
             function (err, results) {
                 if (err) { reject(err); }
@@ -40,7 +40,7 @@ let get_studentInfo = (id) => {
 let get_issuerInfo = (id) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT account_address, account_type, account_status, a.issuer_id, issuer_code, issuer_website, issuer_name, issuer_address, issuer_phone, issuer_fax, issuer_email, issuer_modifieddate, issuer_createddate FROM accounts a JOIN issuers i ON a.issuer_id = i.issuer_id WHERE a.issuer_id = ?',
+            'SELECT account_address, account_type, account_status, a.school_id, issuer_code, issuer_website, issuer_name, issuer_address, issuer_phone, issuer_fax, issuer_email, issuer_modifieddate, issuer_createddate FROM accounts a JOIN issuers i ON a.school_id = i.school_id WHERE a.school_id = ?',
             [id],
             function (err, results) {
                 if (err) { reject(err); }

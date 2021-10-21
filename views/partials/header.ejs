@@ -6,23 +6,47 @@
 
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
       <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">Features</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">Pricing</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">FAQs</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">About</a></li>
+      <li><a href="/cert-search" class="nav-link px-2 link-dark">Tra cứu chứng chỉ</a></li>
+      <li><a href="/qrscan" class="nav-link px-2 link-dark">QRscan</a></li>
+      <li><a href="/nhap-chung-chi" class="nav-link px-2 link-dark">Nhập chứng chỉ</a></li>
     </ul>
 
-    <div class="col-md-3 text-end">
+    <div class="col-md-3">
       <% if (typeof currentUser == "undefined" ) { %>
-        <form name="frmLogin" action = "/login" method="POST">
-          <input type="hidden" name="account_address" id="account_address" value="" />
-          <a type="button" class="btn btn-outline-primary me-2" href="/signup">Signup</a>
-          <button type="submit" class="btn btn-primary">Kết nối với Wallet</button>
-        </form>
-        <% }else{ %>
-          <a class="btn btn-warning" href="/logout">Huỷ kết nối</a>
-        <% } %>
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal"> Đăng nhập </button>
+      <!-- Modal -->
+      <div class="modal fade" id="loginModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="loginModalLabel">Modal title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="/login" method="POST">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Tên đăng nhập</label>
+                  <input type="text" class="form-control" name="username" />
+                </div>
+                <div class="mb-3">
+                  <label for="username" class="form-label">Mật khẩu</label>
+                  <input type="password" class="form-control" name="password" />
+                </div>
+
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Đăng nhập</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="btn btn-primary" href="/signup"> Đăng ký </a>
+      <% }else{ %>
+        <a class="btn btn-warning" href="/logout">Đăng xuất</a>
+      <% } %>
     </div>
   </header>
 </div>
-  <%= (typeof alert != "undefined") ? alert: "" %>

@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const fs = require('fs');
-const issuerModel = require("../../models/issuerModel");
+const schoolModel = require("../../models/schoolModel");
 const contract = require("@truffle/contract");
 const bytes32 = require('bytes32');
 const SHA256 = require('sha256');
@@ -12,29 +12,34 @@ const provider = new Web3.providers.HttpProvider("http://localhost:7545");
 var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
 SystemContract.setProvider(provider);
 
-router.use('/issuer', require('./functions/issuer'));
+router.use('/school', require('./functions/school'));
 router.use('/student', require('./functions/student'));
 router.use('/account', require('./functions/account'));
 
-let get_issuer = async () => {
-  var issuer;
+let get_school = async () => {
+  var school;
   try {
-    var data = await issuerModel.issuer_selectbyId("ISR0001").then(function(data){
+    var data = await schoolModel.school_selectbyId("ISR0001").then(function(data){
       return data[0];
     });
-    issuer = {
-      name: data.issuer_name, 
-      addressPlace: data.issuer_address,
-      phoneNumber: data.issuer_phone,
-      email: data.issuer_email,
-      fax: data.issuer_fax,
-      website: data.issuer_website
+    school = {
+      name: data.school_name, 
+      addressPlace: data.school_address,
+      phoneNumber: data.school_phone,
+      email: data.school_email,
+      fax: data.school_fax,
+      website: data.school_website
     }
   }catch (err){
     console.log(err);
   }
-  return issuer;
+  return school;
 }
+
+router.get('/', (req, res) => {
+  res.render('./admin',{title: "Dashboard"});
+})
+
 router.get('/create_student_contract', async (req,res) => {
   var stuAddr = "0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701"
   const StudentAtrifact = JSON.parse(fs.readFileSync('./src/abis/Student.json'));
@@ -58,27 +63,27 @@ router.get('/add_cert' ,async(req, res) => {
   console.log(bytes32_val);
   await systemInstance.addCerf(stuAddr,"0x70cE91A72dbE08aaD8766aE09E977d559C13B806",bytes32_val,{from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'})
 })
-router.get('/create_issuer_contract', async (req,res) => {
-  // tao hop dong issuer 
-  var issuerAddr = '0x70cE91A72dbE08aaD8766aE09E977d559C13B806';
+router.get('/create_school_contract', async (req,res) => {
+  // tao hop dong school 
+  var schoolAddr = '0x70cE91A72dbE08aaD8766aE09E977d559C13B806';
   const IssuerAtrifact = JSON.parse(fs.readFileSync('./src/abis/Issuer.json'));
   const IssuerContract = contract(IssuerAtrifact);
   IssuerContract.setProvider(provider);
   
-  var issuer = await get_issuer();
-  console.log(issuer);
+  var school = await get_school();
+  console.log(school);
   
-  const isrInstance = await IssuerContract.new(issuer.name, issuer.addressPlace, issuer.phoneNumber, issuer.email, issuer.fax, issuer.website,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
-  // // await IssuerContract.transferOwnership(issuerAddr,{from: issuerAddr});
+  const isrInstance = await IssuerContract.new(school.name, school.addressPlace, school.phoneNumber, school.email, school.fax, school.website,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
+  // // await IssuerContract.transferOwnership(schoolAddr,{from: schoolAddr});
   // // const isrInstance = await IssuerContract.at('0x452c8C8Dc76C6D18F5bb18E2c79F04D010EFAAb2');
   // console.log(isrInstance.address);
   // const systemInstance = await SystemContract.deployed();
-  // await systemInstance.addIssuer(issuerAddr,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'} );
-  // await systemInstance.changeIssuerContract(issuerAddr,isrInstance.address ,{from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'})
-  // var addr = await systemInstance.mapIssuer.call(issuerAddr);
+  // await systemInstance.addIssuer(schoolAddr,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'} );
+  // await systemInstance.changeIssuerContract(schoolAddr,isrInstance.address ,{from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'})
+  // var addr = await systemInstance.mapIssuer.call(schoolAddr);
   // res.send(addr);
 })
-router.get('/get_issuer_data', async(req, res)=> {
+router.get('/get_school_data', async(req, res)=> {
   // 0xfd3793bebf81E084AD71F1fbCdf1AA44D02FB2d7
   const IssuerAtrifact = JSON.parse(fs.readFileSync('./src/abis/Issuer.json'));
   const IssuerContract = contract(IssuerAtrifact);
@@ -88,16 +93,14 @@ router.get('/get_issuer_data', async(req, res)=> {
   var returndata = await i.getData();
   console.log(returndata);
 })
-router.get('/get_issuer_contract_address', async (req, res) => {
+router.get('/get_school_contract_address', async (req, res) => {
   const systemInstance = await SystemContract.deployed();
   var a = await systemInstance.mapIssuer.call('0x70cE91A72dbE08aaD8766aE09E977d559C13B806');
   console.log(a)
 })
 
 
-router.get('/', (req, res) => {
-  res.render('./admin',{title: "Dashboard"});
-})
+
 
 
 module.exports = router

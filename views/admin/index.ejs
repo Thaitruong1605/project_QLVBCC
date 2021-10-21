@@ -5,32 +5,53 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Dashboard</title>
+  <title>
+    <%= title; %>
+  </title>
+  <!-- styles from vendors  -->
   <%- include('./layouts/styles.ejs'); %>
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3">
-        <%- include('./partials/sidebar.ejs')%>
+      <div class="col-md-2 ps-0">
+        <%- include('./partials/sidebar.ejs'); %>
       </div>
-      <div class="col-md-9">
-        <%- include('./partials/navbar.ejs) %>
+      <div class="col-md-10">
         <!-- main content -->
+        <h3 class = "pt-3">Dashboard</h3>
+        <hr >
+        <div class="table-responsive">
+          
+        </div>
+      
       </div>
     </div>
   </div>
+  
 
-  <!-- SCRIPT -->
+  <!-- script form vendor -->
   <%- include('./layouts/scripts.ejs'); %>
+  <!-- Page's scripts -->
+  
   <script>
-    $(document).on('load',function(){
-
-    });
   </script>
-
 </body>
 
 </html>

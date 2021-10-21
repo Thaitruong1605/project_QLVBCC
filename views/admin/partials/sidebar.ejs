@@ -5,61 +5,17 @@
   <hr>
   <ul class="list-unstyled ps-0">
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#issuer-collapse" aria-expanded="<%= (title == "Issuer")? "true":"flase" %>">
-        Issuers
+      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="<%= (page == "User")? "true":"flase" %>">
+        Quản lý người dùng
       </button>
-      <div class="collapse <%= (title == "Issuer")? "show": "" %>" id="issuer-collapse">
+      <div class="collapse <%= (page == "User")? "show":"" %>" id="account-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/admin/issuer/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/admin/issuer/create" class="link-dark rounded">Thêm mới</a></li>
+          <li><a href="/admin/account/" class="link-dark rounded">Tài khoản</a></li>
+          <li><a href="/admin/school/" class="link-dark rounded">Trường học</a></li>
+          <li><a href="/admin/student/" class="link-dark rounded">Sinh viên</a></li>
         </ul>
       </div>
     </li>
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#student-collapse" aria-expanded="<%= (title == "Student")? "true":"flase" %>">
-        Students
-      </button>
-      <div class="collapse <%= (title == "Student")? "show": "" %>" id="student-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/admin/student/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/admin/student/create" class="link-dark rounded">Thêm mới</a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="<%= (title == "Account")? "true":"flase" %>">
-        Account
-      </button>
-      <div class="collapse <%= (title == "Account")? "show":"" %>" id="account-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/admin/account/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/admin/account/create" class="link-dark rounded">Thêm mới</a></li>
-        </ul>
-      </div>
-    </li>
-    <hr>
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#degree-collapse" aria-expanded="<%= (title == "Degree")? "true":"flase" %>">
-        Văn bằng
-      </button>
-      <div class="collapse <%= (title == "Degree")? "true":"flase" %>" id="degree-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/admin/degree/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/admin/degree/create" class="link-dark rounded">Thêm mới</a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#certificate-collapse" aria-expanded="<%= (title == "Certificate")? "true":"flase" %>">
-        Chứng chỉ
-      </button>
-      <div class="collapse <%= (title == "Certificate")? "true":"flase" %>" id="certificate-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/admin/certificate/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/admin/certificate/create" class="link-dark rounded">Thêm mới</a></li>
-        </ul>
-      </div>
-    </li>
-    <br>
+    <br />
   </ul>
 </div>

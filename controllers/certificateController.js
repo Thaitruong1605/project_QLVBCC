@@ -4,7 +4,7 @@ let create = async(req, res) => {
   var error = [];
   var certificate = {
     number: req.body.number, 
-    issuer_id: req.body.issuer_id, 
+    school_id: req.body.school_id, 
     student_id: req.body.student_id, 
   }
   if (certificate.number == '' ){
