@@ -1,7 +1,8 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const loginController = require("./controllers/loginController");
-
+const loginModel = require("./models/loginModel");
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 module.exports = function () {
   passport.serializeUser(function (user, done) {
@@ -11,20 +12,17 @@ module.exports = function () {
     done(null, user);
   });
   
-  passport.use(new LocalStrategy({
-      usernameField: 'account_address',
-      passwordField: 'account_address',
-    },
-    async function (username, password, done) {
-      try{
-        await loginController.checkAccount(username).then(function(data){
-          console.log(data);
-          return done(null, data);
-        });
-      }catch(err){        
-        console.log(err);
-        return done(null, false, { message: err });
+  passport.use(new LocalStrategy( async function (username, password, done) {
+    try{
+      var account = await loginModel.findAccount(username);
+      // password= await bcrypt.hashSync(password, saltRounds);
+      if (await bcrypt.compareSync(password, account.account_password)){
+        return done(null, account);
       }
+      return done(null, false, { message: "Sai mật khẩu!" });
+    }catch(err){        
+      console.log(err);
+      return done(null, false, { message: "Sai tên đăng nhập!" });
     }
-  ));
+  }));
 };

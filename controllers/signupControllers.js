@@ -2,9 +2,7 @@ const signupModel = require("../models/signupModel");
 const validator = require('validator');
 const moment = require('moment');
 const bcrypt = require('bcrypt');
-
 const saltRounds = 10;
-const salt = bcrypt.genSaltSync(saltRounds);
 
 let createUser = async (req, res) => {
   let error = [];

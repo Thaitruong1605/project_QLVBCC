@@ -7,7 +7,6 @@ const fs = require("fs"); // file system
 const certificateModel = require('../models/certificateModel')
 const CryptoJS = require('crypto-js');
 
-const loginController = require("../controllers/loginController");
 
 router.get('/signup',async (req, res) => {
   res.render('./signup');
