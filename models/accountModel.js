@@ -3,7 +3,7 @@ const conn = require('../dbconnect');
 let select = () => {
     return new Promise( (resolve, reject) => {
         conn.query(
-            'SELECT account_address, account_type, account_status, student_id, school_id FROM accounts',
+            'SELECT * FROM accounts',
             function (err, results) {
                 if (err) { console.log(err); reject(); }
                 else {
@@ -13,14 +13,14 @@ let select = () => {
         )
     }); 
 }
-let selectbyaddress = (account_address) => {
+let get_accountByUsername = (account_username) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT account_address, account_type, account_status, student_id, school_id FROM accounts WHERE account_address = ?',
-            [account_address],
+            'SELECT * FROM accounts WHERE account_username = ?',
+            [account_username],
             function (err, results) {
                 if (err) { console.log(err); reject(); }
-                resolve(results);
+                resolve(results[0]);
             }
         )
     });
@@ -50,11 +50,11 @@ let create = (account_inf) => {
         )
     });
 };
-let update = (account_address, account_inf) => {
+let update = (account_username, account_inf) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
-            'UPDATE accounts SET ? WHERE account_address=?', 
-            [account_inf, account_address],
+            'UPDATE accounts SET ? WHERE account_username =?', 
+            [account_inf, account_username],
             function(err){
                 if (err) { console.log(err); reject();}
                 resolve("A new account has been updated!");
@@ -62,11 +62,11 @@ let update = (account_address, account_inf) => {
         )
     });
 };
-let remove = (account_address) => {
+let remove = (account_username) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
-            'DELETE FROM accounts WHERE account_address=?', 
-            [account_address],
+            'DELETE FROM accounts WHERE account_username=?', 
+            [account_username],
             function(err){
                 if (err) { console.log(err); reject();}
                 resolve("A new account has been deleted!");
@@ -77,8 +77,8 @@ let remove = (account_address) => {
 
 module.exports = {
     select,
-    selectbyaddress,
     get_accountById,
+    get_accountByUsername,
     create,
     update,
     remove

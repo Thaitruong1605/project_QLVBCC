@@ -30,6 +30,7 @@
 <body>
   <%- include('../partials/navbar.ejs') %>
   <%- include('../../partials/alert.ejs') %>
+
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-2 ps-0">
@@ -37,9 +38,9 @@
       </div>
       <div class="col-md-10">
         <!-- main content -->
-        <h3 class = "pt-3">Danh sách học viên</h3>
+        <h3 class = "pt-3">Danh sách trường học</h3>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-          Thêm mới
+          Thêm tài khoản cho trường học 
         </button>
         <hr >
         <div class="table-responsive">
@@ -92,50 +93,79 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="createModalLabel">Modal title</h5>
+          <h5 class="modal-title" id="createModalLabel">Thêm tài khoản trường học mới</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form action="/admin/school/create" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
         <div class="modal-body">
             <input type="hidden" name="school_id" value="">
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_code">Mã trường</label>
+            <h5 class="border-start border-start ps-3">Thông tin đăng nhập</h5>
+            <div class="mb-3" >
+              <label for="account_username">Tên đăng nhập</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="school_code" name="school_code" value="">
+                <input type="text" class="form-control" id="account_username" name="account_username" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_name">Tên trường</label>
+            <div class="mb-3" >
+              <label for="password">Mật khẩu</label>
+              <div class="col-sm-10">
+                <input type="password" autocomplete="new-password"  class="form-control" id="account_username" name="account_username" value="">
+              </div>
+            </div>
+            <div class="mb-3" >
+              <label for="school_code">Nhập lại mật khẩu</label>
+              <div class="col-sm-10">
+                <input type="password" autocomplete="new-password"  class="form-control"  name="school_code" value="">
+              </div>
+            </div>
+            <div class="mb-3" >
+              <label for="account_status">Trạng thái</label>
+              <div class="col-sm-10">
+                <select class="form-control" name="account_status" id="account_status">
+                  <option value="active" selected>Hoạt động</option>
+                  <option value="lock">Khoá</option>
+                </select>
+              </div>
+            </div>
+            <h5 class="border-start border-start ps-3">Thông tin trường</h5>
+            <div class="mb-3" >
+              <label  for="school_code">Mã trường</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control"  name="school_code" value="">
+              </div>
+            </div>
+            <div class="mb-3" >
+              <label  for="school_name">Tên trường</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="school_name" name="school_name" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_placeAddress">Địa chỉ</label>
+            <div class="mb-3" >
+              <label  for="school_placeAddress">Địa chỉ</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="school_placeAddress" name="school_placeAddress" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_website">Website</label>
+            <div class="mb-3" >
+              <label  for="school_website">Website</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="school_website" name="school_website" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_email">Email</label>
+            <div class="mb-3" >
+              <label  for="school_email">Email</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="school_email" name="school_email" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_phoneNumber">Số điện thoại</label>
+            <div class="mb-3" >
+              <label  for="school_phoneNumber">Số điện thoại</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="school_phoneNumber" name="school_phoneNumber" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_fax">Fax</label>
+            <div class="mb-3" >
+              <label  for="school_fax">Fax</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="school_fax" name="school_fax" value="">
               </div> 
@@ -239,52 +269,52 @@
           <h5 class="modal-title" id="updateModalLabel">Modal title</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="/admin/school/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+        <form action="/admin/school/update" method="POST" id="frmUpdate" novalidate="novalidate">
         <div class="modal-body">
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_id">ID</label>
+            <div class="mb-3" >
+              <label  for="school_id">ID</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="u-school_id" name="school_id" value="" readonly>
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_code">Mã trường</label>
+            <div>
+              <label  for="school_code">Mã trường</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="u-school_code" name="school_code" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_name">Tên trường</label>
+            <div>
+              <label  for="school_name">Tên trường</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="u-school_name" name="school_name" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_placeAddress">Địa chỉ</label>
+            <div class="mb-3" >
+              <label  for="school_placeAddress">Địa chỉ</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="u-school_placeAddress" name="school_placeAddress" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_website">Website</label>
+            <div class="mb-3" >
+              <label  for="school_website">Website</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="u-school_website" name="school_website" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_email">Email</label>
+            <div class="mb-3" >
+              <label  for="school_email">Email</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="u-school_email" name="school_email" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_phoneNumber">Số điện thoại</label>
+            <div class="mb-3" >
+              <label  for="school_phoneNumber">Số điện thoại</label>
               <div class="col-sm-10">
               <input type="text" class="form-control" id="u-school_phoneNumber" name="school_phoneNumber" value="">
               </div>
             </div>
-            <div class="mb-3 row">
-              <label class="col-sm-2" for="school_fax">Fax</label>
+            <div class="mb-3" >
+              <label  for="school_fax">Fax</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="u-school_fax" name="school_fax" value="">
               </div> 
@@ -308,7 +338,6 @@
     $(document).ready(function(){
 
       let getdata = async function(id) {
-        console.log(id);
         await $.ajax({
           url:'/admin/school/get-data',
           method:'post',

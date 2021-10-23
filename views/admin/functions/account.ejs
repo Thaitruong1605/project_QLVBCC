@@ -9,16 +9,17 @@
     <%= title %>
   </title>
   <!-- styles from vendors  -->
-  <%- include('../../layouts/styles.ejs'); %>
+  <%- include('../layouts/styles.ejs'); %>
 
 </head>
 
 <body>
-  <%- include('../../partials/navbar.ejs') %>
+  <%- include('../partials/navbar.ejs') %>
+  <%- include('../../partials/alert.ejs') %>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-2 px-0">
-        <%- include('../../partials/sidebar.ejs'); %>
+        <%- include('../partials/sidebar.ejs'); %>
       </div>
       <div class="col-md-10 px-0">
         <div class="container">
@@ -31,6 +32,8 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">Tên đăng nhập</th>
+                  <th scope="col">ID</th>
                   <th scope="col">Địa chỉ</th>
                   <th scope="col">Loại tài khoản</th>
                   <th scope="col">Trạng thái</th>
@@ -44,9 +47,15 @@
                       <th scope="row">
                         <%= i++; %>
                       </th>
+                      <th>
+                        <%= account.account_username %>
+                      </th>
+                      <td>
+                        <%= account.student_id %>
+                        <%= account.school_id %>
+                      </td>
                       <td>
                         <%= account.account_address %>
-                        
                       </td>
                       <td>
                         <%= account.account_type %>
@@ -55,19 +64,8 @@
                         <%= account.account_status %>
                       </td>
                       <td>
-                        <!-- Action -->
-                        <% if (account.account_type !== 'admin' ) {%>
-              
-                          <a href="/admin/account/detail-<%= account.account_type %>?id=<%= account.student_id %><%= account.issuer_id %>" class="btn btn-primary">
-                            <span data-feather="detail">Chi tiết</span>
-                          </a>
-                          <% } %>
-                        <a href="/admin/account/update?account_address=<%= account.account_address %>" class="btn btn-warning">
-                          <span data-feather="update">Sửa</span>
-                        </a>
-                        <a href="/admin/account/delete?account_address=<%= account.account_address %>" class="btn btn-danger">
-                          <span data-feather="delete">Xóa</span>
-                        </a>
+                        <button class="btn btn-warning btn-update" account_username="<%= account.account_username %>">Sửa</button>
+                        <button class="btn btn-danger btn-delete" account_username="<%= account.account_username %>" <%= (account.account_type == "admin" )? "disabled":""%>>Xoá</button>
                       </td>
                     </tr>
                     <% }); %>
@@ -79,12 +77,83 @@
     </div>
   </div>
   
+  <!-- MODAL  UPDATE -->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Sửa thông tin tài khoản</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/admin/account/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="u-account_username" class="form-label">Tên đăng nhập: </label>
+                  <input type="text" class="form-control" id="u-account_username" name="account_username" readonly>
+                </div>
+              </div>
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="u-account_status" class="form-label">Trạng thái</label>
+                  <select class="form-control" id="u-account_status" name="account_status">
+                    <option value="active">Hoạt động</option>
+                    <option value="lock">Khoá</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <h6 class= "border-start border-3 ps-3">Thay đổi mật khẩu</h6>
+            <div class="mb-3">
+              <label for="password" class="form-label">Mật khẩu mới</label>
+              <input type="new-password" class="form-control" id="password" name="password">
+            </div>
+            <div class="mb-3">
+              <label for="password2" class="form-label">Xác nhận mật khẩu</label>
+              <input type="new-password" class="form-control" id="password2" name="password2">
+            </div>
+          </div>  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button class="btn btn-primary" name="btnSave">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- script form vendor -->
-  <%- include('../../layouts/scripts.ejs'); %>
+  <%- include('../layouts/scripts.ejs'); %>
   <!-- Page's scripts -->
   
   <script>
+    var account_tempList=[];
+
+    $(document).ready(function(){
+      let getdata = async function(username) {
+        await $.ajax({
+          url:'/admin/account/get-data',
+          method:'post',
+          data:{
+            username
+          },
+          success: function(res){
+            account_tempList[username] = res.account_info;
+          }
+        });
+      };
+
+      $('.btn-update').on('click', async function(){
+        var username = $(this).attr('account_username');
+        if (typeof account_tempList[username] == 'undefined' ){
+          await getdata(username);
+        }
+        $('#u-account_username').val(username);
+        $("#u-account_status option[value="+account_tempList[username].account_status+"]").attr('selected','selected');
+        $("#updateModal").modal('show');
+      })
+    })
   </script>
 </body>
 

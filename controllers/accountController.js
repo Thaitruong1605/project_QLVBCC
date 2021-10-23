@@ -1,64 +1,36 @@
 const accountModel = require("../models/accountModel");
 const validator = require('validator');
 const moment = require('moment')
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 // get System contract 
 
-let create = async (req, res) => {
-  var error = [];
-  var account = {
-    account_address: req.body.account_address,
-    account_type: req.body.account_type, 
-    account_status: req.body.account_status, 
-    student_id: (req.body.student_id)? req.body.student_id:null,
-    school_id: (req.body.school_id)? req.body.school_id:null,
-  };
-  if (
-    account.account_address == ""
-    ){
-    error.push("Vui lòng nhập địa chỉ tài khoản!");
-  }
-
-  if(error != "") {
-    req.flash("error", error);
-    res.redirect('back');
-  }else{
-    // add to database 
-    try {
-      await accountModel.create(account);
-      res.redirect("/admin/account");
-    }catch(err) {
-      console.log(err);
-      req.flash("error", err);
-      res.redirect("/admin/account/create");
-    }
-  }
-}
 let update = async (req, res) => {
   var error = [];
-  var account = {
-    account_type: req.body.account_type, 
-    account_status: req.body.account_status, 
-    student_id: (req.body.student_id)? req.body.student_id:null,
-    school_id: (req.body.student_id)? req.body.student_id:null,
+  var account_info = {
+    account_status: req.body.account_status,
   };
+
+  if ( req.body.password != req.body.password2){
+    error.push("Vui lòng xác nhận đúng mật khẩu!");
+  }else if (req.body.password != ''){
+    account_info.account_password = await bcrypt.hashSync(req.body.password, saltRounds )
+  }
   if(error != "") {
     req.flash("error", error);
-    res.redirect('back');
+    res.redirect('/admin/account');
   }else{
-    // add to database 
     try {
-      await accountModel.update(req.body.account_address,account);
+      await accountModel.update(req.body.account_username,account_info);
+      req.flash("msg","Cập nhật tài khoản thành công!");
       res.redirect("/admin/account");
     }catch(err) {
       console.log(err);
-      req.flash("error", err);
-      res.redirect("/admin/account/create");
+      res.redirect("/admin/account");
     }
   }
 }
-
-
 module.exports = {
-  create,
-  update,
+  update
 };
