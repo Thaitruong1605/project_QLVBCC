@@ -29,7 +29,7 @@
 
 <body>
   <%- include('../../partials/navbar.ejs') %>
-
+  <%- include('../../../partials/alert.ejs') %>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-2 ps-0">
@@ -46,12 +46,10 @@
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">ID</th>
-                <th scope="col">Mã trường</th>
-                <th scope="col">Tên trường</th>
-                <th scope="col">Địa chỉ</th>
-                <th scope="col">Thông tin liên lạc</th>
-                <th scope="col">Ngày cập nhật</th>
-                <th scope="col">Ngày tạo</th>
+                <th scope="col">Tên sinh viên</th>
+                <th scope="col">Giới tính</th>
+                <th scope="col">Email</th>
+                <th scope="col">Số điện thoại</th>
                 <th scope="col">Hành động</th>
               </tr>
             </thead>
@@ -62,38 +60,34 @@
                     <th scope="row">
                       <%= i++; %>
                     </th>
-                    <th scope="row">
+                    <th id="u-student_id<%= i %>">
                       <%= student.student_id %>
                     </th>
-                    <th scope="row">
-                      <%= student.student_code %>
-                    </th>
-                    <td>
+                    <td id="u-student_name<%= i %>">
                       <%= student.student_name %>
                     </td>
-                    <td>
-                      <%= student.student_address %>
+                    <td id="u-student_gender<%= i %>">
+                      <%= (student.student_gender == 1)? "Nam":"Nữ" %>
                     </td>
-                    <td>
-                      <!-- Thong tin lien lac-->
-                      <u>Phone:</u> <%= student.student_phone %> <br />
-                      <u>Fax:</u> <%= student.student_fax %> <br />
-                      <u>Email:</u> <%= student.student_email %>
+                    <td id="u-student_email<%= i %>">
+                      <%= student.student_email %>
                     </td>
-                    <td>
-                      <%= moment(student.student_modifieddate).format('DD-MM-YYYY, h:mm:ss a'); %>
-                    </td>
-                    <td>
-                      <%= moment(student.student_createddate).format('DD-MM-YYYY, h:mm:ss a'); %>
+                    <td id="u-student_phoneNumber<%= i %>">
+                      <%= student.student_phoneNumber %>
                     </td>
                     <td>
                       <!-- Action -->
-                      <a href="/admin/student/update?id=<%= student.student_id %>" class="btn btn-warning">
+                      <!-- <a href="/admin/student/update?id=<%= student.student_id %>" class="btn btn-warning">
                         <span data-feather="update">Sửa</span>
-                      </a>
-                      <a href="/admin/student/delete?id=<%= student.student_id %>" class="btn btn-danger">
+                      </a> -->
+                      <!-- <a href="/admin/student/detail?id=<%= student.student_id %>" class="btn btn-warning" id="btn-test">
+                        <span data-feather="update">test</span>
+                      </a> -->
+                      <button type="button" class="btn btn-primary btn-detail" student_id="<%= student.student_id %>">Chi tiết</button>
+                      <button type="button" class="btn btn-warning btn-update" student_id="<%= student.student_id %>">Sửa</button>
+                      <!-- <a href="/admin/student/delete?id=<%= student.student_id %>" class="btn btn-danger">
                         <span data-feather="delete">Xóa</span>
-                      </a>
+                      </a> -->
                     </td>
                   </tr>
                   <% }); %>
@@ -104,13 +98,221 @@
       </div>
     </div>
   </div>
-  
+  <!-- Modal detail -->
+  <div class="modal fade " id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailModalLabel">Chi tiết sinh viên</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5 class="border-start border-3 ps-3">Chi tiết tài khoản</h5>
+          <table class="table" >
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">Địa chỉ</th>
+                <td id="d-account_address"></td>
+              </tr>
+              <tr>
+                <th scope="row">Tên đang nhập:</th>
+                <td  id="d-account_username"></td>
+              </tr>
+              <tr>
+                <th scope="row">Loại tài khoản:</th>
+                <td  id="d-account_type"></td>
+              </tr>
+              <tr>
+                <th scope="row">Trạng thái:</th>
+                <td  id="d-account_status"></td>
+              </tr>
+            </tbody>
+          </table>
+          <h5 class="border-start border-3 ps-3">Thông tin sinh viên:</h5>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">ID:</th>
+                <td  id="d-student_id"></td>
+              </tr>
+              <tr>
+                <th scope="row">Họ tên:</th>
+                <td  id="d-student_name"></td>
+              </tr>
+              <tr>
+                <th scope="row">Ngày sinh:</th>
+                <td  id="d-student_birth"></td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại:</th>
+                <td  id="d-student_phoneNumber"></td>
+              </tr>
+              <tr>
+                <th scope="row">Giới tính:</th>
+                <td  id="d-student_gender"></td>
+              </tr>
+              <tr>
+                <th scope="row">Email:</th>
+                <td  id="d-student_email"></td>
+              </tr>
+              <tr>
+                <th scope="row">Số căn cước công dân:</th>
+                <td  id="d-student_idNumber"></td>
+              </tr>
+              <tr>
+                <th scope="row">Địa chỉ:</th>
+                <td  id="d-student_placeAddress"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal update-->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Nhập nhật thông tin sinh viên</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/admin/student/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="student_id">ID</label>
+                <input type="text" class="form-control" id="u-student_id" name="student_id" readonly />
+            </div>
+            <div class="mb-3">
+              <label for="student_name">Tên học viên</label>
+                <input type="text" class="form-control" id="u-student_name" name="student_name" />
+            </div>
+            <div class="row">
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="student_email">Email</label>
+                  <input type="text" class="form-control" id="u-student_email" name="student_email" />
+                </div>
+              </div>
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="student_phoneNumber">Số điện thoại</label>
+                  <input type="text" class="form-control" id="u-student_phoneNumber" name="student_phoneNumber">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="student_birth">Ngày sinh</label>
+                  <input type="text" class="form-control" id="u-student_birth" name="student_birth" >
+                </div>
+              </div>
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="student_gender">Giới tính</label>
+                  <select class="form-control" id="u-student_gender" name="student_gender"> 
+                    <option value = "1">Nam</option>
+                    <option value = "0">Nữ</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md">
+                <div class="mb-3">
+                  <label for="student_idNumber">Số căn cước công dân</label>
+                  <input type="text" class="form-control" id="u-student_idNumber" name="student_idNumber">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="student_placeAddress">Địa chỉ</label>
+              <input type="text" class="form-control" id="u-student_placeAddress" name="student_placeAddress" >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button class="btn btn-primary" name="btnSave">Cập nhật thông tin</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- script form vendor -->
   <%- include('../../layouts/scripts.ejs'); %>
   <!-- Page's scripts -->
   
   <script>
+    $(document).ready(function(){
+      $("#u-student_birth" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: "03/09/1999"
+      });
+
+      var student_tempList=[],
+       account_tempList=[];
+
+      //Xem thông tin chi tiết sinh viên
+      $(".btn-detail").on('click', function(event){
+        event.preventDefault();
+        let id = $(this).attr('student_id');
+        $.ajax({
+          url:'/admin/student/get-data',
+          method:'post',
+          data:{
+            id
+          },
+          success: function(res){
+            if (typeof student_tempList[id] == 'undefined'){
+              student_tempList[id] = res.student_info;
+              account_tempList[id] = res.account_info;
+            }
+            for (const [key, value] of Object.entries(student_tempList[id])) {
+              if (key == "student_gender"){
+                $('#d-'+key).text((value == 1)? "Nam": "Nữ");
+              }else 
+                $('#d-'+key).text(value);
+            }
+            for (const [key, value] of Object.entries(account_tempList[id])) {
+              $('#d-'+key).text(value);
+            }
+            $("#detailModal").modal('show');
+          }
+        })
+      })
+      //Cập nhật thông tin sinh viên 
+      $(".btn-update").on('click',function(event){
+        event.preventDefault;
+        let id = $(this).attr('student_id');
+        $.ajax({
+          url:'/admin/student/get-data',
+          method:'post',
+          data:{
+            id
+          },
+          success: function(res){
+            if (typeof student_tempList[id] == 'undefined'){
+              student_tempList[id] = res.student_info;
+              account_tempList[id] = res.account_info;
+            }
+            for (const [key, value] of Object.entries(student_tempList[id])) {
+              if (key == "student_gender"){
+                $("#u-student_gender option[value="+value+"]").attr('selected','selected');
+              }else 
+                $('#u-'+key).val(value);
+            }
+            $("#updateModal").modal('show');
+          }
+        })
+      })
+    });
   </script>
 </body>
 

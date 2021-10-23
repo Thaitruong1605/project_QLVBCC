@@ -7,7 +7,6 @@ let findAccount = (account_username) => {
                 'SELECT * FROM accounts WHERE account_username = ? ',
                 [account_username],
                 function (err, result) {
-                    console.log(this.sql);
                     if (err) { 
                         console.log(err);
                     }
