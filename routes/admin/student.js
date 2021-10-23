@@ -8,7 +8,7 @@ const accountModel = require("../../models/accountModel");
 router.get("/", (req, res) => {
   try{
     studentModel.select().then(function(data){
-      return res.render("./admin/functions/student/",{title:"Danh sách sinh viên", student_list:data, moment, page:"User"});
+      return res.render("./admin/functions/student",{title:"Danh sách sinh viên", student_list:data, moment, page:"User"});
     })
   }catch(err){
     console.log(err);

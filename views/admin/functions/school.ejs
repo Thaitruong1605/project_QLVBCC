@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title + " - " + page; %>
+  </title>
+  <!-- styles from vendors  -->
+  <%- include('../layouts/styles.ejs'); %>
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../partials/navbar.ejs') %>
+  <%- include('../../partials/alert.ejs') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 ps-0">
+        <%- include('../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col-md-10">
+        <!-- main content -->
+        <h3 class = "pt-3">Danh sách học viên</h3>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+          Thêm mới
+        </button>
+        <hr >
+        <div class="table-responsive">
+          <table class="table">
+            <caption>List of Schools</caption>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
+                <th scope="col">Mã trường</th>
+                <th scope="col">Tên trường</th>
+                <th scope="col">Email</th>
+                <th scope="col">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% let i=1 ;%>
+                <% school_list.forEach(function(school){ %>
+                  <tr>
+                    <th scope="row">
+                      <%= i++; %>
+                    </th>
+                    <th scope="row">
+                      <%= school.school_id %>
+                    </th>
+                    <th scope="row">
+                      <%= school.school_code %>
+                    </th>
+                    <td>
+                      <%= school.school_name %>
+                    </td>
+                    <td>
+                      <%= school.school_email %>
+                    </td>
+                    
+                    <td>
+                      <button class="btn btn-primary btn-detail" school_id = "<%= school.school_id %>">Chi tiết</button>
+                      <button class="btn btn-warning btn-update" school_id = "<%= school.school_id %>">Sửa</button>
+                    </td>
+                  </tr>
+                  <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal create-->
+  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/admin/school/create" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+        <div class="modal-body">
+            <input type="hidden" name="school_id" value="">
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_code">Mã trường</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="school_code" name="school_code" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_name">Tên trường</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="school_name" name="school_name" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_placeAddress">Địa chỉ</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="school_placeAddress" name="school_placeAddress" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_website">Website</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="school_website" name="school_website" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_email">Email</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="school_email" name="school_email" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_phoneNumber">Số điện thoại</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="school_phoneNumber" name="school_phoneNumber" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_fax">Fax</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="school_fax" name="school_fax" value="">
+              </div> 
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary" name="btnSave">Thêm mới</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+  <!-- Modal detail -->
+  <div class="modal fade " id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailModalLabel">Chi tiết trường</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5 class="border-start border-3 ps-3">Chi tiết tài khoản</h5>
+          <table class="table" >
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">Địa chỉ</th>
+                <td id="d-account_address"></td>
+              </tr>
+              <tr>
+                <th scope="row">Tên đang nhập:</th>
+                <td  id="d-account_username"></td>
+              </tr>
+              <tr>
+                <th scope="row">Loại tài khoản:</th>
+                <td  id="d-account_type"></td>
+              </tr>
+              <tr>
+                <th scope="row">Trạng thái:</th>
+                <td  id="d-account_status"></td>
+              </tr>
+            </tbody>
+          </table>
+          <h5 class="border-start border-3 ps-3">Thông tin trường:</h5>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">ID:</th>
+                <td  id="d-school_id"></td>
+              </tr>
+              <tr>
+                <th scope="row">Tên trường:</th>
+                <td  id="d-school_name"></td>
+              </tr>
+              <tr>
+                <th scope="row">Mã trường:</th>
+                <td  id="d-school_code"></td>
+              </tr>
+              <tr>
+                <th scope="row">Website:</th>
+                <td  id="d-school_website"></td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại:</th>
+                <td  id="d-school_phoneNumber"></td>
+              </tr>
+              <tr>
+                <th scope="row">Fax:</th>
+                <td  id="d-school_fax"></td>
+              </tr>
+              <tr>
+                <th scope="row">Email:</th>
+                <td  id="d-school_email"></td>
+              </tr>
+              <tr>
+                <th scope="row">Địa chỉ:</th>
+                <td  id="d-school_placeAddress"></td>
+              </tr>
+              <tr>
+                <th scope="row">Thời gian tạo:</th>
+                <td  id="d-school_createTime"></td>
+              </tr>
+              <tr>
+                <th scope="row">Thời gian chỉnh sửa:</th>
+                <td  id="d-school_modifyTime"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal update-->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/admin/school/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+        <div class="modal-body">
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_id">ID</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="u-school_id" name="school_id" value="" readonly>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_code">Mã trường</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="u-school_code" name="school_code" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_name">Tên trường</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="u-school_name" name="school_name" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_placeAddress">Địa chỉ</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="u-school_placeAddress" name="school_placeAddress" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_website">Website</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="u-school_website" name="school_website" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_email">Email</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="u-school_email" name="school_email" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_phoneNumber">Số điện thoại</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" id="u-school_phoneNumber" name="school_phoneNumber" value="">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="col-sm-2" for="school_fax">Fax</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="u-school_fax" name="school_fax" value="">
+              </div> 
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary" name="btnSave">Lưu</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+  <!-- script form vendor -->
+  <%- include('../layouts/scripts.ejs'); %>
+  <!-- Page's scripts -->
+  <script>
+    var school_tempList=[],
+        account_tempList=[];
+        
+    $(document).ready(function(){
+
+      let getdata = async function(id) {
+        console.log(id);
+        await $.ajax({
+          url:'/admin/school/get-data',
+          method:'post',
+          data:{
+            id
+          },
+          success: function(res){
+            school_tempList[id] = res.school_info;
+            if (typeof res.account_info != 'undefined' )
+              account_tempList[id] = res.account_info;
+          }
+        })
+      }
+
+      $(".btn-detail").on('click',async function(event){
+        event.preventDefault();
+        let id = $(this).attr('school_id');
+        if (typeof school_tempList[id] == 'undefined'){
+          await getdata(id)
+        }
+        for (const [key, value] of Object.entries(school_tempList[id])) {
+          $('#d-'+key).text(value);
+        }
+        if (typeof account_tempList[id] != 'undefined'){
+          for (const [key, value] of Object.entries(account_tempList[id])) {
+            $('#d-'+key).text(value);
+          }
+        }else {
+          $("#d-account_address").text('');
+          $("#d-account_username").text('');
+          $("#d-account_type").text('');
+          $("#d-account_status").text('');
+        }
+        $("#detailModal").modal('show');
+      })
+      //Cập nhật thông tin sinh viên 
+    $(".btn-update").on('click',async function(event){
+        event.preventDefault;
+        let id = $(this).attr('school_id');
+        if (typeof school_tempList[id] == 'undefined'){
+          await getdata(id);
+        }
+        for (const [key, value] of Object.entries(school_tempList[id])) {
+          $('#u-'+key).val(value);
+        }
+        $("#updateModal").modal('show');
+      })
+    })
+  </script>
+</body>
+
+</html>

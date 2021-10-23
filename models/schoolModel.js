@@ -6,7 +6,7 @@ let school_select = () => {
       "SELECT school_id, school_code, school_name, school_placeAddress, school_website, school_email, school_phoneNumber, school_fax, school_createTime, school_modifyTime FROM schools",
       function (err, results) {
         if (err) {
-          reject(err);
+          console.log(err);reject(err);
         } else {
           resolve(results);
         }
@@ -22,9 +22,9 @@ let school_selectbyId = (id) => {
       id, 
       function (err, results) {
         if (err) {
-          reject(err);
+          console.log(err);reject(err);
         } else {
-          resolve(results);
+          resolve(results[0]);
         }
       }
     );
@@ -39,7 +39,7 @@ let school_create = (school_inf) => {
       function (err) {
         console.log(this.sql);
         if (err) {
-          reject(err);
+          console.log(err);reject(err);
         }
         resolve("A new school has been created!");
       }
@@ -55,7 +55,7 @@ let school_update = (id, school_inf) => {
       function (err) {
         console.log(this.sql);
         if (err) {
-          reject(err);
+          console.log(err);reject(err);
         }
         resolve("A new school has been updated!");
       }
@@ -69,7 +69,7 @@ let school_delete = (id) => {
     id,
     function (err) {
       if (err) {
-        reject(err);
+        console.log(err);reject(err);
       } else {
         resolve("A row has been deleted");
       }

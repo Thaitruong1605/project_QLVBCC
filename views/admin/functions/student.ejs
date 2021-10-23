@@ -9,7 +9,7 @@
     <%= title + " - " + page; %>
   </title>
   <!-- styles from vendors  -->
-  <%- include('../../layouts/styles.ejs'); %>
+  <%- include('../layouts/styles.ejs'); %>
   <style>
     .bd-placeholder-img {
       font-size: 1.125rem;
@@ -28,12 +28,12 @@
 </head>
 
 <body>
-  <%- include('../../partials/navbar.ejs') %>
-  <%- include('../../../partials/alert.ejs') %>
+  <%- include('../partials/navbar.ejs') %>
+  <%- include('../../partials/alert.ejs') %>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-2 ps-0">
-        <%- include('../../partials/sidebar.ejs'); %>
+        <%- include('../partials/sidebar.ejs'); %>
       </div>
       <div class="col-md-10">
         <!-- main content -->
@@ -243,7 +243,7 @@
   </div>
 
   <!-- script form vendor -->
-  <%- include('../../layouts/scripts.ejs'); %>
+  <%- include('../layouts/scripts.ejs'); %>
   <!-- Page's scripts -->
   
   <script>
@@ -257,7 +257,7 @@
       });
 
       var student_tempList=[],
-       account_tempList=[];
+        account_tempList=[];
 
       //Xem thông tin chi tiết sinh viên
       $(".btn-detail").on('click', function(event){

@@ -11,6 +11,7 @@ let school_create = async (req, res) => {
     school_name: req.body.school_name,
     school_placeAddress: req.body.school_placeAddress,
     school_phoneNumber: req.body.school_phoneNumber,
+    school_website: req.body.school_website,
     school_fax: req.body.school_fax,
     school_email: req.body.school_email,
   };
@@ -41,6 +42,7 @@ let school_checkUpdate = async (req, res) => {
     school_name: req.body.school_name,
     school_placeAddress: req.body.school_placeAddress,
     school_phoneNumber: req.body.school_phoneNumber,
+    school_website: req.body.school_website,
     school_fax: req.body.school_fax,
     school_email: req.body.school_email,
   };
