@@ -37,6 +37,17 @@ let get_school = async () => {
 }
 
 router.get("/", (req, res) => {
+  var options = {address: "0x3E5C773519D38EB7996A5cADFDb8C8256889cB79"};
+
+  var myfilter= Web3.eth.filter(options);
+  console.log(myfilter);
+
+  myfilter.get(function (error, log) {
+    console.log("get error:", error); 
+    console.log("get log:", log); 
+  });
+
+
   res.render("./admin",{title: "Dashboard", page:""});
 })
 

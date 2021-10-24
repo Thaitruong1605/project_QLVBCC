@@ -3795,8 +3795,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-09-28T12:21:22.277Z",
-  "networkType": "ethereum",
+  "updatedAt": "2021-10-24T20:24:05.303Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
