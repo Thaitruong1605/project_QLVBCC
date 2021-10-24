@@ -30,6 +30,21 @@ let school_selectbyId = (id) => {
     );
   });
 };
+let school_getIdbyEmail = (email) => {
+  return new Promise(async (resolve, reject) => {
+    conn.query(
+      "SELECT school_id FROM schools WHERE school_email = ?",
+      email, 
+      function (err, results) {
+        if (err) {
+          console.log(err);reject(err);
+        } else {
+          resolve(results[0]);
+        }
+      }
+    );
+  });
+};
 
 let school_create = (school_inf) => {
   return new Promise(async (resolve, reject) => {
@@ -80,6 +95,7 @@ let school_delete = (id) => {
 module.exports = {
   school_select,
   school_selectbyId,
+  school_getIdbyEmail,
   school_create,
   school_update,
   school_delete
