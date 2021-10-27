@@ -7,10 +7,13 @@ const contract = require("@truffle/contract");
 const bytes32 = require("bytes32");
 const SHA256 = require("sha256");
 const Web3 = require("web3");
-const provider = new Web3.providers.HttpProvider("http://localhost:7545");
 
-var SystemContract = contract(JSON.parse(fs.readFileSync("./src/abis/System.json")));
-SystemContract.setProvider(provider);
+const web3 = new Web3( new Web3.providers.HttpProvider("http://localhost:7545"));
+const account = '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'
+// const provider = new Web3.providers.HttpProvider("http://localhost:7545");
+
+// var SystemContract = contract(JSON.parse(fs.readFileSync("./src/abis/System.json")));
+// SystemContract.setProvider(provider);
 
 router.use("/school", require("./school"));
 router.use("/student", require("./student"));
@@ -36,18 +39,21 @@ let get_school = async () => {
   return school;
 }
 
-router.get("/", (req, res) => {
-  var options = {address: "0x3E5C773519D38EB7996A5cADFDb8C8256889cB79"};
+router.get("/", async (req, res) => {
+  let block = await web3.eth.getBlock('latest');
+  console.log(block);
+  let number = block.number;
+  console.log('Searching block ' + number);
 
-  var myfilter= Web3.eth.filter(options);
-  console.log(myfilter);
-
-  myfilter.get(function (error, log) {
-    console.log("get error:", error); 
-    console.log("get log:", log); 
-  });
-
-
+  if (block != null && block.transactions != null) {
+      for (let txHash of block.transactions) {
+          let tx = await web3.eth.getTransaction(txHash);
+          if (account == tx.to.toLowerCase()) {
+              console.log('Transaction found on block: ' + number);
+              console.log({address: tx.from, value: web3.utils.fromWei(tx.value, 'ether'), timestamp: new Date()});
+          }
+      }
+  }
   res.render("./admin",{title: "Dashboard", page:""});
 })
 
@@ -110,8 +116,7 @@ router.get("/get_school_contract_address", async (req, res) => {
   console.log(a)
 })
 
-
-
+// transaction
 
 
 module.exports = router
