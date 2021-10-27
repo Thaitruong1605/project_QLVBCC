@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title + " - " + page; %></title>
+  <title><%= title %></title>
   <%- include('./layouts/styles') %>
 </head>
 <body>
@@ -16,7 +16,16 @@
         <%- include('./partials/sidebar')%>
       </div>
       <div class="col">
-        
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <th scope="col">#</th>
+              <th scope="col">Tên đăng nhập</th>
+              <th scope="col">Tên người dùng</th>
+              <th scope="col">Tên người dùng</th>
+            </thead>
+          </table>
+        </div>
       </div>
     </div>
   </div>

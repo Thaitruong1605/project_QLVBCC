@@ -7,7 +7,7 @@ router.use("/issuer", require('./issuer'));
 router.use("/verifier", require('./verifier'));
 
 router.get("/", (req, res) => {
-  res.render("./issuer",{title:"Issuer", page:" index"});
+  res.render("./school",{title:"Trang quản lý của trường học", page:"index"});
 });
 
 module.exports = router;
