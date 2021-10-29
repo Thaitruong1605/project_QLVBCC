@@ -28,8 +28,8 @@ let get_accountByUsername = (account_username) => {
 let get_accountById = (id) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT * FROM accounts WHERE student_id = ? OR school_id = ?',
-            [id,id],
+            'SELECT * FROM accounts WHERE student_id = ? OR school_id = ? OR issuer_id = ?',
+            [id,id,id],
             function (err, results) {
                 if (err) { console.log(err); reject(); }
                 resolve(results[0]);
@@ -45,19 +45,19 @@ let create = (account_inf) => {
             account_inf,
             function(err){
                 if (err) { console.log(err); reject();}
-                resolve("A new account has been created!");
+                resolve('A new account has been created!');
             }
         )
     });
 };
-let update = (account_username, account_inf) => {
+let update = (account_inf, account_username) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
             'UPDATE accounts SET ? WHERE account_username =?', 
             [account_inf, account_username],
             function(err){
                 if (err) { console.log(err); reject();}
-                resolve("A new account has been updated!");
+                resolve('A new account has been updated!');
             }
         )
     });
@@ -69,7 +69,19 @@ let remove = (account_username) => {
             [account_username],
             function(err){
                 if (err) { console.log(err); reject();}
-                resolve("A new account has been deleted!");
+                resolve('A new account has been deleted!');
+            }
+        )
+    });
+};
+let removeByIssuerId = (issuer_id) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'DELETE FROM accounts WHERE issuer_id=?', 
+            [issuer_id],
+            function(err){
+                if (err) { console.log(err); reject();}
+                resolve('A new account has been deleted!');
             }
         )
     });
@@ -81,5 +93,6 @@ module.exports = {
     get_accountByUsername,
     create,
     update,
-    remove
+    remove,
+    removeByIssuerId
 }

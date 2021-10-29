@@ -1,9 +1,10 @@
-const conn = require("../dbconnect");
+const conn = require('../dbconnect');
 
-let select = () =>{
+let select = (school_id) =>{
   return new Promise((resolve, reject) => {
     conn.query(
-      'SELECT * FROM issuers',
+      'SELECT i.issuer_id, i.issuer_name, account_username, account_status  FROM issuers i LEFT JOIN accounts a ON i.issuer_id = a.issuer_id WHERE i.school_id = ?',
+      school_id,
       function(err , results){
         if (err) { console.log(err) , reject()}
         resolve(results);
@@ -15,10 +16,22 @@ let selectById = (id) =>{
   return new Promise((resolve, reject) => {
     conn.query(
       'SELECT * FROM issuers WHERE issuer_id = ?',
-      id, 
+      [id], 
       function(err , results){
         if (err) { console.log(err) , reject()}
         resolve(results[0]);
+      }
+    );
+  })
+}
+let getIdbyEmail = (email) => { 
+  return new Promise((resolve, reject) => {
+    conn.query(
+      'SELECT issuer_id FROM issuers WHERE issuer_email = ?',
+      email, 
+      function(err , results){
+        if (err) { console.log(err) , reject()}
+        resolve(results[0].issuer_id);
       }
     );
   })
@@ -30,7 +43,7 @@ let create = (issuer_info) =>{
       issuer_info,
       function(err){
         if (err) { console.log(err) , reject(); }
-        resolve("A row have been inserted");
+        resolve('A row have been inserted');
       }
     );
   })
@@ -42,19 +55,19 @@ let update = (issuer_info, id) =>{
       [issuer_info, id],
       function(err){
         if (err) { console.log(err) , reject(); }
-        resolve("A row have been updated");
+        resolve('A row have been updated');
       }
     );
   })
 }
-let remove = (di) =>{
+let remove = (id) =>{
   return new Promise((resolve, reject) => {
     conn.query(
-      'DEELTE FROM issuers WHERE issuer_id = ?',
+      'DELETE FROM issuers WHERE issuer_id = ?',
       id,
       function(err , results){
         if (err) { console.log(err) , reject(); }
-        resolve("A row have been deleted");
+        resolve('A row have been deleted');
       }
     );
   })
@@ -63,6 +76,7 @@ let remove = (di) =>{
 module.exports = {
   select,
   selectById,
+  getIdbyEmail,
   create,
   update,
   remove

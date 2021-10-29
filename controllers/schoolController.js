@@ -20,7 +20,7 @@ let school_create = async (req, res) => {
     error.push("Mật khẩu xác nhận không giống!");
     console.log(account.account_password);
   }else {
-    // account.account_password = await bcrypt.hashSync(req.body.account_password, saltRounds);
+    account.account_password = await bcrypt.hashSync(req.body.account_password, saltRounds);
   }
   var school = {
     school_code: req.body.school_code,

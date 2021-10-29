@@ -16,21 +16,286 @@
         <%- include('./partials/sidebar')%>
       </div>
       <div class="col">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+          Thêm tài khoản cho người phát hành
+        </button>
         <div class="table-responsive">
           <table class="table">
             <thead>
               <th scope="col">#</th>
+              <th scope="col">ID</th>
               <th scope="col">Tên đăng nhập</th>
-              <th scope="col">Tên người dùng</th>
-              <th scope="col">Tên người dùng</th>
+              <th scope="col">Tên đăng nhập</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col">Hành động</th>
             </thead>
+            <tbody>
+              <% var i = 1; issuer_list.forEach(function(issuer){ %>
+                <tr>
+                  <th scope="row"><%= i++; %></th>
+                  <th><%= issuer.issuer_id%></th>
+                  <td><%= issuer.issuer_name%></td>
+                  <td><%= issuer.account_username%></td>
+                  <td><%= issuer.account_status%></td>
+                  <td>
+                    <button class="btn btn-primary btn-detail" issuer_id = "<%= issuer.issuer_id %>">Chi tiết</button>
+                    <button class="btn btn-warning btn-update" issuer_id = "<%= issuer.issuer_id %>">Sửa</button>
+                    <button class="btn btn-danger btn-delete" issuer_id = "<%= issuer.issuer_id %>">Xoá</button>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
-  
-  <%- include('./layouts/scripts') %>
+  <!-- MODAL CREATE-->
+  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createModalLabel">Thêm tài khoản người phát hành</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/school/issuer/create" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+        <div class="modal-body">
+            <input type="hidden" name="school_id" value="">
+            <h5 class="border-start border-start ps-3">Thông tin đăng nhập</h5>
+            <div class="mb-3">
+              <label for="account_username">Tên đăng nhập</label>
+              <input type="text" class="form-control" id="account_username" name="account_username" value="">
+            </div>
+            <div class="row">
+              <div class="col-md">
+                <div class="mb-3" >
+                  <label for="account_password">Mật khẩu</label>
+                  <input type="password" autocomplete="new-password"  class="form-control" name="account_password" value="">
+                </div>
+              </div>
+              <div class="col-md">
+                <div class="mb-3" >
+                  <label for="account_password2">Nhập lại mật khẩu</label>
+                  <input type="password" autocomplete="new-password"  class="form-control"  name="account_password2" value="">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3" >
+              <label for="account_status">Trạng thái</label>
+                <select class="form-control" name="account_status" id="account_status">
+                  <option value="active" selected>Hoạt động</option>
+                  <option value="lock">Khoá</option>
+                </select>
+            </div>
+            <h5 class="border-start border-start ps-3">Thông tin người phát hành</h5>
+            <div class="mb-3" >
+              <label  for="issuer_name">Tên</label>
+              <input type="text" class="form-control"  name="issuer_name" value="">
+            </div>
+            <div class="mb-3" >
+              <label  for="issuer_email">Email</label>
+              <input type="text" class="form-control"  name="issuer_email" value="">
+            </div>
+            <div class="mb-3" >
+              <label  for="issuer_phoneNumber">Số điện thoại</label>
+              <input type="text" class="form-control"  name="issuer_phoneNumber" value="">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary" name="btnSave">Thêm mới</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+  <!-- MODAL UPDATE-->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel">Sửa tài khoản người phát hành</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/school/issuer/update" method="POST" name="frmUpdate" id="frmUpdate" novalidate="novalidate">
+        <div class="modal-body">
+            <h5 class="border-start border-start ps-3">Thông tin đăng nhập</h5>
+            <div class="mb-3">
+              <label for="account_username">Tên đăng nhập</label>
+              <input type="text" class="form-control" id="u-account_username" name="account_username" value="" readonly>
+            </div>
+            <div class="row">
+              <div class="col-md">
+                <div class="mb-3" >
+                  <label for="account_password">Mật khẩu</label>
+                  <input type="password" autocomplete="new-password"  class="form-control" id="account_password" name="account_password" value="">
+                </div>
+              </div>
+              <div class="col-md">
+                <div class="mb-3" >
+                  <label for="account_password2">Nhập lại mật khẩu</label>
+                  <input type="password" autocomplete="new-password"  class="form-control" id="account_password2" name="account_password2" value="">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3" >
+              <label for="account_status">Trạng thái</label>
+                <select class="form-control" name="account_status" id="u-account_status">
+                  <option value="active">Hoạt động</option>
+                  <option value="lock">Khoá</option>
+                </select>
+            </div>
+            <h5 class="border-start border-start ps-3">Thông tin người phát hành</h5>
+            <input type="hidden" id="u-issuer_id" name="issuer_id" value="">
+            <div class="mb-3" >
+              <label  for="issuer_name">Tên</label>
+              <input type="text" class="form-control" id="u-issuer_name" name="issuer_name" value="">
+            </div>
+            <div class="mb-3" >
+              <label  for="issuer_email">Email</label>
+              <input type="text" class="form-control" id="u-issuer_email" name="issuer_email" value="">
+            </div>
+            <div class="mb-3" >
+              <label  for="issuer_phoneNumber">Số điện thoại</label>
+              <input type="text" class="form-control" id="u-issuer_phoneNumber" name="issuer_phoneNumber" value="">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary" name="btnSave">Lưu</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+  <!-- MODAL DETAIL-->
+  <div class="modal fade " id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailModalLabel">Chi tiết tài khoản cấp phát</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5 class="border-start border-3 ps-3">Chi tiết tài khoản</h5>
+          <table class="table" >
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">Địa chỉ</th>
+                <td id="d-account_address"></td>
+              </tr>
+              <tr>
+                <th scope="row">Tên đang nhập:</th>
+                <td  id="d-account_username"></td>
+              </tr>
+              <tr>
+                <th scope="row">Loại tài khoản:</th>
+                <td  id="d-account_type"></td>
+              </tr>
+              <tr>
+                <th scope="row">Trạng thái:</th>
+                <td  id="d-account_status"></td>
+              </tr>
+            </tbody>
+          </table>
+          <h5 class="border-start border-3 ps-3">Thông tin sinh viên:</h5>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">ID:</th>
+                <td  id="d-issuer_id"></td>
+              </tr>
+              <tr>
+                <th scope="row">Họ tên:</th>
+                <td  id="d-issuer_name"></td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại:</th>
+                <td  id="d-issuer_phoneNumber"></td>
+              </tr>
+              <tr>
+                <th scope="row">Email:</th>
+                <td  id="d-issuer_email"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <%- include('../layouts/scripts') %>
+
+  <script>
+    var issuer_tempList=[];
+    var account_tempList=[];
+    $(document).ready(function(){
+      let getdata = async function(id) {
+        await $.ajax({
+          url:'/school/issuer/get-data',
+          method:'post',
+          data:{
+            id
+          },
+          success: function(res){
+            issuer_tempList[id] = res.issuer_info;
+            account_tempList[id] = res.account_info;
+          }
+        })
+      }
+
+      $(".btn-detail").on('click',async function(event){
+        event.preventDefault();
+        
+        let id = $(this).attr('issuer_id');
+        if (typeof issuer_tempList[id] == 'undefined'){ await getdata(id);}
+        for (const [key, value] of Object.entries(issuer_tempList[id])) {
+          $('#d-'+key).text(value);
+        }
+        for (const [key, value] of Object.entries(account_tempList[id])) {
+          $('#d-'+key).text(value);
+        }
+        $("#detailModal").modal('show');
+      })
+      //Cập nhật thông tin người phát hành
+      $(".btn-update").on('click',async function(event){
+        event.preventDefault;
+        let id = $(this).attr('issuer_id');
+        if (typeof issuer_tempList[id] == 'undefined'){
+          await getdata(id);
+        }
+        for (const [key, value] of Object.entries(issuer_tempList[id])) {
+          $('#u-'+key).val(value);
+        }
+        for (const [key, value] of Object.entries(account_tempList[id])) {
+          $('#u-'+key).val(value);
+        }
+        $("#updateModal").modal('show');
+      })
+      // Xoá 
+      $(".btn-delete").on('click', function(event){
+        if (confirm('Bạn có chắn chắn xoá? Hành động này không thể phục hồi!')) {
+          event.preventDefault;
+          let id = $(this).attr('issuer_id');
+          $.ajax({
+            url:'/school/issuer/delete',
+            method:'post',
+            data:{
+              id
+            },
+            success: function(response) {
+              if (response.result == 'redirect') {
+                //redirecting to main page from here.
+                window.location.replace(response.url);
+              }
+            }
+          })
+        }
+      })
+    })
+  </script>
 </body>
 </html>

@@ -36,7 +36,7 @@ let insert = (student_info)=>{
         student_info,
         function(error){
           if (error) {console.log(error); reject();}
-          resolve("A row has been created");
+          resolve('A row has been created');
         }
       )
     }catch(err){console.log(err)}
@@ -50,7 +50,7 @@ let update = (student_id, student_info)=>{
         [student_info, student_id],
         function(error){
           if (error) {console.log(error); reject();}
-          resolve("A row has been updated");
+          resolve('A row has been updated');
         }
       )
     }catch(err){console.log(err)}
@@ -64,7 +64,7 @@ let remove = (student_id)=>{
         [student_id],
         function(error){
           if (error) {console.log(error); reject();}
-          resolve("A row has been deleted");
+          resolve('A row has been deleted');
         }
       )
     }catch(err){console.log(err)}

@@ -1,5 +1,4 @@
-const conn = require("../dbconnect");
-const bcrypt = require("bcrypt");
+const conn = require('../dbconnect');
 
 
 let get_student_id = (student_email) => {
@@ -25,7 +24,7 @@ let add_account = (account) => {
     return new Promise (async (resolve, reject) => {
         try{
             conn.query(
-                "INSERT INTO accounts SET ?", 
+                'INSERT INTO accounts SET ?', 
                 [account],
                 function(err){
                     if(err){

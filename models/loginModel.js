@@ -1,4 +1,4 @@
-const conn = require("../dbconnect");
+const conn = require('../dbconnect');
 
 let findAccount = (account_username) => {
     return new Promise((resolve, reject) => {
@@ -14,7 +14,7 @@ let findAccount = (account_username) => {
                         let user = result[0];
                         resolve(user);
                     } 
-                    reject("Không tìm thấy người dùng!");
+                    reject('Không tìm thấy người dùng!');
                 }
             );
         } catch (err) {
