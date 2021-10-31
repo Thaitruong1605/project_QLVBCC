@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../../layouts/styles') %>
+</head>
+<body>
+  <%- include('../../partials/header') %>
+  <%- include('../../partials/alert') %>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <%- include('../partials/sidebar') %>
+      </div>
+      <div class="col"> 
+        <form action="/issuer/cert/create" method="POST">
+          <div class="mb-3 row">
+            <label for="number"  class="col-sm-2">Số hiệu</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="number" name="number" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="cn_id" class="col-sm-2">Tên chứng chỉ</label>
+            <div class="col-sm-10">
+              <select class="form-select" type="text" id="cn_id" name="cn_id" >
+                <option selected></option>
+                <% namelist.forEach(function(name){ %>
+                  <option value="<%= name.cn_id%>"><%= name.cn_name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="ck_id" class="col-sm-2">Loại</label>
+            <div class="col-sm-10">
+              <select class="form-select" type="text" id="ck_id" name="ck_id" >
+                <option selected></option>
+                <% kindlist.forEach(function(kind){ %>
+                  <option value="<%= kind.ck_id%>"><%= kind.ck_name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" id="certname" name="certname" />
+          <input type="hidden" id="certkind" name="certkind" />
+          <h6 class="ps-3 pb-2 border-start">THÔNG TIN NGƯỜI NHẬN CHƯNG CHỈ</h6>
+          <div class="mb-3 row">
+            <label for="student_name"   class="col-sm-2">Họ tên</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="student_name" name="student_name" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="student_gender" class="col-sm-2">Giới tính</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="student_gender" name="student_gender" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="student_dayofbirth" class="col-sm-2">Ngày sinh</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="student_dayofbirth" name="student_dayofbirth" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="student_placeofbirth" class="col-sm-2">Nơi sinh</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="student_placeofbirth" name="student_placeofbirth" />
+            </div>
+          </div>
+          <h6 class="ps-3 pb-2 border-start">THÔNG TIN KHOÁ HỌC</h6>
+          <div class="mb-3 row">
+            <label for="course_name" class="col-sm-2">Tên khoá học</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="course_name" name="course_name" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="duration"   class="col-sm-2">Thời gian đào tạo</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="duration" name="duration" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="testday"   class="col-sm-2">Ngày kiểm tra</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="testday" name="testday" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="classification"   class="col-sm-2">Xếp loại</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="classification" name="classification" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="signday"   class="col-sm-2">Ngày ký</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="signday" name="signday" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="regno"   class="col-sm-2">Số vào sổ</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="regno" name="regno" />
+            </div>
+          </div>
+          <button type="submit" id= "submit"class="btn btn-primary">Tạo chứng chỉ</button>
+        </form>
+      </div>  
+    </div>
+  </div>
+  <%- include('../../layouts/scripts') %>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+  <script type="text/javascript">
+    var temp = [];
+    $(document).ready(function(){
+      $("form").children().each(function(){
+        this.value=$(this).val().trim();
+      })
+      $("#certname").val( $("#cn_id option:selected").text());
+      $("#certkind").val( $("#ck_id option:selected").text());
+
+      $("#cn_id").on('click', function(){
+        $("#certname").val( $("#cn_id option:selected").text());
+      })
+      $("#ck_id").on('click', function(){
+        $("#certkind").val( $("#ck_id option:selected").text());
+      })
+    })
+  </script>
+</body>
+</html>

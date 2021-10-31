@@ -3,6 +3,11 @@ const router = express.Router();
 const issuerModel = require('../../models/issuerModel');
 const accountModel = require('../../models/accountModel');
 
+
+
+var Accounts = require('web3-eth-accounts');
+var accounts = new Accounts('HTTP://127.0.0.1:7545');
+
 const bcrypt = require('bcrypt');
 const moment = require('moment');
 const saltRounds = 10;
@@ -70,13 +75,11 @@ router.post('/update', async (req, res) => {
 router.post('/create', async (req, res) => {
   var error = [];
   var issuer_info = {
-    school_id: req.user.school_id, 
     issuer_name: req.body.issuer_name, 
     issuer_phoneNumber: req.body.issuer_phoneNumber, 
     issuer_email: req.body.issuer_email, 
   }
   if (
-    issuer_info.shool_id == '' ||
     issuer_info.issuer_name == '' ||
     issuer_info.issuer_phoneNumber == '' ||
     issuer_info.issuer_email == ''
@@ -88,7 +91,9 @@ router.post('/create', async (req, res) => {
       account_username: req.body.account_username, 
       account_status: 'active', 
       account_type: 'issuer',
-      account_password: await bcrypt.hashSync(req.body.account_password, saltRounds)
+      account_password: await bcrypt.hashSync(req.body.account_password, saltRounds),
+      school_id: req.user.school_id,
+      account_address: accounts.create()
     }
   }
   if (error != ''){
@@ -104,7 +109,6 @@ router.post('/create', async (req, res) => {
   try{
     await issuerModel.getIdbyEmail(req.body.issuer_email).then(async function(data){
       account_info.issuer_id = data;
-      console.log(data);
       try{
         await accountModel.create(account_info);
         req.flash('msg','Thêm tài khoản người phát hành thành công!');
@@ -150,12 +154,13 @@ router.post('/delete', async (req, res) => {
         return res.status(200).send({result: 'redirect', url:'/school/issuer'})
       }catch(err){
         console.log(err);
-        res.redirect('/school/issuer');
+        return res.status(200).send({result: 'redirect', url:'/school/issuer'})
       }
     });
   }catch(err){
     console.log(err);
-    res.redirect('/school/issuer');
+    return res.status(200).send({result: 'redirect', url:'/school/issuer'})
+
   }
 })
 module.exports = router;

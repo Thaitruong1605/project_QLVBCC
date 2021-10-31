@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../../layouts/styles') %>
+</head>
+<body>
+  <%- include('../../partials/header') %>
+  <%- include('../../partials/alert') %>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <%- include('../partials/sidebar') %>
+      </div>
+      <div class="col"> 
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Số chứng chỉ</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Loại</th>
+                <th scope="col">Trạng Thái</th>
+                <th scope="col">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% var i=0 %>
+              <% cert_list.forEach(function(row){%>
+                <tr>
+                  <th scope="row"><%= i++; %></th>
+                  <td><%= row.number %></td>
+                  <td><%= row.cn_name %></td>
+                  <td><%= row.ck_name %></td>
+                  <td><%= row.status %></td>
+                  <td>
+                    <a class="btn btn-primary" number="%=row.number%>">Chi tiết</a>
+                    <a class="btn btn-warning" href="/issuer/cert/update?number=<%=row.number%>">Sửa</a>
+                    <a class="btn btn-danger" href="/issuer/cert/delete?number=<%=row.number%>">Xoá</a>
+                  </td>
+                </tr>
+              <%}) %>
+            </tbody>
+          </table>
+        </div>
+      </div>  
+    </div>
+  </div>
+  <!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <%- include('../../layouts/scripts') %>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+  <script type="text/javascript">
+    var temp = [];
+    $(document).ready(function(){
+      let get_data = (number) => {
+        
+      }
+
+    })
+  </script>
+</body>
+</html>

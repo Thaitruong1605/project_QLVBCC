@@ -3,7 +3,7 @@ const conn = require('../dbconnect');
 let select = (school_id) =>{
   return new Promise((resolve, reject) => {
     conn.query(
-      'SELECT i.issuer_id, i.issuer_name, account_username, account_status  FROM issuers i LEFT JOIN accounts a ON i.issuer_id = a.issuer_id WHERE i.school_id = ?',
+      'SELECT i.issuer_id, i.issuer_name, account_username, account_status  FROM issuers i LEFT JOIN accounts a ON i.issuer_id = a.issuer_id WHERE a.school_id = ?',
       school_id,
       function(err , results){
         if (err) { console.log(err) , reject()}

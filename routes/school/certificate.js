@@ -6,7 +6,6 @@ const fs = require("fs"); // file system
 const request = require("request"); 
 const hash = require('object-hash'); 
 const CryptoJS = require('crypto-js');
-const excel = require('excel');
 const ipfsClient = require("ipfs-http-client");
 const { Certificate } = require("crypto");
 
@@ -116,7 +115,6 @@ router.get("/update",async (req, res) => {
     console.log(err);
   }
 });
-
 router.get("/detail", (req, res) => {
   // lay du lieu
   try {
@@ -144,8 +142,6 @@ router.get("/detail", (req, res) => {
     console.log(err);
   }
 });
-
-
 router.get("/delete", async (req, res) => {
   // lay ten file
   try {
@@ -201,9 +197,6 @@ router.get("/up_to_ipfs", async (req, res) => {
     console.log("Không tin thấy number")
   }
 });
-router.post("/input-from-excel", async (req, res) => {
-                                     
-})
 router.post("/create", async (req, res) => {
   var data = {
     number: req.body.number,

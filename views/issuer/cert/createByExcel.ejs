@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../../layouts/styles') %>
+</head>
+<body>
+  <%- include('../../partials/header') %>
+  <%- include('../../partials/alert') %>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <%- include('../partials/sidebar') %>
+      </div>
+      <div class="col"> 
+          <div class="mb-3">
+            <label for="cert_name" class="form-label">Tên chứng chỉ:</label>
+            <select class="form-control" name="cert_name" id="cert_name">
+              <% namelist.forEach(function(name){%>
+                <option value="<%= name.cn_id%>"><%= name.cn_name%></option>
+              <%}) %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="cert_kind" class="form-label">Loại chứng chỉ:</label>
+            <select class="form-control" name="cert_kind" id="cert_kind">
+              <% kindlist.forEach(function(kind){%>
+                <option value="<%= kind.ck_id%>"><%= kind.ck_name%></option>
+              <%}) %>
+            </select>
+          </div>
+          <div class="input-group mb-3">
+            <input type="file" class= "form-control" id="fileUpload" />
+            <button id="upload" value="Upload" class="btn btn-secondary">Đọc file</button>
+          </div>
+          <button type="submit" class="btn btn-primary" id="submit">Lưu chứng chỉ</button>
+          
+        <hr />
+        
+        <div class="table-responsive d-none" id="table-div">
+          <h4 class="pb-3 border-bottom">Danh sách chứng chỉ</h4>
+          <table class="table table-striped" >
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Số hiệu</th>
+                <th scope="col">Họ tên</th>
+                <th scope="col">Giới tính</th>
+                <th scope="col">Ngày sinh</th>
+                <th scope="col">Nơi sinh</th>
+                <th scope="col">Tên khoá học</th>
+                <th scope="col">Thời gian đào tạo</th>
+                <th scope="col">Ngày kiểm tra</th>
+                <th scope="col">Xếp loại</th>
+                <th scope="col">Ngày ký</th>
+                <th scope="col">Số vào sổ </th>
+              </tr>
+            </thead>
+            <tbody id="cert_info">
+
+            </tbody>
+          </table>
+        </div>
+      </div>  
+    </div>
+  </div>
+  <%- include('../../layouts/scripts') %>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+  <script type="text/javascript">
+    var temp = [];
+    $(document).ready(function(){
+      //Submit
+      $('#submit').on('click', function(event){
+        if(temp.length == 0) {
+          alert('Vui lòng tải tập tin chứng chỉ!');
+        }else {
+          event.preventDefault();
+          $.ajax({
+            type: 'POST',
+            url: '/issuer/cert/create-by-excel',
+            dataType: "json",
+            data: {
+              cert_name: $('#cert_name option:selected').text(),
+              cert_kind: $('#cert_kind option:selected').text(),
+              ck_id: $('#cert_kind option:selected').attr('value'),
+              cn_id: $('#cert_name option:selected').attr('value'),
+              cert_info: JSON.stringify(temp)
+            },
+            success: function(response) {
+              if (response.result == 'redirect') {
+                //redirecting to main page from here.
+                window.location.replace(response.url);
+              }
+            }
+          })
+        }
+      })
+
+      //  Xử lý file excel
+      $("#upload").on("click", function () {
+        var fileUpload = $("#fileUpload")[0];
+        //Validate whether File is valid Excel file.
+        var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+        if (regex.test(fileUpload.value.toLowerCase())) {
+          if (typeof (FileReader) != "undefined") {
+            var reader = new FileReader();
+            //For Browsers other than IE.
+            if (reader.readAsBinaryString) {
+              reader.onload = function (e) {
+                  ProcessExcel(e.target.result);
+              };
+              reader.readAsBinaryString(fileUpload.files[0]);
+            } else {
+              //For IE Browser.
+              reader.onload = function (e) {
+                  var data = "";
+                  var bytes = new Uint8Array(e.target.result);
+                  for (var i = 0; i < bytes.byteLength; i++) {
+                      data += String.fromCharCode(bytes[i]);
+                  }
+                  ProcessExcel(data);
+              };
+              reader.readAsArrayBuffer(fileUpload.files[0]);
+            }
+          } else {
+            alert("This browser does not support HTML5.");
+          }
+        } else {
+          alert("Please upload a valid Excel file.");
+        }
+      });
+      // Read excel to table
+      function ProcessExcel(data) {
+        //Xoá dữ liệu cũ
+        temp = [];
+        $('#cert_info').text('');
+
+        var workbook = XLSX.read(data, {
+            type: 'binary'
+        });
+        var firstSheet = workbook.SheetNames[0];
+        temp = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+        // console.log(temp);
+        var i =1;
+        temp.forEach(function(row){
+          // console.log(row);
+          var temp_tr = `<tr>
+            <th scopee="row">`+(i++)+`</th>
+            `;
+          for(const [key, value] of Object.entries(row)) {
+            temp_tr += '<td>'+value+'</td>';
+          }
+          temp_tr += '</tr>';
+          $('#cert_info').append(temp_tr);
+          $('#table-div').removeClass('d-none');
+        })
+      };
+    })
+  </script>
+</body>
+</html>

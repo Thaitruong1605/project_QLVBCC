@@ -1,14 +1,40 @@
 const conn = require("../dbconnect");
 
-let select_byissuer = (school_id) => {
+let select_byissuer = (issuer_id) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "SELECT * FROM certificates WHERE school_id=?",
+      `SELECT c.*, ck_name, cn_name 
+      FROM certificates c 
+
+      LEFT JOIN certkind ck ON c.ck_id = ck.ck_id
+      LEFT JOIN certname cn ON c.cn_id = cn.cn_id
+      WHERE c.issuer_id = ?`,
+      issuer_id,
+      function (err, results) {
+        if (err) {
+          console.log(err); reject();
+        } else {
+          resolve(results);
+        }
+      }
+    );
+  });
+};
+let select_byschool = (school_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT c.*, ck_name, cn_name 
+      FROM certificates c 
+      LEFT JOIN accounts a ON c.issuer_id = a.issuer_id
+      LEFT JOIN certkind ck ON c.ck_id = ck.ck_id
+      LEFT JOIN certname cn ON c.cn_id = cn.cn_id
+      WHERE a.school_id = ?`,
       school_id,
       function (err, results) {
         if (err) {
-          reject(err);
+          console.log(err); reject();
         } else {
+          console.log(results);
           resolve(results);
         }
       }
@@ -22,7 +48,7 @@ let select_byNumber = (number) => {
       number,
       function (err, results) {
         if (err) {
-          reject(err);
+          console.log(err); reject();
         } else {
           resolve(results);
         }
@@ -30,27 +56,26 @@ let select_byNumber = (number) => {
     );
   });
 };
-
 let create = (data) => {
   return new Promise((resolve, reject) => {
     conn.query("INSERT INTO certificates SET ?", data, function (err) {
+      // console.log(this.sql);
       if (err) {
-        reject(err);
+        console.log(err); reject();
       } else {
         resolve("A new row has been created!");
       }
     });
   });
 };
-
-let update = (number, school_id, data) => {
+let update = (number, issuer_id, data) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "UPDATE certificates SET ? WHERE school_id=? and number=?",
-      [data, school_id, number],
+      "UPDATE certificates SET ? WHERE issuer_id=? and number=?",
+      [data, issuer_id, number],
       function (err) {
         if (err) {
-          reject(err);
+          console.log(err); reject();
         } else {
           resolve("A row has been updated!");
         }
@@ -65,7 +90,7 @@ let update_ipfs_hash = (number, ipfs_hash) => {
       [ipfs_hash, number],
       function (err, results) {
         if (err) {
-          reject(err);
+          console.log(err); reject();
         } else {
           resolve("A row has been deleted!");
         }
@@ -80,7 +105,7 @@ let delete_byNumber = (number) => {
       [number],
       function (err, results) {
         if (err) {
-          reject(err);
+          console.log(err); reject();
         } else {
           resolve("A row has been deleted!");
         }
@@ -114,14 +139,14 @@ let certname_get = (id) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve(results);
       }
     );
   })
 };
-let certname_getbyissuer = (school_id, id) => { 
+let certname_getbyschool = (school_id, id) => { 
   sql = "SELECT cn_id, cn_name FROM certname WHERE school_id='"+school_id+"'"; 
   sql += (id)? "' cn_id = '"+id+"'":'';
   return new Promise((resolve, reject) =>{
@@ -130,7 +155,7 @@ let certname_getbyissuer = (school_id, id) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve(results);
       }
@@ -145,7 +170,7 @@ let certname_update = (id,name) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve();
       }
@@ -160,7 +185,7 @@ let certname_create = (school_id, name) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve();
       }
@@ -175,7 +200,7 @@ let certname_remove = (school_id, id) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve();
       }
@@ -192,14 +217,14 @@ let certkind_get = (id) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve(results);
       }
     );
   })
 };
-let certkind_getbyissuer = (school_id, id ) => { 
+let certkind_getbyschool = (school_id, id ) => { 
   sql = "SELECT ck_id, ck_name FROM certkind WHERE school_id='"+school_id+"'"; 
   sql += (id)? "' ck_id = '"+id+"'":'';
   return new Promise((resolve, reject) =>{
@@ -208,7 +233,7 @@ let certkind_getbyissuer = (school_id, id ) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve(results);
       }
@@ -223,7 +248,7 @@ let certkind_update = (id,name) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve();
       }
@@ -238,7 +263,7 @@ let certkind_create = (school_id, name) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve();
       }
@@ -253,7 +278,7 @@ let certkind_remove = (id) => {
       function(err, results){
         if (err){
           console.log(err);
-          reject(err);
+          console.log(err); reject();
         }
         resolve();
       }
@@ -261,12 +286,14 @@ let certkind_remove = (id) => {
   })
 };
 module.exports = {
+  select_byschool,
   select_byissuer,
   select_byNumber,
+  get_certformipfs,
   create,
   update,
   update_ipfs_hash,
   delete_byNumber,
-  certname_get, certname_getbyissuer, certname_create, certname_update, certname_remove,
-  certkind_get, certkind_getbyissuer, certkind_create, certkind_update, certkind_remove
+  certname_get, certname_getbyschool, certname_create, certname_update, certname_remove,
+  certkind_get, certkind_getbyschool, certkind_create, certkind_update, certkind_remove
 };

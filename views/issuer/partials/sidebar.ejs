@@ -1,0 +1,35 @@
+<div class="flex-shrink-0 bg-light bg-gradient ps-3 w-100 sidebar shadow">
+  <a href="/issuer" class="d-flex px-2 pt-3 my-3 link-dark text-decoration-none">
+    <b>HOME</b>
+  </a>
+  <hr>
+  <ul class="list-unstyled ps-0">
+   
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#degree-collapse" aria-expanded="<%= (page == "Degree")? "true":"flase" %>">
+        Văn bằng
+      </button>
+      <div class="collapse <%= (page == "Degree")? "show": "" %>" id="degree-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a href="/issuer/degree/" class="link-dark rounded">Danh sách</a></li>
+          <li><a href="/issuer/degree/create" class="link-dark rounded">Thêm mới</a></li>
+          <li><a href="/issuer/degree/namelist" class="link-dark rounded">Tên văn bằng</a></li>
+          <li><a href="/issuer/degree/kindlist" class="link-dark rounded">Loại văn bằng</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="mb-1">
+      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#cert-collapse" aria-expanded="<%= (page == "Certificate")? "true":"flase" %>">
+        Chứng chỉ
+      </button>
+      <div class="collapse <%= (page == "Cert")? "show": "" %>" id="cert-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a href="/issuer/cert/" class="link-dark rounded">Danh sách</a></li>
+          <li><a href="/issuer/cert/create-by-excel" class="link-dark rounded">Nhập chứng chỉ bằng excel</a></li>
+          <li><a href="/issuer/cert/create" class="link-dark rounded">Nhập chứng chỉ bằng biểu mẫu</a></li>
+        </ul>
+      </div>
+    </li>
+    <br>
+  </ul>
+</div>

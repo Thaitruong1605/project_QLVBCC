@@ -9,6 +9,7 @@ contract Student is Ownable{
   struct Certificate {
     uint8 state;
     address issuerAddress;
+    bytes32 ipfs;
     bytes32 certHash;
   }
   bytes32[] public certificateList; // mang hashed_cert
@@ -24,9 +25,9 @@ contract Student is Ownable{
     transferOwnership(newOwner);
   }
 
-  function addCertificates(address _address, bytes32 _hashedCert) external{
+  function addCertificates(address _address, bytes32 _ipfs,bytes32 _hashedCert) external{
     certificateList.push(_hashedCert);
-    mapCertificates[_hashedCert] = Certificate(uint8(0), _address, _hashedCert);
+    mapCertificates[_hashedCert] = Certificate(uint8(0), _address, _ipfs, _hashedCert);
     emit addCert(_address, _hashedCert);
   }
   
