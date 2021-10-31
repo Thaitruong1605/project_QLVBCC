@@ -58,7 +58,7 @@ router.get("/", async (req, res) => {
     res.redirect("back");
   }
   if (kindlist !='' && namelist !=''){
-    res.render("./school/certificate/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment });
+    res.render("./school/cert/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment });
   }else {
     req.flash('err','Không thể truy cập');
     res.redirect('/school');
@@ -82,7 +82,7 @@ router.get("/create",async (req, res) => {
     console.log(err);
     res.redirect("back");
   }
-  res.render("./school/certificate/create",{title:'Nhập chứng chỉ',namelist, kindlist , page:'Certificate'});
+  res.render("./school/cert/create",{title:'Nhập chứng chỉ',namelist, kindlist , page:'Certificate'});
 });
 router.get("/update",async (req, res) => {
   // lay du lieu
@@ -109,7 +109,7 @@ router.get("/update",async (req, res) => {
       var filename = data[0].filename;
      
         data = JSON.parse(fs.readFileSync("./public/cert/" + filename));
-        res.render('./school/certificate/update',{title:"Cập nhật chứng chỉ",page:"Certificate" ,cert_info: data,kindlist,namelist});
+        res.render('./school/cert/update',{title:"Cập nhật chứng chỉ",page:"Certificate" ,cert_info: data,kindlist,namelist});
     });
   } catch (err) {
     console.log(err);
@@ -122,7 +122,7 @@ router.get("/detail", (req, res) => {
       var filename = data[0].filename;
       if (filename != null) {
         data = JSON.parse(fs.readFileSync("./public/cert/" + filename));
-        res.render('./school/certificate/detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info: data});
+        res.render('./school/cert/detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info: data});
       } else {
         var url = "https://ipfs.io/ipfs/" + data[0].ipfs_hash;
         request(
@@ -132,7 +132,7 @@ router.get("/detail", (req, res) => {
           },
           function (error, response, data) {
             if (!error && response.statusCode === 200) {
-              res.render('./school/certificate/detail',{cert_info: data});
+              res.render('./school/cert/detail',{cert_info: data});
             }
           }
         );
@@ -155,7 +155,7 @@ router.get("/delete", async (req, res) => {
           else {
             try {
               certificateModel.delete_byNumber(req.query.number);
-              res.redirect("/school/certificate/");
+              res.redirect("/school/cert/");
             } catch (err) {
               console.log(err);
             }
@@ -188,7 +188,7 @@ router.get("/up_to_ipfs", async (req, res) => {
             console.log(err);
           }
           // res.flash(msg,"Đã tải chứng chỉ lên ipfs!");
-          res.redirect("/school/certificate");
+          res.redirect("/school/cert");
         });
     } catch (err) {
       console.log(err);
@@ -242,7 +242,7 @@ router.post("/create", async (req, res) => {
         try {
           await certificateModel.create(cert);
           req.flash('msg','Tạo chứng chỉ mới thành công')
-          res.redirect("/school/certificate");
+          res.redirect("/school/cert");
         } catch (err) {
           console.log(err);
         }
@@ -305,7 +305,7 @@ router.post("/update", async (req, res) => {
         try {
           await certificateModel.update(req.body.number, req.user.school_id ,cert);
           req.flash('msg','Cập nhật chứng chỉ thành công')
-          res.redirect("/school/certificate");
+          res.redirect("/school/cert");
         } catch (err) {
           console.log(err);
         }
@@ -319,25 +319,25 @@ router.post("/update", async (req, res) => {
 router.get('/certname', (req, res) => {
   try{
     certificateModel.certname_get().then(function(data) {
-      res.render('./school/certificate/certname',{page:'Certificate',title:'Danh sách tên chứng chỉ',data})
+      res.render('./school/cert/certname',{page:'Certificate',title:'Danh sách tên chứng chỉ',data})
     })
   }catch(err){
     console.log(err);
-    res.redirect('/school/certificate/certname');
+    res.redirect('/school/cert/certname');
   }
 })
 router.post('/certname/create', async (req, res) => {
   if(req.body.cn_name == ''){
     req.flash("alert","Vui lòng nhập tên chứng chỉ");
-    res.redirect('/school/certificate/certname');
+    res.redirect('/school/cert/certname');
   }else {
     try{
       await certificateModel.certname_create(req.body.cn_name, req.user.school_id);
       req.flash("msg","Thêm mới tên chứng chỉ thành công!");
-      res.redirect('/school/certificate/certname');
+      res.redirect('/school/cert/certname');
     }catch(err){
       console.log(err);
-      res.redirect('/school/certificate/certname');
+      res.redirect('/school/cert/certname');
     }
   }
 })
@@ -345,11 +345,11 @@ router.post('/certname/update', (req, res) => {
   try{
     certificateModel.certname_update(req.body.cn_id,req.body.cn_name).then(function(){
       req.flash('msg',"Cập nhập tên chứng chỉ thành công!");
-      res.redirect('/school/certificate/certname');
+      res.redirect('/school/cert/certname');
     })
   }catch(err){
     console.log(err);
-    res.redirect('/school/certificate/certname');
+    res.redirect('/school/cert/certname');
   }
 })
 router.get('/certname/remove', (req, res )=> {
@@ -357,12 +357,12 @@ router.get('/certname/remove', (req, res )=> {
     try{
       certificateModel.certname_remove(req.user.school_id, req.query.id).then(function(){
         req.flash("msg","Xoá tên chứng chỉ thành công!");
-        res.redirect('/school/certificate/certname');
+        res.redirect('/school/cert/certname');
       })
     }catch(err){
       console.log(err);
       req.flash("msg","Xoá tên chứng chỉ thất bại!");
-      res.redirect('/school/certificate/certname');
+      res.redirect('/school/cert/certname');
     }
   }
 })
@@ -371,7 +371,7 @@ router.get('/certname/remove', (req, res )=> {
 router.get('/certkind', async (req, res) => {
   try{
     certificateModel.certkind_getbyschool(req.user.school_id).then(function(data) {
-      res.render('./school/certificate/certkind',{page:'Certificate',title:'Danh sách loại chứng chỉ',data})
+      res.render('./school/cert/certkind',{page:'Certificate',title:'Danh sách loại chứng chỉ',data})
     })
   }catch(err){
     console.log(err);
@@ -381,15 +381,15 @@ router.get('/certkind', async (req, res) => {
 router.post('/certkind/create', async (req, res) => {
   if(req.body.ck_name == ''){
     req.flash("alert","Vui lòng nhập tên chứng chỉ");
-    res.redirect('/school/certificate/certkind');
+    res.redirect('/school/cert/certkind');
   }else {
     try{
       await certificateModel.certkind_create(req.user.school_id, req.body.ck_name);
       req.flash("msg","Thêm mới loại chứng chỉ thành công!");
-      res.redirect('/school/certificate/certkind');
+      res.redirect('/school/cert/certkind');
     }catch(err){
       console.log(err);
-      res.redirect('/school/certificate/certkind');
+      res.redirect('/school/cert/certkind');
     }
   }
 })
@@ -397,11 +397,11 @@ router.post('/certkind/update', (req, res) => {
   try{
     certificateModel.certkind_update(req.body.ck_id,req.body.ck_name).then(function(){
       req.flash('msg',"Cập nhập loại chứng chỉ thành công!");
-      res.redirect('/school/certificate/certkind');
+      res.redirect('/school/cert/certkind');
     })
   }catch(err){
     console.log(err);
-    res.redirect('/school/certificate/certkind');
+    res.redirect('/school/cert/certkind');
   }
 })
 router.get('/certkind/remove', (req, res )=> {
@@ -409,12 +409,12 @@ router.get('/certkind/remove', (req, res )=> {
     try{
       certificateModel.certkind_remove(req.user.school_id, req.query.id).then(function(){
         req.flash("msg","Xoá loại chứng chỉ thành công!");
-        res.redirect('/school/certificate/certkind');
+        res.redirect('/school/cert/certkind');
       })
     }catch(err){
       console.log(err);
       req.flash("msg","Xoá loại chứng chỉ thất bại!");
-      res.redirect('/school/certificate/certkind');
+      res.redirect('/school/cert/certkind');
     }
   }
 })

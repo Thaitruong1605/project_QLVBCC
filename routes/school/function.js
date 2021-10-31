@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-router.use("/certificate", require('./certificate'));
+router.use("/cert", require('./cert'));
 router.use("/degree", require('./degree'));
 router.use("/issuer", require('./issuer'));
 

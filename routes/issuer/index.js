@@ -86,22 +86,19 @@ router.get('/cert/create-by-excel',async (req, res) => {
 router.post("/cert/create-by-excel", async (req, res) => {
   var error = [];
   var cert_list = JSON.parse(req.body.cert_list);
-
   cert_list.forEach(function(elt){
-    console.log(elt);
     var hashed_data = CryptoJS.SHA256(JSON.stringify(elt), {asBytes: true});
-    console.log(hashed_data.toString(CryptoJS.enc.Hex));
-    var fname = "cert_" + elt.number + "_" + Date.now() + ".json";
+    var fname = "cert_" + elt.number + ".json";
     // QRCode.toFile('public/qrCode'+ fname +'.png', 'http://localhost:3000/cert-detail?hash=?'+hashed_data, function (err) {
     //   if (err) throw err
     // })
-    
+    elt.cert_name = req.body.cert_name
+    elt.cert_kind = req.body.cert_kind
     var cert = {
       number: elt.number,
       cn_id: req.body.cn_id,
       ck_id: req.body.ck_id,
       issuer_id: req.user.issuer_id,
-      filename: fname,
       status: "checking",
       hash: hashed_data
     };
@@ -181,7 +178,6 @@ router.post("/cert/create", async (req, res) => {
     cn_id: req.body.cn_id,
     ck_id: req.body.ck_id,
     issuer_id: req.user.issuer_id,
-    filename: fname,
     status: "checking",
     hash: hashed_data
   };
@@ -210,12 +206,9 @@ router.get('/cert/detail', async(req, res)=>{
     req.flash('error','Không tìm thấy chứng chỉ');
     res.redirect('back');
   }else {
-    var cert_info;
-    // if (filename != null) {
-    cert_info = JSON.parse(fs.readFileSync('./public/cert/cert_' + req.query.number+'.json'));
-    if(cert_info){
-      console.log(true);
-    } else {
+    var data = fs.readFileSync('./public/cert/cert_' + req.query.number+'.json')
+    var cert_info = JSON.parse(data);
+    if(!cert_info){
       var url = 'https://ipfs.io/ipfs/' + data[0].ipfs_hash;
       request(
         {
@@ -228,8 +221,8 @@ router.get('/cert/detail', async(req, res)=>{
           }
         }
       );
-    }
-    res.render('./school/certificate/detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info});
+    } 
+    res.render('./issuer/cert/detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info});
   }
 })
 

@@ -88,7 +88,7 @@
               cert_kind: $('#cert_kind option:selected').text(),
               ck_id: $('#cert_kind option:selected').attr('value'),
               cn_id: $('#cert_name option:selected').attr('value'),
-              cert_info: JSON.stringify(temp)
+              cert_list: JSON.stringify(temp)
             },
             success: function(response) {
               if (response.result == 'redirect') {

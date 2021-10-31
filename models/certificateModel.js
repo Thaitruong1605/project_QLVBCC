@@ -34,7 +34,6 @@ let select_byschool = (school_id) => {
         if (err) {
           console.log(err); reject();
         } else {
-          console.log(results);
           resolve(results);
         }
       }

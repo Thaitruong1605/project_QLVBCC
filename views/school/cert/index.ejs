@@ -53,11 +53,11 @@
                 
                 <td id="tb-createtime"><%= moment(cert.createtime).format('DD-MM-YYYY, h:mm:ss a'); %></td>
                 <td>
-                  <a class="btn btn-primary" href="/issuer/certificate/detail?number=<%= cert.number %>">Xem</a>
-                  <a class="btn btn-warning" href="/issuer/certificate/update?number=<%= cert.number %>">Sửa</a>
-                  <a class="btn btn-danger" href="/issuer/certificate/delete?number=<%= cert.number; %>">Xoá</a>
+                  <a class="btn btn-primary" href="/school/cert/detail?number=<%= cert.number %>">Xem</a>
+                  <a class="btn btn-warning" href="/school/cert/update?number=<%= cert.number %>">Sửa</a>
+                  <a class="btn btn-danger" href="/school/cert/delete?number=<%= cert.number; %>">Xoá</a>
                   <% if(cert.ipfs_hash == null){ %>
-                    <a class="btn btn-primary" href="/issuer/certificate/up_to_ipfs?number=<%= cert.number %>">Up to ifps</a>
+                    <a class="btn btn-primary" href="/school/cert/up_to_ipfs?number=<%= cert.number %>">Cấp phát</a>
                   <% } %>
                 </td>
               </tr>
@@ -67,28 +67,27 @@
       </div>
     </div>
   </div>
-  <!-- Button trigger modal -->
 
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Understood</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-  <%- include('../layouts/scripts.ejs'); %>
+  <%- include('../../layouts/scripts.ejs'); %>
   
 </body>
 
