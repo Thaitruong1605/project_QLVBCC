@@ -41,7 +41,36 @@ router.get('/asd', function (req, res) {
 });
 
 // Tra cứu chứng chỉ 
+router.post('/cert-search',async (req ,res) => {
+  try{
+    certificateModel.cert_search(req.body.data).then(async function(data){
+      try {
+        var data = await fs.readFileSync('./public/cert/cert_' + data.number+'.json')
+        var cert_info = JSON.parse(data);
+        res.render('./cert-detail',{title:"Chi tiết chứng chỉ",page:"Cert" ,cert_info});
+      }catch(err){
+        ipfs_hash = await certificateModel.get_ipfs_hash(data.number);
+        var url = 'https://ipfs.io/ipfs/' + ipfs_hash;
+        request(
+          {
+            url: url,
+            json: true,
+          },
+          function (error, response, data) {
+            if (!error && response.statusCode === 200) {
+              cert_info = data;
+              res.render('./cert-detail',{title:"Chi tiết chứng chỉ",page:"Cert" ,cert_info});
+            }
+          }
+        );
+      }
+    })
+  }catch (err){ 
+    console.log(err);
+  }
+})
 router.get('/cert-search', (req ,res) => {
+
   res.render('./cert-search')
 })
 router.get('/cert-detail', async (req, res) =>{

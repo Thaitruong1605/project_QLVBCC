@@ -17,6 +17,7 @@ let createUser = async (req, res) => {
   }
   //Kiểm tra username 
   if ( await signupModel.isExist_username(account.account_username)) error.push("Tên đăng nhập đã tồn tại!");
+  else if ( typeof account.account_address == 'undefined') error.push("Vui lỏng kết nối với ví điện tử!");
   else if ((account.account_username).length < 6 || (account.account_username).length > 12) error.push("Tên đăng nhập có từ 6 đến 12 ký tự!");
   else if (!validator.isAlphanumeric(account.account_username)) error.push("Tên đang nhập không được có ký tự đặc biệt!");
   else if (account.account_username.indexOf(" ") > 0 ) error.push("Tên đang nhập không được có khoản trắng!");
@@ -24,7 +25,6 @@ let createUser = async (req, res) => {
   if (req.body.account_password != req.body.account_password2) error.push("Mật khẩu xác nhận không giống!");
   else {
     account.account_password= await bcrypt.hashSync(req.body.account_password, saltRounds);
-    console.log(account.account_password)
   }
   var student={
     student_name: req.body.student_name,

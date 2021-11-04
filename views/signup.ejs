@@ -17,10 +17,10 @@
         <div class="col-md-8">
             <h5 class="text-center ">Thông tin cá nhân sinh viên</h5>
             <form name="frmSignup" id="frmSignup" action="/signup" method="POST" >
-                <!-- <input type="text" type="hidden" name="account_address" id="account_address"/> -->
                 <div class="mb-3">
                     <label for="account_address">Địa chỉ tài khoản: </label>
                     <input type="text" name="account_address" id="account_address" value="" class="form-control" readonly/>
+                    <button id="connectWallet" type="button" class="btn btn-primary">Connect wallet</button>
                 </div>
                 <div class="mb-3">
                     <label for="account_username">Tên đăng nhập: </label>
@@ -93,23 +93,29 @@
     </div>
   </div>
   <%- include('./layouts/scripts.ejs') %>
-  <script>
-    $(document).ready( async function(){
-      if(typeof ethereum == "undefined") {
-        alert("Vui lòng kết nối với netmark");
-      } else {
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        $('#account_address').attr('value', accounts);
-        $('#NetmarkAddress').text(accounts);
-      }
-    $( "#student_birth" ).datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "dd/mm/yy",
-        yearRange: "1960:2021",
-        defaultDate: "03/09/1999"
-    });
-    })
-  </script>
+    <script>
+        $(document).ready( async function(){
+            $( "#student_birth" ).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: "dd/mm/yy",
+                yearRange: "1960:2021",
+                defaultDate: "03/09/1999"
+            });
+            $('#connectWallet').on('click',async function(){
+                if (window.ethereum) {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        $('#account_address').attr('value', accounts);
+                        console.log(accounts);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }else {
+                    alert("Vui lòng kết nối với netmark");
+                }
+            })
+        })  
+    </script>
 </body>
 </html>

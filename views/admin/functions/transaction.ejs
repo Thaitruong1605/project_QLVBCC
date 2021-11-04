@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %>
+  </title>
+  <!-- styles from vendors  -->
+  <%- include('../layouts/styles.ejs'); %>
+
+</head>
+
+<body>
+  <%- include('../partials/navbar.ejs') %>
+  <%- include('../../partials/alert.ejs') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 px-0">
+        <%- include('../partials/sidebar.ejs'); %>
+      </div>
+      <div class="col-md-10">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Giao dịch</th>
+                <th scope="col">Địa chỉ thực hiện</th>
+                <th scope="col">Tên sự kiện</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% var i =1; transList.forEach(function(row){ %>
+              <tr>
+                <th scope="row"><%= i++; %></th>
+                <td><%= row.transactionHash %></td>
+                <td><%= row.address %></td>
+                <td><%= row.event %></td>
+              </tr>  
+              <%}) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- script form vendor -->
+  <%- include('../layouts/scripts.ejs'); %>
+  <!-- Page's scripts -->
+  
+  <script>
+    
+  </script>
+</body>
+
+</html>

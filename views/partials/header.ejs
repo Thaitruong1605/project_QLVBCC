@@ -11,7 +11,7 @@
       <li><a href="/nhap-chung-chi" class="nav-link px-2 link-dark">Nhập chứng chỉ</a></li>
       <% if (typeof currentUser != "undefined" ) { %>
         <% if (currentUser.account_type == "admin" ) { %>
-        <li><a href="/admin" class="nav-link px-2 link-dark">Quản lý ứng dụng</a></li>
+        <li><a href="/admin" class="nav-link px-2 link-dark">Quản lý</a></li>
         <% }else %>
         <% if (currentUser.account_type == "student" ) { %>
         <li><a href="/admin" class="nav-link px-2 link-dark">Sinh viên</a></li>

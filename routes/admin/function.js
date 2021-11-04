@@ -1,19 +1,19 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
+const moment = require('moment');
 const fs = require('fs');
 const schoolModel = require('../../models/schoolModel');
 const contract = require('@truffle/contract');
 const bytes32 = require('bytes32');
 const SHA256 = require('sha256');
 const Web3 = require('web3');
-
-const web3 = new Web3( new Web3.providers.HttpProvider('http://localhost:7545'));
+const provider = new Web3.providers.HttpProvider('http://localhost:7545');
+const web3 = new Web3( provider );
 const account = '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'
-// const provider = new Web3.providers.HttpProvider('http://localhost:7545');
 
-// var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
-// SystemContract.setProvider(provider);
+var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
+SystemContract.setProvider(provider);
 
 router.use('/school', require('./school'));
 router.use('/student', require('./student'));
@@ -38,25 +38,10 @@ let get_school = async () => {
   }
   return school;
 }
-
 router.get('/', async (req, res) => {
-  let block = await web3.eth.getBlock('latest');
-  console.log(block);
-  let number = block.number;
-  console.log('Searching block ' + number);
 
-  if (block != null && block.transactions != null) {
-      for (let txHash of block.transactions) {
-          let tx = await web3.eth.getTransaction(txHash);
-          if (account == tx.to.toLowerCase()) {
-              console.log('Transaction found on block: ' + number);
-              console.log({address: tx.from, value: web3.utils.fromWei(tx.value, 'ether'), timestamp: new Date()});
-          }
-      }
-  }
   res.render('./admin',{title: 'Dashboard', page:''});
 })
-
 router.get('/create_student_contract', async (req,res) => {
   var stuAddr = '0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701'
   const StudentAtrifact = JSON.parse(fs.readFileSync('./src/abis/Student.json'));
@@ -118,5 +103,356 @@ router.get('/get_school_contract_address', async (req, res) => {
 
 // transaction
 
+router.get('/transaction', async (req, res) => {
+  // var myAddr  = '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79';
+  // var currentBlock= i = 329
+  // var n = await web3.eth.getTransactionCount(myAddr, currentBlock);
+  // var bal = await web3.eth.getBalance(myAddr, currentBlock);
+  // for (var i=currentBlock; i >= 0 && (n > 0 || bal > 0); --i) {
+    // try {
+    //   var block = await web3.eth.getBlock(i, true);
+    //   console.log(block.transactions);
+    //   block.transactions.hash
 
+    
+    // } catch (e) { console.error("Error in block " + i, e); }
+  // }
+
+  var myContract = new web3.eth.Contract([
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newIssuer",
+          "type": "address"
+        }
+      ],
+      "name": "addedIssuer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newStudent",
+          "type": "address"
+        }
+      ],
+      "name": "addedStudent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_issuerAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_contractAddr",
+          "type": "address"
+        }
+      ],
+      "name": "changedIssuerContract",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_studentAddr",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_contractAddr",
+          "type": "address"
+        }
+      ],
+      "name": "changedStudentContract",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "issuerAddresses",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "mapIssuer",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "mapStudent",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "studentAddresses",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_issuerAddr",
+          "type": "address"
+        }
+      ],
+      "name": "addIssuer",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_issuerAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_contractAddr",
+          "type": "address"
+        }
+      ],
+      "name": "changeIssuerContract",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_studentAddr",
+          "type": "address"
+        }
+      ],
+      "name": "addStudent",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_studentAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_contractAddr",
+          "type": "address"
+        }
+      ],
+      "name": "changeStudentContract",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_studentAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_issuerAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_hashedCert",
+          "type": "bytes32"
+        }
+      ],
+      "name": "addCerf",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],process.env.SYSTEM_ADDRESS)
+  
+  myContract.getPastEvents('allEvents', {fromBlock: 0, toBlock: 'latest'}, async function(e,results){
+    var transList = results;
+    // transList.forEach(async function(elt){
+    //   block = await web3.eth.getBlock(transList[0].blockHash);
+    //   // console.log(block.timestamp);
+    //   var date = new Date(block.timestamp*1000);
+    //   elt.time = moment(date).format('DD/MM/YYYY, h:mm:ss a');
+    // })
+    // console.log(transList)
+    res.render('./admin/functions/transaction',{title: 'Giao dịch', page:'Transaction', transList})
+  })
+})
 module.exports = router

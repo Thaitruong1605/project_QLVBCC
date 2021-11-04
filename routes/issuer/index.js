@@ -30,6 +30,9 @@ const client = ipfsClient.create({
 client.pin.add("QmeGAVddnBSnKc1DLE7DLV9uuTqo5F7QbaveTjr45JUdQn").then((res) => {
   // console.log(res)
 });
+let uptoblockchain = (hash, student_address) => {
+  
+}
 router.get('/',async (req, res)=> {
   res.render('./issuer/',{page:'', title:'trang chủ'});
 });
@@ -89,9 +92,9 @@ router.post("/cert/create-by-excel", async (req, res) => {
   cert_list.forEach(function(elt){
     var hashed_data = CryptoJS.SHA256(JSON.stringify(elt), {asBytes: true});
     var fname = "cert_" + elt.number + ".json";
-    // QRCode.toFile('public/qrCode'+ fname +'.png', 'http://localhost:3000/cert-detail?hash=?'+hashed_data, function (err) {
-    //   if (err) throw err
-    // })
+    QRCode.toFile('public//qrCode/cert_'+ elt.number +'.png', 'http://localhost:3000/cert-detail?data='+hashed_data, function (err) {
+      if (err) throw err
+    })
     elt.cert_name = req.body.cert_name
     elt.cert_kind = req.body.cert_kind
     var cert = {

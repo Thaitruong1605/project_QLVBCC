@@ -67,11 +67,11 @@ let create = (data) => {
     });
   });
 };
-let update = (number, issuer_id, data) => {
+let update = (number, data) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "UPDATE certificates SET ? WHERE issuer_id=? and number=?",
-      [data, issuer_id, number],
+      "UPDATE certificates SET ? WHERE number=?",
+      [data, number],
       function (err) {
         if (err) {
           console.log(err); reject();
@@ -92,6 +92,21 @@ let update_ipfs_hash = (number, ipfs_hash) => {
           console.log(err); reject();
         } else {
           resolve("A row has been deleted!");
+        }
+      }
+    );
+  });
+};
+let get_ipfs_hash = (number) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT ipfs_hash FROM certificates  WHERE number=?",
+      [number],
+      function (err, results) {
+        if (err) {
+          console.log(err); reject();
+        } else {
+          resolve(results[0].ipfs_hash);
         }
       }
     );
@@ -128,6 +143,24 @@ let get_certformipfs = (url) => {
     reject("Fail")
   });
 };
+let cert_search = (data) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT number, ck_id, cn_id, student_id, issuer_id, status, ipfs_hash, hash
+      FROM certificates
+      WHERE number = ? OR 
+      hash = ?`,
+      [data,data],
+      function (err, results) {
+        if (err) {
+          console.log(err); reject();
+        } else {
+          resolve(results[0]);
+        }
+      }
+    );
+  });
+}
 // CERT NAME ---------------------------------------------------
 let certname_get = (id) => { 
   sql = "SELECT cn_id, cn_name FROM certname ";
@@ -284,13 +317,16 @@ let certkind_remove = (id) => {
     );
   })
 };
+
 module.exports = {
   select_byschool,
   select_byissuer,
   select_byNumber,
   get_certformipfs,
+  cert_search,
   create,
   update,
+  get_ipfs_hash,
   update_ipfs_hash,
   delete_byNumber,
   certname_get, certname_getbyschool, certname_create, certname_update, certname_remove,

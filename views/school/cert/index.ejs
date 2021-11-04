@@ -5,14 +5,14 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Danh sách chứng chỉ</title>
+  <title><%= title %></title>
   <%- include('../layouts/styles'); %>
 
 </head>
 
 <body>
   <%- include('../../partials/header') %>
-
+  <%- include('../../partials/alert') %>
   <div class="container">
     <div class="row">
       <div class="col-2">
@@ -23,41 +23,50 @@
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Số chứng chỉ</th>
+              <th scope="col">Số</th>
               <th scope="col">Tên</th>
               <th scope="col">Loại</th>
-              <th scope="col">Người nhận</th>
+              <th scope="col">Người tạo</th>
               <th scope="col">Trạng thái</th>
-              <th scope="col">Ngày tạo</th>
+              <th scope="col">Thời gian tạo</th>
               <th scope="col">Hành động</th>
             </tr>
           </thead>
           <tbody>
             <% i=1; %>
             <% certlist.forEach(function(cert){ %>
-              <tr id="row_<%= i %>">
+              <tr >
                 <th scope="row"><%= i++; %></th>
-                <td id="tb-name"><%= cert.number; %></td>
-                <td id="tb-cn_name">
+                <td ><%= cert.number; %></td>
+                <td >
                   <% namelist.forEach(function(name){ %>
                     <%= (name.cn_id == cert.cn_id)? name.cn_name:'' %>
                   <% }) %>
                 </td>
-                <td id="tb-ck_name">
+                <td>
                   <% kindlist.forEach(function (kind){ %>
                     <%= (kind.ck_id == cert.ck_id)? kind.ck_name:'' %>
                   <% }) %>
                 </td>
-                <td id="tb-student_id"><%= (cert.student_id) ? cert.student_id : "Chưa có"%></td>
-                <td id="tb-status"><%= cert.status %></td> %> 
-                
-                <td id="tb-createtime"><%= moment(cert.createtime).format('DD-MM-YYYY, h:mm:ss a'); %></td>
+                <td><%=cert.issuer_id%></td>
                 <td>
-                  <a class="btn btn-primary" href="/school/cert/detail?number=<%= cert.number %>">Xem</a>
-                  <a class="btn btn-warning" href="/school/cert/update?number=<%= cert.number %>">Sửa</a>
-                  <a class="btn btn-danger" href="/school/cert/delete?number=<%= cert.number; %>">Xoá</a>
+                  <% if (cert.status == 'Incorrect') {%>
+                    <span class="text-danger fw-bold"><%= cert.status %></span>  
+                  <% } else if (cert.status == 'checking') { %>
+                    <span class="text-warning fw-bold"><%= cert.status %></span>  
+                  <%} else  {%>
+                    <span class="text-success fw-bold"><%= cert.status %></span>  
+                  <% } %>
+                </td> 
+                
+                <td><%= moment(cert.createTime).format('DD-MM-YYYY, h:mm:ss a'); %></td>
+                <td>
+                  <a class="btn btn-outline-primary" href="/school/cert/detail?number=<%= cert.number %>">Xem</a>
+                  <% if (cert.status == 'checking') {%>
+                    <a class="btn btn-warning" href="/school/cert/set-to-incorrect?number=<%= cert.number; %>">Sai</a>
+                  <% } %>
                   <% if(cert.ipfs_hash == null){ %>
-                    <a class="btn btn-primary" href="/school/cert/up_to_ipfs?number=<%= cert.number %>">Cấp phát</a>
+                    <a class="btn btn-primary" href="/school/cert/issue?number=<%= cert.number %>">Cấp phát</a>
                   <% } %>
                 </td>
               </tr>
@@ -68,25 +77,6 @@
     </div>
   </div>
 
-
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
-        </div>
-      </div>
-    </div>
-  </div>
   <%- include('../../layouts/scripts.ejs'); %>
   
 </body>

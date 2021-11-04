@@ -12,20 +12,9 @@
   <%- include('./partials/alert.ejs') %>
   <!-- FLASH  -->
   <div class="container">
-    <div class="row">
-    </div>
   </div>
   <%- include('./layouts/scripts.ejs') %>
   <script>
-    $(document).ready( async function(){
-      if(typeof ethereum == "undefined") {
-        alert("Vui lòng kết nối với netmark");
-      } else {
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        $('#account_address').attr('value', accounts);
-        $('#NetmarkAddress').text(accounts);
-      }
-    })
   </script>
 </body>
 </html>

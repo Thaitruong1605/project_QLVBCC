@@ -14,10 +14,10 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <form method="get" action="/cert-detail">
+        <form method="POST" action="/cert-search">
           <div class="mp-3">
-            <label class="form-label">Nhập số chứng chỉ</label>
-            <input type=text class="form-control" name="number" />
+            <label class="form-label">Nhập số chứng chỉ hoặc hash của chứng chỉ</label>
+            <input type=text class="form-control" name="data"/>
           </div>
           <button type="submit" class="btn btn-primary pull-right">Tìm</button>
         </form>

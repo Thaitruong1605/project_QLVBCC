@@ -36,11 +36,21 @@
                   <td><%= row.number %></td>
                   <td><%= row.cn_name %></td>
                   <td><%= row.ck_name %></td>
-                  <td><%= row.status %></td>
                   <td>
-                    <a class="btn btn-primary" href="/issuer/cert/detail?number=<%=row.number%>">Chi tiết</a>
+                    <% if (row.status == 'Incorrect') {%>
+                      <span class="text-danger fw-bold"><%= row.status %></span>  
+                    <% } else if (row.status == 'checking') { %>
+                      <span class="text-warning fw-bold"><%= row.status %></span>  
+                    <%} else  {%>
+                      <span class="text-success fw-bold"><%= row.status %></span>  
+                    <% } %>
+                  </td> 
+                  <td>
+                    <% if(row.ipfs_hash == null){ %>
+                      <a class="btn btn-danger" href="/issuer/cert/delete?number=<%=row.number%>">Xoá</a>
+                    <% } %>
                     <a class="btn btn-warning" href="/issuer/cert/update?number=<%=row.number%>">Sửa</a>
-                    <a class="btn btn-danger" href="/issuer/cert/delete?number=<%=row.number%>">Xoá</a>
+                    <a class="btn btn-primary" href="/issuer/cert/detail?number=<%=row.number%>">Chi tiết</a>
                   </td>
                 </tr>
               <%}) %>

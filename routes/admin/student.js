@@ -4,6 +4,10 @@ const moment = require('moment');
 const studentModel = require('../../models/studentModel');
 const studentController = require('../../controllers/studentController');
 const accountModel = require('../../models/accountModel');
+const fs = require('fs');
+
+const Web3 = require('web3');
+const web3 = new Web3('HTTP://127.0.0.1:7545');
 
 router.get('/', (req, res) => {
   try{
@@ -15,8 +19,6 @@ router.get('/', (req, res) => {
     return res.redirect('/admin');
   }
 })
-
-
 router.get('/update', (req, res) => {
   if( typeof req.query.id !== 'undefined'){
     try{
@@ -40,6 +42,14 @@ router.get('/delete', async (req, res) => {
       console.log(err);
       return res.redirect('/admin/student');
     }
+  }
+})
+router.get('/active-student', async (req, res) => {
+  console.log('active-student');
+  if ( typeof req.query.id !== 'undefined'){
+    var sysABI = JSON.parse(await fs.readFileSync('./src/abis/System.json'))['abi'];
+    var system = new web3.eth.contract(sysABI,process.env.SYSTEM_ADDRESS);
+    
   }
 })
 // POST -----------------------------------------
