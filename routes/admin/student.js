@@ -7,7 +7,12 @@ const accountModel = require('../../models/accountModel');
 const fs = require('fs');
 
 const Web3 = require('web3');
-const web3 = new Web3('HTTP://127.0.0.1:7545');
+const provider = new Web3.providers.HttpProvider('http://localhost:7545');
+const web3 = new Web3( provider );
+const contract = require('@truffle/contract');
+
+var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
+SystemContract.setProvider(provider);
 
 router.get('/', (req, res) => {
   try{
@@ -44,13 +49,41 @@ router.get('/delete', async (req, res) => {
     }
   }
 })
-router.get('/active-student', async (req, res) => {
-  console.log('active-student');
-  if ( typeof req.query.id !== 'undefined'){
-    var sysABI = JSON.parse(await fs.readFileSync('./src/abis/System.json'))['abi'];
-    var system = new web3.eth.contract(sysABI,process.env.SYSTEM_ADDRESS);
-    
+// router.get('/active-student', async (req, res) => {
+//   if ( typeof req.query.id !== 'undefined'){
+//     console.log('active-student');
+//     const systemInstance = await SystemContract.deployed();
+//     try { 
+//       await studentModel.auth(req.query.id)
+//     }catch(err){
+//       console.log(err);
+//     }
+//     try {
+//       await systemInstance.addStudent();
+//     }catch (err){
+//       console.log(err);
+//     }
+//   }
+// })
+router.get('/auth',async (req, res)=>{
+  if (typeof req.query.student_id == 'undefined'){
+    req.flash('Hành động không hợp lệ!')
+  }else {
+    try{
+      await studentModel.auth(req.query.student_id);
+      var account = await accountModel.get_accountById(req.query.student_id);
+      try {
+        const systemInstance = await SystemContract.deployed();
+        await systemInstance.addStudent(account.account_address,req.query.student_email,{from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
+        req.flash('Xác thực sinh viên thành công');
+      }catch (err){
+        console.log(err);
+      }
+    }catch(err){
+      console.log(err);
+    }
   }
+  res.redirect('/admin/student');
 })
 // POST -----------------------------------------
 router.post('/get-data', async (req, res) => {
@@ -72,6 +105,7 @@ router.post('/get-data', async (req, res) => {
     console.log(err);
     res.redirect('back');
   }
+  console.log(student_info);
   student_info.student_birth = moment(student_info.student_birth).format('DD/MM/YYYY');
   res.json({student_info, account_info});
 });

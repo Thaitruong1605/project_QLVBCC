@@ -4,6 +4,18 @@ const accountModel = require("../models/accountModel");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+const fs = require('fs');
+
+const sysAddr = '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'
+
+const Web3 = require('web3');
+const provider = new Web3.providers.HttpProvider('http://localhost:7545');
+const web3 = new Web3( provider );
+const contract = require('@truffle/contract');
+
+var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
+SystemContract.setProvider(provider);
+
 // get System contract 
 
 let school_create = async (req, res) => {

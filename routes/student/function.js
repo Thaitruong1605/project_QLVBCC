@@ -39,6 +39,5 @@ router.get('/add_cert',async (req, res) => {
 
   res.render('/student/add_cert');
 })
-router.get('/')
 
 module.exports = router;

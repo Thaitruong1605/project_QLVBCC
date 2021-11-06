@@ -3,8 +3,6 @@ const router = express.Router();
 const issuerModel = require('../../models/issuerModel');
 const accountModel = require('../../models/accountModel');
 
-
-
 var Accounts = require('web3-eth-accounts');
 var accounts = new Accounts('HTTP://127.0.0.1:7545');
 

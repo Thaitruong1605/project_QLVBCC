@@ -76,18 +76,11 @@
                       <%= student.student_phoneNumber %>
                     </td>
                     <td>
-                      <!-- Action -->
-                      <!-- <a href="/admin/student/update?id=<%= student.student_id %>" class="btn btn-warning">
-                        <span data-feather="update">Sửa</span>
-                      </a> -->
-                      <!-- <a href="/admin/student/detail?id=<%= student.student_id %>" class="btn btn-warning" id="btn-test">
-                        <span data-feather="update">test</span>
-                      </a> -->
-                      <button type="button" class="btn btn-primary btn-detail" student_id="<%= student.student_id %>">Chi tiết</button>
+                      <% if (!student.student_isAuth) { %>
+                        <a href="/admin/student/auth?student_id=<%= student.student_id %>&student_email=<%= student.student_email %>" class="btn btn-primary" >Xác thực</a>
+                      <%}%>
+                      <button type="button" class="btn btn-outline-primary btn-detail" student_id="<%= student.student_id %>">Chi tiết</button>
                       <button type="button" class="btn btn-warning btn-update" student_id="<%= student.student_id %>">Sửa</button>
-                      <!-- <a href="/admin/student/delete?id=<%= student.student_id %>" class="btn btn-danger">
-                        <span data-feather="delete">Xóa</span>
-                      </a> -->
                     </td>
                   </tr>
                   <% }); %>
@@ -98,6 +91,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal detail -->
   <div class="modal fade " id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -253,14 +247,9 @@
         yearRange: "1960:2021",
         defaultDate: "03/09/1999"
       });
-
       var student_tempList=[],
         account_tempList=[];
-
-      //Xem thông tin chi tiết sinh viên
-      $(".btn-detail").on('click', function(event){
-        event.preventDefault();
-        let id = $(this).attr('student_id');
+      let getdata = async function(id) {
         $.ajax({
           url:'/admin/student/get-data',
           method:'post',
@@ -271,19 +260,27 @@
             if (typeof student_tempList[id] == 'undefined'){
               student_tempList[id] = res.student_info;
               account_tempList[id] = res.account_info;
+              console.log(student_tempList[id])
+              console.log(account_tempList[id])
             }
-            for (const [key, value] of Object.entries(student_tempList[id])) {
-              if (key == "student_gender"){
-                $('#d-'+key).text((value == 1)? "Nam": "Nữ");
-              }else 
-                $('#d-'+key).text(value);
-            }
-            for (const [key, value] of Object.entries(account_tempList[id])) {
-              $('#d-'+key).text(value);
-            }
-            $("#detailModal").modal('show');
           }
         })
+      }
+      //Xem thông tin chi tiết sinh viên
+      $(".btn-detail").on('click', async function(event){
+        event.preventDefault();
+        let id = $(this).attr('student_id');
+        await getdata(id);
+        for (const [key, value] of Object.entries(student_tempList[id])) {
+          if (key == "student_gender"){
+            $('#d-'+key).text((value == 1)? "Nam": "Nữ");
+          }else 
+            $('#d-'+key).text(value);
+        }
+        for (const [key, value] of Object.entries(account_tempList[id])) {
+          $('#d-'+key).text(value);
+        }
+        $("#detailModal").modal('show');
       })
       //Cập nhật thông tin sinh viên 
       $(".btn-update").on('click',function(event){
@@ -310,7 +307,6 @@
           }
         })
       })
-      
     });
   </script>
 </body>

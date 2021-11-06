@@ -7,9 +7,11 @@ const schoolModel = require('../../models/schoolModel');
 const contract = require('@truffle/contract');
 const bytes32 = require('bytes32');
 const SHA256 = require('sha256');
+
 const Web3 = require('web3');
 const provider = new Web3.providers.HttpProvider('http://localhost:7545');
 const web3 = new Web3( provider );
+
 const account = '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'
 
 var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
@@ -50,12 +52,11 @@ router.get('/create_student_contract', async (req,res) => {
 
   const stInstane = await StudentContract.new({from: '0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701'});
   var iaddr = stInstane.address;
-console.log(iaddr);
+  console.log(iaddr);
   const systemInstance = await SystemContract.deployed();
-  await systemInstance.addStudent(stuAddr,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'} );
+  await systemInstance.addStudent(stuAddr,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
   await systemInstance.changeStudentContract(stuAddr,iaddr,{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'} );
   // await systemInstance.addCerf(stuAddr,'0x70cE91A72dbE08aaD8766aE09E977d559C13B806', 'hash_value',{from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'})
-
 })
 router.get('/add_cert' ,async(req, res) => {
   var stuAddr = '0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701';

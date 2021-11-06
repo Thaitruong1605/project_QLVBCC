@@ -69,11 +69,13 @@ contract Ownable {
   }
 }
 
-contract System is Ownable{
+contract System is Ownable{ 
   address[] public schoolAddresses;
   address[] public studentAddresses;
-  mapping (address => address) public mapSchool;
-  mapping (address => address) public mapStudent;
+  mapping (address => address) public mapSchool; // school address => contract
+  mapping (address => address) public mapStudent; // student address => contract
+
+  mapping (string => address) public emailToAddress; // student email to get student contract address
   
   event addedSchool(address newSchool, address newContract);
   event addedStudent(address newStudent, address newContract);
@@ -106,13 +108,11 @@ contract System is Ownable{
     return false;
   }
 
-  function addSchool ( string memory name, string memory addressPlace, string memory phoneNumber, string memory email, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
-    if (!_isSchool(schoolAddr)){
-      schoolAddresses.push(schoolAddr);
-      School schoolContract = new School(name, addressPlace, phoneNumber, email, fax, website, schoolAddr);
-      mapSchool[schoolAddr] = address(schoolContract);
-      emit addedSchool(schoolAddr, address(schoolContract));
-    }
+  function addSchool( string memory name, string memory addressPlace, string memory phoneNumber, string memory email, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
+    schoolAddresses.push(schoolAddr);
+    School schoolContract = new School(name, addressPlace, phoneNumber, email, fax, website, schoolAddr);
+    mapSchool[schoolAddr] = address(schoolContract);
+    emit addedSchool(schoolAddr, address(schoolContract));
   }
   function changeSchoolContract(address _schoolAddr, address _contractAddr) public onlyOwner(){
     for(uint i = 0 ; i< schoolAddresses.length; i++){
@@ -130,15 +130,27 @@ contract System is Ownable{
     return mapSchool[_schoolAddr];
   }
   // STUDENT CONTRACT -----------------------------------
-  function addStudent(address _studentAddr) public onlyOwner(){
+  function addStudent(address _studentAddr, string memory email) public onlyOwner(){
+    // check if studentAddress is exist
     for(uint i = 0 ; i< studentAddresses.length; i++){
       if (studentAddresses[i] == _studentAddr){
         return;
       }
     }
+    // push student address to array
     studentAddresses.push(_studentAddr);
-    Student stuContract = new Student(_studentAddr);
-    mapStudent[_studentAddr] = address(stuContract);
+    Student stuContract;
+    if (emailToAddress[email] != address(0)) { // if Email not in map
+      stuContract = Student(emailToAddress[email]);
+      // trasfer contract to student
+      stuContract.transferOwnership(_studentAddr);
+    }else{
+      // push email to map
+      emailToAddress[email] = _studentAddr;
+      // deployed new contract for student
+      stuContract = new Student(_studentAddr);
+      mapStudent[_studentAddr] = address(stuContract);
+    } 
     emit addedStudent(_studentAddr, address(stuContract));
   }
   function changeStudentContract(address _studentAddr, address _contractAddr) public onlyOwner(){

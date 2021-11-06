@@ -36,7 +36,7 @@ let insert = (student_info)=>{
         student_info,
         function(error){
           if (error) {console.log(error); reject();}
-          resolve('A row has been created');
+          resolve();
         }
       )
     }catch(err){console.log(err)}
@@ -50,7 +50,7 @@ let update = (student_id, student_info)=>{
         [student_info, student_id],
         function(error){
           if (error) {console.log(error); reject();}
-          resolve('A row has been updated');
+          resolve();
         }
       )
     }catch(err){console.log(err)}
@@ -64,7 +64,21 @@ let remove = (student_id)=>{
         [student_id],
         function(error){
           if (error) {console.log(error); reject();}
-          resolve('A row has been deleted');
+          resolve();
+        }
+      )
+    }catch(err){console.log(err)}
+  })
+}
+let auth = (student_id) => {
+  return new Promise((resolve, reject)=> {
+    try{
+      conn.query(
+        `UPDATE students SET student_isAuth='1' WHERE student_id = ?`,
+        [student_id],
+        function(error){
+          if (error) {console.log(error); reject();}
+          resolve();
         }
       )
     }catch(err){console.log(err)}
@@ -75,5 +89,6 @@ module.exports = {
   select_byId,
   insert,
   update,
-  remove
+  remove,
+  auth
 }
