@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles') %>
+  <link href="/vendors/fontawesome-free-5.15.4-web/css/fontawesome.css" rel="stylesheet">
+  <link href="/vendors/fontawesome-free-5.15.4-web/css/brands.css" rel="stylesheet">
+  <link href="/vendors/fontawesome-free-5.15.4-web/css/solid.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/alert') %>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <h4 class="border-start border-3 ps-3">Chi tiết tài khoản</h5>
+          <table class="table table-borderless" >
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">Địa chỉ</th>
+                <td id="account_address"><%= account.account_address %>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Tên đang nhập:</th>
+                <td  id="account_username"><%= account.account_username %> 
+                </td>
+              </tr>
+              <tr>
+                <th colspan="3" class="h5">Thông tin sinh viên</th>
+              </tr>
+              <tr>
+                <th scope="row" class="w-25">ID:</th>
+                <td  id="student_id"><%= student.student_id %>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Họ tên:</th>
+                <td  id="student_name"><%= student.student_name %>
+                  <i class="fas fa-edit btn btn-outline-warning btn-sm"></i>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Ngày sinh:</th>
+                <td  id="student_birth"><%= moment(student.student_birth).format('DD/MM/YYYY') %>
+                  <i class="fas fa-edit btn btn-outline-warning btn-sm"></i>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại:</th>
+                <td  id="student_phoneNumber"><%= student.student_phoneNumber%>
+                  <i class="fas fa-edit btn btn-outline-warning btn-sm"></i>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Giới tính:</th>
+                <td  id="student_gender"><%= (student.student_gender == 1)? 'Nam':'Nữ'%>
+                  <i class="fas fa-edit btn btn-outline-warning btn-sm"></i>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Email:</th>
+                <td  id="student_email"><%= student.student_email%>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Số căn cước công dân:</th>
+                <td  id="student_idNumber"><%= student.student_idNumber%>
+                  <i class="fas fa-edit btn btn-outline-warning btn-sm"></i>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Địa chỉ:</th>
+                <td  id="student_placeAddress"><%= student.student_placeAddress%>
+                  <i class="fas fa-edit btn btn-outline-warning btn-sm"></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>  
+    </div>
+  </div>
+
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="/student/edit" method="POST" >  
+            <div class="row">
+              <div class="col-md-10">
+                <input type="input" class="form-control" id="update-input" name="" value="" />
+                <input type="text" class="form-control" id="u-student_birth" autocomplete="off">
+                <select class="form-control" id="u-student_gender"> 
+                  <option value = "">Chọn giới tính</option>
+                  <option value = "1">Nam</option>
+                  <option value = "0">Nữ</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Lưu</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/scripts') %>
+  <script>
+    $(document).ready(function(){
+      $("#u-student_birth" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: "03/09/1999"
+      });
+      $('.btn-outline-warning').on('click', function(){
+        $('#u-student_birth').attr({'name':'','hidden':true});
+        $('#u-student_gender').attr({'name':'','hidden':true});
+        $('#update-input').attr({'name':'','hidden':true});
+        var name = $(this).parent().attr('id');
+        if (name == 'student_gender'){
+          $('#u-student_gender').attr({'name':name,'hidden':false});
+        }else if (name == 'student_birth'){
+          $('#u-student_birth').attr({'name':name,'hidden':false});
+        }else {
+          $('#update-input').attr({'name':name,'hidden':false});
+        }
+        $('#updateModal').modal('show')
+      })
+    })  
+  </script>
+</body>
+</html>

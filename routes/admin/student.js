@@ -49,22 +49,6 @@ router.get('/delete', async (req, res) => {
     }
   }
 })
-// router.get('/active-student', async (req, res) => {
-//   if ( typeof req.query.id !== 'undefined'){
-//     console.log('active-student');
-//     const systemInstance = await SystemContract.deployed();
-//     try { 
-//       await studentModel.auth(req.query.id)
-//     }catch(err){
-//       console.log(err);
-//     }
-//     try {
-//       await systemInstance.addStudent();
-//     }catch (err){
-//       console.log(err);
-//     }
-//   }
-// })
 router.get('/auth',async (req, res)=>{
   if (typeof req.query.student_id == 'undefined'){
     req.flash('Hành động không hợp lệ!')
