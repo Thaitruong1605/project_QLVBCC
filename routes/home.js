@@ -4,9 +4,10 @@ const session = require('express-session').Session;
 const isStudent = require('../auth').isStudent;
 const router = express.Router();
 const fs = require("fs"); // file system
-const certificateModel = require('../models/certificateModel')
 const CryptoJS = require('crypto-js');
-
+// MODEL 
+const certificateModel = require('../models/certificateModel')
+const schoolModel = require('../models/schoolModel')
 
 router.get('/signup',async (req, res) => {
   res.render('./signup');
@@ -14,11 +15,9 @@ router.get('/signup',async (req, res) => {
 router.post('/signup', (req, res) => {
   require('../controllers/signupControllers').createUser(req, res);
 });
-
 router.get('/login', (req, res) => { 
   res.render('./login',{title:"Đăng nhập"});
 })
-
 router.post('/login',
   passport.authenticate('local', {
       successRedirect: 'back',
@@ -26,12 +25,10 @@ router.post('/login',
       failureFlash: true
   })
 );
-
 router.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
-
 router.get('/', function (req, res) {
   res.render('./', { page_name: 'Trang chủ' });
 });
@@ -69,9 +66,16 @@ router.post('/cert-search',async (req ,res) => {
     console.log(err);
   }
 })
-router.get('/cert-search', (req ,res) => {
-
-  res.render('./cert-search')
+router.get('/cert-search',async (req ,res) => {
+  var schoolList ;
+  try{
+    await schoolModel.school_select().then(function(data){
+      return schoolList = data;
+    })
+  }catch(err){
+    console.log(err);
+  }
+  res.render('./cert-search',{title:'Tra cứu văn bằng chứng chỉ',schoolList})
 })
 router.get('/cert-detail', async (req, res) =>{
   try {

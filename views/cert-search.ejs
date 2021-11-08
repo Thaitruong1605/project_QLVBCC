@@ -13,24 +13,32 @@
 
   <div class="container">
     <div class="row">
-      <div class="col">
-        <form method="POST" action="/cert-search">
-          <div class="mp-3">
-            <label class="form-label">Nhập số chứng chỉ hoặc hash của chứng chỉ</label>
-            <input type=text class="form-control" name="data"/>
-          </div>
-          <button type="submit" class="btn btn-primary pull-right">Tìm</button>
-        </form>
+      <div class="col-md-4">
+        <div class="mp-3">
+          <select id="school_name" class="form-control">
+            <option value=''>Chọn nơi cấp phát chứng chỉ</option>
+            <% schoolList.forEach(function(school){ %>
+              <option value='<%= school.school_id %>'><%= school.school_name %></option>
+            <%})%>
+          </select>
+          <select id="cert_kind" class="form-control" hidden>
+          </select>
+          <select id="cert_name" class="form-control" hidden>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-8">
       </div>
     </div>
   </div>
 
   <%- include('./layouts/scripts.ejs') %>
-  <script type="module">
-    import QrScanner from 'path/to/qr-scanner.min.js';
-    // do something with QrScanner
-
+  <script>
+    $(document).ready(function(){
+      $('#school_name').on('click',function(){
+        
+      })
+    })
   </script>
-
 </body>
 </html>

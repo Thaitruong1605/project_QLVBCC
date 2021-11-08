@@ -28,16 +28,6 @@ router.get('/school_create_contract',async (req, res)=> {
     'www.ctu.edu.vn', 
     '0x70cE91A72dbE08aaD8766aE09E977d559C13B806',
     {from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
-  // try {
-  //   // await systemInstance.addSchool('Đại học Cần Thơ','Khu II, Đ. 3/2, Xuân Khánh, Ninh Kiều, Cần Thơ', '(84-292) 383266', 'dhct@ctu.edu.vn', '(84-292) 383847', 'www.ctu.edu.vn', '0x70cE91A72dbE08aaD8766aE09E977d559C13B806',{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
-  //   await systemInstance.addStudent('0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701','thaitruong1605@gmail.com',{from: '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
-  // }catch(err){
-  //   console.log(err);
-  // }
-  
-  // var sysI = new web3.eth.Contract(sysABI,process.env.SYSTEM_ADDRESS);
-  // // console.log(sysI._address);
-  
 })
 router.get('/', (req, res) => {
   // Lay du lieu school

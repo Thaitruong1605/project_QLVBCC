@@ -37,7 +37,20 @@ let get_accountById = (id) => {
         )
     });
 }
-
+let get_stuAbyEmail = (email)=> {
+    return new Promise ((resolve, reject) => {
+        conn.query(
+            `SELECT account_address FROM accounts a
+            LEFT JOIN students s ON a.student_id = s.student_id
+            WHERE s.student_email = ?`,
+            email,
+            function(err, results){
+                if (err){ console.log(err); reject();}
+                resolve(results[0]);
+            }
+        )
+    })
+}
 let create = (account_inf) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
@@ -91,6 +104,7 @@ module.exports = {
     select,
     get_accountById,
     get_accountByUsername,
+    get_stuAbyEmail,
     create,
     update,
     remove,

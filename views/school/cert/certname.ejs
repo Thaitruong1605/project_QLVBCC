@@ -20,7 +20,7 @@
         <div class="row">
           <%- include('../../partials/alert.ejs') %>
         </div>
-        <span class='h3'> Danh sách loại chứng chỉ - </span>
+        <span class='h3'> Danh sách tên chứng chỉ - </span>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"> Thêm </button>
         <table class="table">
           <thead>
@@ -33,14 +33,14 @@
           </thead>
           <tbody>
             <% i=1; %>
-            <% data.forEach(function(elt){ %>
+            <% name_list.forEach(function(elt){ %>
               <tr>
                 <th scope="row"><%= i++; %></th>
                 <td><%= elt.cn_id; %></td>
                 <td><%= elt.cn_name; %></td>
                 <td>
                   <button type="button" cn_id="<%= elt.cn_id; %>" cn_name="<%= elt.cn_name; %>" class="btn btn-warning btn-update" data-bs-toggle="modal" data-bs-target="#updateModal">Sửa</button>
-                  <a class="btn btn-danger" href="/issuer/certificate/certname/remove?id=<%= elt.cn_id; %>">Xoá</a>  
+                  <a class="btn btn-danger" href="/school/cert/certname/remove?id=<%= elt.cn_id; %>">Xoá</a>  
                 </td>
               </tr>
             <% }); %>
@@ -59,8 +59,16 @@
           <h5 class="modal-title" id="createModalLabel">Thêm tên chứng chỉ</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="/issuer/certificate/certname/create" method="POST">
+        <form action="/school/cert/certname/create" method="POST">
           <div class="modal-body">
+          <div class="mb-3 row">
+            <select class="form-control" id="ck_id" name="ck_id" >
+              <option value="" >Chọn loại chứng chỉ</option>
+              <% kind_list.forEach(function(row){%>
+                <option value="<%= row.ck_id %>" ><%= row.ck_name %></option>
+              <% }) %>
+            </select>
+          </div>
           <div class="mb-3 row">
             <input type="text" class="form-control" id="cn_name" name="cn_name" placeholder="Nhập tên chứng chỉ"/>
           </div>
@@ -81,7 +89,7 @@
           <h5 class="modal-title" id="updateModalLabel">Sửa tên chứng chỉ</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="/issuer/certificate/certname/update" method="POST" >
+        <form action="/school/cert/certname/update" method="POST" >
           <div class="modal-body">
           <div class="mb-3 row">
             <input type="hidden" class="form-control" id="upd_cn_id" name="cn_id" value=""/>

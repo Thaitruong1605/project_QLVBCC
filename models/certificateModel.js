@@ -209,12 +209,12 @@ let certname_update = (id,name) => {
     );
   })
 };
-let certname_create = (school_id, name) => { 
+let certname_create = (school_id, ck_id,name) => { 
   return new Promise((resolve, reject) =>{
     conn.query(
-      "INSERT INTO certname (cn_name,school_id) VALUES (?,?)",
-      [name,school_id],
-      function(err, results){
+      "INSERT INTO certname (cn_name,school_id,ck_id) VALUES (?,?,?)",
+      [name,school_id,ck_id],
+      function(err){
         if (err){
           console.log(err);
           console.log(err); reject();

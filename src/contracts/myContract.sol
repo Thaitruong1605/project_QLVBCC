@@ -75,8 +75,8 @@ contract System is Ownable{
   mapping (address => address) public mapSchool; // school address => contract
   mapping (address => address) public mapStudent; // student address => contract
 
-  mapping (string => address) public emailToAddress; // student email to get student contract address
-  
+  mapping (string => address) public emailToContract;
+
   event addedSchool(address newSchool, address newContract);
   event addedStudent(address newStudent, address newContract);
   event changedSchoolContract(address _schoolAddr,address _contractAddr);
@@ -90,25 +90,23 @@ contract System is Ownable{
     _;
   }
   function isSchool() public view returns(bool) {
-    for (uint i=0; i<= schoolAddresses.length; i++){
-      if (msg.sender == schoolAddresses[i]) return true;
-    }
+    if (mapSchool[msg.sender] != address(0)) return true;
     return false;
   }
-  function _isSchool(address schoolAddr) internal view returns(bool) {
-    for (uint i=0; i<= schoolAddresses.length; i++){
+  function _isSchool(address schoolAddr) public view returns(bool) {
+    for (uint i=0; i< schoolAddresses.length; i++){
       if (schoolAddr == schoolAddresses[i]) return true;
     }
     return false;
   }
   function _isStudent(address studentAddr) internal view returns(bool) {
-    for (uint i=0; i<= studentAddresses.length; i++){
+    for (uint i=0; i< studentAddresses.length; i++){
       if (studentAddr == studentAddresses[i]) return true;
     }
     return false;
   }
-
   function addSchool( string memory name, string memory addressPlace, string memory phoneNumber, string memory email, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
+    require(!(_isSchool(schoolAddr)));
     schoolAddresses.push(schoolAddr);
     School schoolContract = new School(name, addressPlace, phoneNumber, email, fax, website, schoolAddr);
     mapSchool[schoolAddr] = address(schoolContract);
@@ -130,27 +128,23 @@ contract System is Ownable{
     return mapSchool[_schoolAddr];
   }
   // STUDENT CONTRACT -----------------------------------
-  function addStudent(address _studentAddr, string memory email) public onlyOwner(){
+  function addStudent(address _studentAddr, string memory _email) public onlyOwner(){
     // check if studentAddress is exist
     for(uint i = 0 ; i< studentAddresses.length; i++){
       if (studentAddresses[i] == _studentAddr){
         return;
       }
     }
-    // push student address to array
-    studentAddresses.push(_studentAddr);
     Student stuContract;
-    if (emailToAddress[email] != address(0)) { // if Email not in map
-      stuContract = Student(emailToAddress[email]);
-      // trasfer contract to student
-      stuContract.transferOwnership(_studentAddr);
-    }else{
-      // push email to map
-      emailToAddress[email] = _studentAddr;
-      // deployed new contract for student
+    studentAddresses.push(_studentAddr);
+    if(emailToContract[_email] == address(0)){
       stuContract = new Student(_studentAddr);
-      mapStudent[_studentAddr] = address(stuContract);
-    } 
+      emailToContract[_email] = address(stuContract);
+    }else {
+      stuContract = Student(emailToContract[_email]);
+      stuContract.transferOwnership(_studentAddr);
+    }
+    // push student address to array
     emit addedStudent(_studentAddr, address(stuContract));
   }
   function changeStudentContract(address _studentAddr, address _contractAddr) public onlyOwner(){
@@ -165,6 +159,14 @@ contract System is Ownable{
   function getStudentContractAddr(address stuAddr) public view returns(address) {
     return (mapStudent[stuAddr] != address(0))? mapStudent[stuAddr] : address(0);
   }
+  function createTempContractbyEmail (string memory _email) public onlyOwner(){
+    require(emailToContract[_email] == address(0));
+    Student stuC = new Student(msg.sender);
+    emailToContract[_email] = address(stuC);
+  }
+  function getContractbyEmail (string memory _email) public view returns(address){
+    return emailToContract[_email];
+  }
 } 
 
 contract School is Ownable{
@@ -174,8 +176,6 @@ contract School is Ownable{
   string public email;
   string public fax; 
   string public website;
-  
-  System public system;
 
   constructor(
     string memory _name,
@@ -186,7 +186,6 @@ contract School is Ownable{
     string memory _website,
     address schAddr
   ) public {
-    system = System(msg.sender);
     name = _name;
     addressPlace = _addressPlace;
     phoneNumber = _phoneNumber;
@@ -203,59 +202,22 @@ contract School is Ownable{
     fax; 
     website;
   }
-  function setSystem(address sysAddr) public {
-      system = System(sysAddr);
-  }
-  function addCertificate (address stuAddr, bytes32 ipfs, bytes32 certHash ) public onlyOwner(){
-    address stuContractAddress = system.getStudentContractAddr(stuAddr);
-    if(stuContractAddress != address(0)) {
-      Student stuContract = Student(stuContractAddress);
-      stuContract._addCertificate(ipfs, certHash);
-    }
-  }
-  function deactivateCertificate(address stuAddr, bytes32 certHash) public onlyOwner(){
-    address stuContractAddress = system.getStudentContractAddr(stuAddr);
-    if(stuContractAddress != address(0)) {
-      Student stuContract = Student(stuContractAddress);
-      stuContract._deactivateCertificate(certHash);
-    }
-  }
-  function deleteCertificate(address stuAddr, bytes32 certHash) public onlyOwner(){
-    address stuContractAddress = system.getStudentContractAddr(stuAddr);
-    if(stuContractAddress != address(0)) {
-      Student stuContract = Student(stuContractAddress);
-      stuContract._deleteCertificate(certHash);
-    }
-  }
 }
 
 contract Student is Ownable{
   struct Certificate {
     uint8 state;
     address schoolAddress;
-    bytes32 ipfs;
     bytes32 certHash;
   }
-  struct Degree {
-    uint8 state;
-    address schoolAddress;
-    bytes32 ipfs;
-    bytes32 degreeHash;
-  }
-  
+
   bytes32[] public certificateList; // mang hashed_cert
   mapping (bytes32 => Certificate) mapCertificates; // hashed_cert => Certificate
-  bytes32[] public degreeList; // mang hashed_cert
-  mapping (bytes32 => Degree) mapDegrees; // hashed_cert => Certificate
   System public system;
 
-  event addCertificate(address _address, bytes32 _certHash);
-  event deactivateCertificate(address _address, bytes32 _certHash);
-  event deleteCertificate(address _address, bytes32 _certHash);
-
-  event addDegree(address _address, bytes32 _certHash);
-  event deactivateDegree(address _address, bytes32 _certHash);
-  event deleteDegree(address _address, bytes32 _certHash);
+  event addedCertificate(address _address, bytes32 _certHash);
+  event deactivatedCertificate(address _address, bytes32 _certHash);
+  event deletedCertificate(address _address, bytes32 _certHash);
 
   constructor(address stuAddr) public {
     system = System(msg.sender);
@@ -263,44 +225,28 @@ contract Student is Ownable{
   }
   
   modifier onlySchool() {
-    require(system.isSchool());
+    require(system._isSchool(msg.sender));
     _;
   }
 
-  function _addCertificate(bytes32 _ipfs,bytes32 _hashedCert) external onlySchool(){
+  function addCertificate(bytes32 _hashedCert) public onlySchool(){
     certificateList.push(_hashedCert);
-    mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _ipfs, _hashedCert);
-    emit addCertificate(msg.sender, _hashedCert);
+    mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _hashedCert);
+    emit addedCertificate(msg.sender, _hashedCert);
   }
-  function _deactivateCertificate(bytes32 _certHash) external onlySchool(){
+  function deactivateCertificate(bytes32 _certHash) public onlySchool(){
+    require(msg.sender == mapCertificates[_certHash].schoolAddress);
     mapCertificates[_certHash].state = uint8(0);
-    emit deactivateCertificate(msg.sender, _certHash);
+    emit deactivatedCertificate(msg.sender, _certHash);
   }
-  function _deleteCertificate(bytes32 _certHash) external onlySchool(){
+  function deleteCertificate(bytes32 _certHash) public onlySchool(){
+    require(msg.sender == mapCertificates[_certHash].schoolAddress);
     mapCertificates[_certHash].state = uint8(2);
-    emit deleteCertificate(msg.sender, _certHash);
+    emit deletedCertificate(msg.sender, _certHash);
   }
-  function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32, bytes32){
+  function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32){
     Certificate storage cert = mapCertificates[_certHash];
-    return (cert.state, cert.schoolAddress, cert.certHash, cert.ipfs);
-  }
-
-  function _addDegree(bytes32 _ipfs,bytes32 _degreeHash) external onlySchool(){
-    degreeList.push(_degreeHash);
-    mapDegrees[_degreeHash] = Degree(uint8(1), msg.sender, _ipfs, _degreeHash);
-    emit addDegree(msg.sender, _degreeHash);
-  }
-  function _deactivateDegree(bytes32 _degreeHash) external onlySchool(){
-    mapDegrees[_degreeHash].state = uint8(0);
-    emit deactivateDegree(msg.sender, _degreeHash);
-  }
-  function _deleteDegree(bytes32 _degreeHash) external onlySchool(){
-    mapDegrees[_degreeHash].state = uint8(2);
-    emit deleteDegree(msg.sender, _degreeHash);
-  }
-  function viewDegree(bytes32 _degreeHash) public view returns(uint8, address, bytes32, bytes32){
-    Degree storage degree = mapDegrees[_degreeHash];
-    return (degree.state, degree.schoolAddress, degree.degreeHash, degree.ipfs);
+    return (cert.state, cert.schoolAddress, cert.certHash);
   }
   
 }

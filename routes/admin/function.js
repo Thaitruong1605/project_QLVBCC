@@ -105,20 +105,6 @@ router.get('/get_school_contract_address', async (req, res) => {
 // transaction
 
 router.get('/transaction', async (req, res) => {
-  // var myAddr  = '0x3E5C773519D38EB7996A5cADFDb8C8256889cB79';
-  // var currentBlock= i = 329
-  // var n = await web3.eth.getTransactionCount(myAddr, currentBlock);
-  // var bal = await web3.eth.getBalance(myAddr, currentBlock);
-  // for (var i=currentBlock; i >= 0 && (n > 0 || bal > 0); --i) {
-    // try {
-    //   var block = await web3.eth.getBlock(i, true);
-    //   console.log(block.transactions);
-    //   block.transactions.hash
-
-    
-    // } catch (e) { console.error("Error in block " + i, e); }
-  // }
-
   var myContract = new web3.eth.Contract([
     {
       "inputs": [],

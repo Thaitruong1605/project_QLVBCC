@@ -90,7 +90,6 @@ router.post("/cert/create-by-excel", async (req, res) => {
   var error = [];
   var cert_list = JSON.parse(req.body.cert_list);
   cert_list.forEach(function(elt){
-    var hashed_data = CryptoJS.SHA256(JSON.stringify(elt), {asBytes: true});
     var fname = "cert_" + elt.number + ".json";
     QRCode.toFile('public//qrCode/cert_'+ elt.number +'.png', 'http://localhost:3000/cert-detail?data='+hashed_data, function (err) {
       if (err) throw err
@@ -101,12 +100,12 @@ router.post("/cert/create-by-excel", async (req, res) => {
       number: elt.number,
       cn_id: req.body.cn_id,
       ck_id: req.body.ck_id,
+      student_email: elt.student_email,
       issuer_id: req.user.issuer_id,
       status: "checking",
-      hash: hashed_data
     };
     // Tạo file
-    fs.appendFile(
+    fs.writeFile(
       "./public/cert/" + fname,
       JSON.stringify(elt),
       async function (err) {
