@@ -5,6 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trang chủ</title>
+  <style>
+    .fa-external-link-alt:hover {
+     color: #0d6efd;
+     cursor: pointer;
+    }
+  </style>
   <%- include('./layouts/styles.ejs')%>
 </head>
 <body>
@@ -13,32 +19,166 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
         <div class="mp-3">
-          <select id="school_name" class="form-control">
-            <option value=''>Chọn nơi cấp phát chứng chỉ</option>
-            <% schoolList.forEach(function(school){ %>
-              <option value='<%= school.school_id %>'><%= school.school_name %></option>
-            <%})%>
-          </select>
-          <select id="cert_kind" class="form-control" hidden>
-          </select>
-          <select id="cert_name" class="form-control" hidden>
-          </select>
+          <form method="POST" action="/cert-search" id="frmSearch">
+            <select id="school_id" class="form-control">
+              <option value=''>Chọn nơi cấp phát chứng chỉ</option>
+              <% schoolList.forEach(function(school){ %>
+                <option value='<%= school.school_id %>'><%= school.school_name %></option>
+              <%})%>
+            </select>
+            <select id="ck_id" class="form-control">
+              <option value=''>Chọn loại chứng chỉ</option>
+            </select>
+            <select id="cn_id" name="cn_id" class="form-control">
+              <option value=''>Chọn tên chứng chỉ</option>
+            </select>
+            <input type="text" class="form-control" name="student_name" placeholder="Họ tên người nhận"/>
+            <input type="text" class="form-control" name="number" placeholder="Số chứng chỉ"/>
+            <input type="text" class="form-control" name="regno" placeholder="số vào sổ"/>
+            <button type="submit" id="btn-submit" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm</button>
+            <span id="count"></span>
+          </form>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="row">
+
+        <div class="col">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tên văn bằng</th>
+                <th scope="col">Họ và tên</th>
+                <th scope="col">Ngày sinh</th>
+                <th scope="col">Số hiệu</th>
+                <th scope="col">Số vào sổ</th>
+                <th scope="col">Chi tiết</th>
+              </tr>
+            </thead>
+            <tbody id="certList">
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-
+  <%- include('./cert_template.ejs') %>
+  
   <%- include('./layouts/scripts.ejs') %>
   <script>
     $(document).ready(function(){
-      $('#school_name').on('click',function(){
-        
+      // $('#certModal').modal('show');
+      var kindList =[], nameList=[] ;
+      $( "#school_id" ).change(function() {
+        $( "#school_id option:selected" ).each(async function(event) {
+          event.preventDefault;;
+          var school_id = $(this).attr('value');
+          if (school_id != '') {
+            await $.ajax({
+              url:'/get-certkind',
+              method:'post',
+              data:{
+                school_id
+              },
+              success: function(res) {
+                kindList[school_id] = res.kindList; 
+              }
+            })
+            html = `<option value=''>Chọn loại chứng chỉ</option>`;
+            kindList[school_id].forEach(function(row){
+              html += `<option value='${row.ck_id}'>${row.ck_name}</option>`
+            })
+            $('#ck_id').html(html);
+            $('#cn_id').html(`<option value=''>Chọn tên chứng chỉ</option>`);
+          }else {
+            
+          }
+          
+        });
+      }).trigger( "change" );
+      $( "#ck_id" ).change(function() {
+        $( "#ck_id option:selected" ).each(async function(event) {
+          event.preventDefault;;
+          var ck_id = $(this).attr('value');
+          if (ck_id != '') {
+            await $.ajax({
+              url:'/get-certName',
+              method:'post',
+              data:{
+                ck_id
+              },
+              success: function(res) {
+                nameList[ck_id] = res.nameList; 
+              }
+            })
+            html = `<option value=''>Chọn tên chứng chỉ</option>`;
+            nameList[ck_id].forEach(function(row){
+              html += `<option value='${row.cn_id}'>${row.cn_name}</option>`
+            })
+            $('#cn_id').html(html);
+            $('#ck_id').html();
+          }else {
+            $('#cn_id').html();
+          }
+          
+        });
+      }).trigger( "change" );
+      $("#frmSearch").submit(async function (event){
+        $(".spinner-border").attr('hidden',false).parent().attr('disabled',true)
+        event.preventDefault();
+        await $.ajax({
+          method: $(this).attr('method'),
+          url: $(this).attr('action'),
+          data: $(this).serialize(),
+          success: function(res){
+            var certList= res.certList,
+            html = ``,i =1;
+            $("#count").text('Có '+certList.length+' kết quả phù hợp:')
+            certList.forEach(function(elt){
+              html+= `<tr>
+                <th scope="row">${i++}</th>
+                <td>${elt['cn_name']}</td>
+                <td>${elt['student_birth']}</td>
+                <td>${elt['student_name']}</td>
+                <td>${elt['number']}</td>
+                <td>${elt['regno']}</td>
+                <td><i class="fnDetail fas fa-external-link-alt" ipfs="${elt['ipfs_hash']}" ></i><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></td>
+              </tr>`
+            })
+            $('#certList').html(html).fadeIn(2000);
+            $(".spinner-border").attr('hidden',true).parent().attr('disabled',false)
+            }
+        })
       })
     })
+    $(document).on('click', '.fnDetail',async function(){
+      $(this).parent('td').children(".spinner-border").attr('hidden',false);
+      console.log('fnDetail');
+      event.preventDefault();
+      var ipfs = $(this).attr('ipfs')
+      await $.ajax({
+        method:"POST",
+        url: "/get-detai-by-ipfs",
+        data: {
+          ipfs
+        },
+        success: function(res){
+          if (typeof res.cert_info == 'undefined'){
+            alert('Vui lòng thử lại!');
+          }else{
+            cert_info = res.cert_info
+            for (const [key, value] of Object.entries(cert_info)) {
+              $(`#c-${key}`).text(`${value}`)
+            }
+            $('#certModal').modal('show');
+          } 
+        }
+      })
+      $(this).parent('td').children(".spinner-border").attr('hidden',true);
+    });
   </script>
 </body>
 </html>

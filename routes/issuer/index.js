@@ -30,9 +30,6 @@ const client = ipfsClient.create({
 client.pin.add("QmeGAVddnBSnKc1DLE7DLV9uuTqo5F7QbaveTjr45JUdQn").then((res) => {
   // console.log(res)
 });
-let uptoblockchain = (hash, student_address) => {
-  
-}
 router.get('/',async (req, res)=> {
   res.render('./issuer/',{page:'', title:'trang chủ'});
 });
@@ -45,7 +42,7 @@ router.get('/cert', async (req, res)=> {
     })
   }catch(err){
     console.log(err);
-    res.redirect('back')
+    return res.redirect('back')
   }
   try{
     await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
@@ -53,7 +50,7 @@ router.get('/cert', async (req, res)=> {
     })
   }catch(err){
     console.log(err);
-    res.redirect('back')
+    return res.redirect('back')
   }
   try{
     await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
@@ -61,7 +58,7 @@ router.get('/cert', async (req, res)=> {
     })
   }catch(err){
     console.log(err);
-    res.redirect('back')
+    return res.redirect('back')
   }
   res.render('./issuer/cert/',{page:'Cert', title:'Danh sách chứng chỉ', namelist, kindlist, cert_list})
 })
@@ -90,24 +87,40 @@ router.post("/cert/create-by-excel", async (req, res) => {
   var error = [];
   var cert_list = JSON.parse(req.body.cert_list);
   cert_list.forEach(function(elt){
+    var cert_info = {
+      number: elt.number.trim(),
+      student_name: elt.student_name.toUpperCase().trim(),
+      cert_name: req.body.cert_name.toUpperCase().trim(),
+      cert_kind: req.body.cert_kind.toUpperCase().trim(),
+      student_gender: elt.student_gender.toUpperCase().trim(),
+      student_dayofbirth: elt.student_dayofbirth.trim(),
+      student_placeofbirth: elt.student_placeofbirth.toUpperCase().trim(),
+      course_name: elt.course_name.toUpperCase().trim(),
+      duration:  elt.duration.toUpperCase().trim(),
+      testday: elt.testday.trim(),
+      classification: elt.classification.toUpperCase().trim(),
+      signday: elt.signday.trim(),
+      regno: elt.regno.trim(),
+    }
     var fname = "cert_" + elt.number + ".json";
-    QRCode.toFile('public//qrCode/cert_'+ elt.number +'.png', 'http://localhost:3000/cert-detail?data='+hashed_data, function (err) {
-      if (err) throw err
-    })
-    elt.cert_name = req.body.cert_name
-    elt.cert_kind = req.body.cert_kind
+    // QRCode.toFile('public//qrCode/cert_'+ elt.number +'.png', 'http://localhost:3000/cert-detail?data='+hashed_data, function (err) {
+    //   if (err) throw err
+    // })
+
     var cert = {
-      number: elt.number,
-      cn_id: req.body.cn_id,
-      ck_id: req.body.ck_id,
-      student_email: elt.student_email,
-      issuer_id: req.user.issuer_id,
+      regno: elt.regno.trim(),
+      number: elt.number.trim(),
+      cn_id: req.body.cn_id.trim(),
+      ck_id: req.body.ck_id.trim(),
+      student_email: elt.student_email.trim(),
+      student_name: elt.student_name.toUpperCase().trim(),
+      issuer_id: req.user.issuer_id.trim(),
       status: "checking",
     };
     // Tạo file
     fs.writeFile(
       "./public/cert/" + fname,
-      JSON.stringify(elt),
+      JSON.stringify(cert_info),
       async function (err) {
         if (err) {
           console.log(err);
@@ -166,14 +179,11 @@ router.post("/cert/create", async (req, res) => {
     signday: req.body.signday.trim(),
     regno: req.body.regno.toUpperCase().trim(),
   }
-  var hashed_data = CryptoJS.SHA256(Object.toString(data), {asBytes: true});
-  console.log(hashed_data);
-  console.log(hashed_data.toString(CryptoJS.enc.Hex));
   var fname = "cert_" + data.number +".json";
-  QRCode.toFile('public/'+ fname +'.png', 'http://localhost:3000/cert-detail?hash=?'+hashed_data, function (err) {
-    if (err) throw err
-    console.log('done')
-  })
+  // QRCode.toFile('public/'+ fname +'.png', 'http://localhost:3000/cert-detail?hash=?'+hashed_data, function (err) {
+  //   if (err) throw err
+  //   console.log('done')
+  // })
   // Tạo file
   var cert = {
     number: req.body.number,
@@ -225,6 +235,21 @@ router.get('/cert/detail', async(req, res)=>{
       );
     } 
     res.render('./issuer/cert/detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info});
+  }
+})
+router.get('/cert/delete', async(req, res)=>{
+  if (typeof req.query.number == ''){
+    req.flash('error','Không tìm thấy chứng chỉ');
+    res.redirect('back');
+  }else {
+    try {
+      await certificateModel.delete_byNumber(req.query.number);
+      fs.unlink('./public/cert/'+req.query.number+'.json');
+      req.flash('msg','Xoá chứng chỉ thành công');
+    }catch (err){
+      console.log(err);
+    }
+    res.redirect('/issuer/cert');
   }
 })
 

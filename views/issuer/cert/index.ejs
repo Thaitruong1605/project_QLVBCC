@@ -47,9 +47,9 @@
                   </td> 
                   <td>
                     <% if(row.ipfs_hash == null){ %>
-                      <a class="btn btn-danger" href="/issuer/cert/delete?number=<%=row.number%>">Xoá</a>
+                      <a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn xoá? Hành động không thể hoàn tác!!')" href="/issuer/cert/delete?number=<%=row.number%>">Xoá</a>
+                      <a class="btn btn-warning" href="/issuer/cert/update?number=<%=row.number%>">Sửa</a>
                     <% } %>
-                    <a class="btn btn-warning" href="/issuer/cert/update?number=<%=row.number%>">Sửa</a>
                     <a class="btn btn-primary" href="/issuer/cert/detail?number=<%=row.number%>">Chi tiết</a>
                   </td>
                 </tr>
@@ -62,8 +62,6 @@
   </div>
 
   <%- include('../../layouts/scripts') %>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
   <script type="text/javascript">
   </script>
 </body>
