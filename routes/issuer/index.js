@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const certificateModel = require('../../models/certificateModel.js')
-
+const moment = require('moment');
 const fs = require("fs"); // file system
 const request = require("request"); 
 const hash = require('object-hash'); 
@@ -86,35 +86,39 @@ router.get('/cert/create-by-excel',async (req, res) => {
 router.post("/cert/create-by-excel", async (req, res) => {
   var error = [];
   var cert_list = JSON.parse(req.body.cert_list);
-  cert_list.forEach(function(elt){
+  cert_list.forEach(async function(elt){
     var cert_info = {
       number: elt.number.trim(),
-      student_name: elt.student_name.toUpperCase().trim(),
-      cert_name: req.body.cert_name.toUpperCase().trim(),
-      cert_kind: req.body.cert_kind.toUpperCase().trim(),
-      student_gender: elt.student_gender.toUpperCase().trim(),
+      student_name: elt.student_name.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+      cert_name: req.body.cert_name.trim(),
+      cert_kind: req.body.cert_kind.trim(),
+      student_gender: elt.student_gender.trim(),
       student_dayofbirth: elt.student_dayofbirth.trim(),
-      student_placeofbirth: elt.student_placeofbirth.toUpperCase().trim(),
-      course_name: elt.course_name.toUpperCase().trim(),
-      duration:  elt.duration.toUpperCase().trim(),
+      student_placeofbirth: elt.student_placeofbirth.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+      course_name: elt.course_name.trim(),
+      duration:  elt.duration.trim(),
       testday: elt.testday.trim(),
-      classification: elt.classification.toUpperCase().trim(),
+      classification: elt.classification.trim(),
       signday: elt.signday.trim(),
       regno: elt.regno.trim(),
     }
+    
+    var hashed_data = await '0x'+CryptoJS.SHA256(JSON.stringify(cert_info));
     var fname = "cert_" + elt.number + ".json";
+    console.log(elt.number+':'+ hashed_data);
     // QRCode.toFile('public//qrCode/cert_'+ elt.number +'.png', 'http://localhost:3000/cert-detail?data='+hashed_data, function (err) {
     //   if (err) throw err
     // })
-
     var cert = {
-      regno: elt.regno.trim(),
       number: elt.number.trim(),
+      regno: elt.regno.trim(),
       cn_id: req.body.cn_id.trim(),
       ck_id: req.body.ck_id.trim(),
+      issuer_id: req.user.issuer_id,
+      hash: hashed_data,
       student_email: elt.student_email.trim(),
-      student_name: elt.student_name.toUpperCase().trim(),
-      issuer_id: req.user.issuer_id.trim(),
+      student_name: elt.student_name.trim(),
+      student_birth: moment(elt.student_dayofbirth.trim(),'DD/MM/YYYY').format(),
       status: "checking",
     };
     // Tạo file
@@ -180,10 +184,6 @@ router.post("/cert/create", async (req, res) => {
     regno: req.body.regno.toUpperCase().trim(),
   }
   var fname = "cert_" + data.number +".json";
-  // QRCode.toFile('public/'+ fname +'.png', 'http://localhost:3000/cert-detail?hash=?'+hashed_data, function (err) {
-  //   if (err) throw err
-  //   console.log('done')
-  // })
   // Tạo file
   var cert = {
     number: req.body.number,

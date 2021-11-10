@@ -145,6 +145,7 @@ contract System is Ownable{
       stuContract.transferOwnership(_studentAddr);
     }
     // push student address to array
+    mapStudent[_studentAddr] = address(stuContract);
     emit addedStudent(_studentAddr, address(stuContract));
   }
   function changeStudentContract(address _studentAddr, address _contractAddr) public onlyOwner(){

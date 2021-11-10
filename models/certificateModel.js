@@ -55,6 +55,24 @@ let select_byNumber = (number) => {
     );
   });
 };
+let select_byEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT school_name, cn_name, number, regno, ipfs_hash FROM certificates c
+      LEFT JOIN certname cn ON c.cn_id = cn.cn_id
+      LEFT JOIN schools sch ON cn.school_id = sch.school_id
+      WHERE student_email=?`,
+      email,
+      function (err, results) {
+        if (err) {
+          reject();
+        } else {
+          resolve(results);
+        }
+      }
+    );
+  });
+};
 let create = (data) => {
   return new Promise((resolve, reject) => {
     conn.query("INSERT INTO certificates SET ?", data, function (err) {
@@ -337,9 +355,7 @@ let certkind_remove = (id) => {
 };
 
 module.exports = {
-  select_byschool,
-  select_byissuer,
-  select_byNumber,
+  select_byschool,select_byEmail,select_byissuer,select_byNumber,
   get_certformipfs,
   cert_search,
   create,

@@ -11,7 +11,6 @@ var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json
 SystemContract.setProvider(provider);
 
 router.use("/cert", require('./cert'));
-router.use("/degree", require('./degree'));
 router.use("/issuer", require('./issuer'));
 
 router.get("/", (req, res) => {

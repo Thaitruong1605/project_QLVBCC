@@ -178,7 +178,7 @@ router.get("/delete", async (req, res) => {
   }
 });
 router.get("/issue", async (req, res) => {
-  if(typeof req.query.number != 'undefined '){
+  if(typeof req.query.number == 'undefined ') return;
   // create system Instance
     const systemInstance = await SystemContract.deployed();
   // get student contract 
@@ -196,23 +196,22 @@ router.get("/issue", async (req, res) => {
     var StudentContract = contract(JSON.parse(fs.readFileSync('./src/abis/Student.json')));
     StudentContract.setProvider(provider);
     var stuI = await StudentContract.at(stuCA);
-    // console.log(stuI)
       // up to ifps
     var path= './public/cert/cert_' + req.query.number +'.json';
+    var hashed_data = CryptoJS.SHA256(JSON.stringify(JSON.parse(fs.readFileSync(path))));
+    console.log('0x'+hashed_data);
     const file = await client.add(
       ipfsClient.globSource(path)
     );
     var ipfs_hash = file.cid.toString();
-    var hashed_data = CryptoJS.SHA256(JSON.stringify(fs.readFileSync(path)));
-    console.log('0x'+hashed_data.toString(CryptoJS.enc.Hex));
     try {
-      await stuI.addCertificate('0x'+hashed_data.toString(CryptoJS.enc.Hex),{from: req.user.account_address});
+      await stuI.addCertificate('0x'+hashed_data,{from: req.user.account_address});
       // update info in database
       try {
         await certificateModel.update_ipfs_hash(req.query.number, ipfs_hash);
         // Xoa file tren server
         fs.unlink(path,(err=>{if(err) console.log(err);}));
-        req.flash('msg','Đã tải chứng chỉ lên ipfs!');
+        req.flash('msg','Cáp phát chứng chỉ thành công!');
         res.redirect('/school/cert');
       } catch (err) {
         console.log(err);
@@ -220,7 +219,6 @@ router.get("/issue", async (req, res) => {
     }catch (err){
       console.log(err);
     }
-  }
 });
 router.get('/set-to-incorrect', async(req, res )=> {
   if (typeof req.query.number == 'undefined'){

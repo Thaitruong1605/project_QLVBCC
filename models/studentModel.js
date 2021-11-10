@@ -28,6 +28,20 @@ let select_byId = (student_id) => {
     }catch(err){console.log(err)}
   })
 }
+let select_emailbyId = (student_id) => {
+  return new Promise((resolve, reject)=> {
+    conn.query(
+      `SELECT student_email
+      FROM students
+      WHERE student_id =?`,
+      [student_id],
+      function(error, results){
+        if (error) {console.log(error); reject();}
+        resolve(results[0]);
+      }
+    )
+  })
+}
 let insert = (student_info)=>{
   return new Promise((resolve, reject)=> {
     try{
@@ -87,6 +101,7 @@ let auth = (student_id) => {
 module.exports = {
   select,
   select_byId,
+  select_emailbyId,
   insert,
   update,
   remove,

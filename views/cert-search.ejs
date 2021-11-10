@@ -23,22 +23,50 @@
       <div class="col-md-8">
         <div class="mp-3">
           <form method="POST" action="/cert-search" id="frmSearch">
-            <select id="school_id" class="form-control">
-              <option value=''>Chọn nơi cấp phát chứng chỉ</option>
-              <% schoolList.forEach(function(school){ %>
-                <option value='<%= school.school_id %>'><%= school.school_name %></option>
-              <%})%>
-            </select>
-            <select id="ck_id" class="form-control">
-              <option value=''>Chọn loại chứng chỉ</option>
-            </select>
-            <select id="cn_id" name="cn_id" class="form-control">
-              <option value=''>Chọn tên chứng chỉ</option>
-            </select>
-            <input type="text" class="form-control" name="student_name" placeholder="Họ tên người nhận"/>
-            <input type="text" class="form-control" name="number" placeholder="Số chứng chỉ"/>
-            <input type="text" class="form-control" name="regno" placeholder="số vào sổ"/>
-            <button type="submit" id="btn-submit" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm</button>
+            <div class="row g-3">
+              <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Nơi cấp phát chứng chỉ:</label></div>
+              <div class="col text-start">
+                <select id="school_id" class="form-control">
+                  <option value=''>Chọn nơi cấp phát chứng chỉ</option>
+                  <% schoolList.forEach(function(school){ %>
+                    <option value='<%= school.school_id %>'><%= school.school_name %></option>
+                  <%})%>
+                </select>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Loại chứng chỉ:</label></div>
+              <div class="col text-start">
+                <select id="ck_id" class="form-control">
+                  <option value=''>Chọn loại chứng chỉ</option>
+                </select>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Tên chứng chỉ:</label></div>
+              <div class="col text-start">
+                <select id="cn_id" name="cn_id" class="form-control">
+                  <option value=''>Chọn tên chứng chỉ</option>
+                </select>
+              </div>
+            </div>
+            <div class="row g-1">
+              <div class="col text-start">
+                <input type="text" class="form-control" name="student_name" placeholder="Họ tên người nhận"/>
+              </div>
+              <div class="col-3 text-start">
+                <input type="text" class="form-control" name="number" placeholder="Số chứng chỉ"/>
+              </div>
+              <div class="col-3 text-start">
+                <input type="text" class="form-control" name="regno" placeholder="số vào sổ"/>
+              </div>
+              <div class="col-auto text-start">
+                <button type="submit" id="btn-submit" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
+              </div>
+            </div>
+            <div class="form-text text-center">
+              * Điều kiện tìm kiếm: Họ tên, số hiệu, số vào sổ không phân biệt ký tự HOA, thường.
+            </div>
             <span id="count"></span>
           </form>
         </div>
@@ -46,7 +74,7 @@
       <div class="row">
 
         <div class="col">
-          <table class="table">
+          <table class="table table-striped">
             <thead>
               <tr>
                 <th scope="col">#</th>
