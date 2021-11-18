@@ -8,12 +8,24 @@
       <td><%= cert_info.number %></td>
     </tr>
     <tr>
+      <th>Loại</th>
+      <td><%= cert_info.cert_kind %></td>
+    </tr>
+    <tr>
       <th>Tên chứng chỉ</th>
       <td><%= cert_info.cert_name %></td>
     </tr>
     <tr>
-      <th>Loại</th>
-      <td><%= cert_info.cert_kind %></td>
+      <th>Xếp loại</th>
+      <td><%= cert_info.classification %></td>
+    </tr>
+    <tr>
+      <th>Ngày ký</th>
+      <td><%= cert_info.signday %></td>
+    </tr>
+    <tr>
+      <th>Số vào sổ </th>
+      <td><%= cert_info.regno %></td>
     </tr>
     <tr >
       <th colspan="2"><h6 class="ps-3 border-start">THÔNG TIN NGƯỜI NHẬN CHƯNG CHỈ</h6></th>
@@ -34,32 +46,10 @@
       <th>Nơi sinh</th>
       <td><%= cert_info.student_placeofbirth %></td>
     </tr>
-    <tr >
-      <th colspan="2"><h6 class="ps-3 pb-2 border-start">KẾT QUẢ KHOÁ HỌC</h6></th>
-    </tr>
     <tr>
-      <th>Tên khoá học</th>
-      <td><%= cert_info.course_name %></td>
+      <th>Số căn cước</th>
+      <td><%= cert_info.student_idNumber %></td>
     </tr>
-    <tr>
-      <th>Thời gian đào tạo</th>
-      <td><%= cert_info.duration %></td>
-    </tr>
-    <tr>
-      <th>Ngày kiểm tra</th>
-      <td><%= cert_info.testday %></td>
-    </tr>
-    <tr>
-      <th>Xếp loại</th>
-      <td><%= cert_info.classification %></td>
-    </tr>
-    <tr>
-      <th>Ngày ký</th>
-      <td><%= cert_info.signday %></td>
-    </tr>
-    <tr>
-      <th>Số vào sổ </th>
-      <td><%= cert_info.regno %></td>
-    </tr>
+    
   </tbody>
 </table>

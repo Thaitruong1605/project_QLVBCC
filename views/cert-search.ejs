@@ -22,7 +22,7 @@
       <div class="col-md-2"></div>
       <div class="col-md-8">
         <div class="mp-3">
-          <form method="POST" action="/cert-search" id="frmSearch">
+          <form method="POST" action="/tra-cuu" id="frmSearch">
             <div class="row g-3">
               <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Nơi cấp phát chứng chỉ:</label></div>
               <div class="col text-start">
@@ -52,7 +52,7 @@
             </div>
             <div class="row g-1">
               <div class="col text-start">
-                <input type="text" class="form-control" name="student_name" placeholder="Họ tên người nhận"/>
+                <input type="text" class="form-control" name="user_name" placeholder="Họ tên người nhận"/>
               </div>
               <div class="col-3 text-start">
                 <input type="text" class="form-control" name="number" placeholder="Số chứng chỉ"/>
@@ -169,8 +169,8 @@
               html+= `<tr>
                 <th scope="row">${i++}</th>
                 <td>${elt['cn_name']}</td>
-                <td>${elt['student_birth']}</td>
-                <td>${elt['student_name']}</td>
+                <td>${elt['user_birth']}</td>
+                <td>${elt['user_name']}</td>
                 <td>${elt['number']}</td>
                 <td>${elt['regno']}</td>
                 <td><i class="fnDetail fas fa-external-link-alt" ipfs="${elt['ipfs_hash']}" ></i><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></td>

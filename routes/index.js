@@ -13,7 +13,7 @@ router.use(function(req,res,next){
 router.use("/", require('./home'));
 // router.use("/issuer", require('./issuer/function'));
 router.use("/admin", require("./admin/function"));
-router.use("/student", require("./student/function"));
+router.use("/student", require("./user/function"));
 router.use("/school", require("./school/function"));
 router.use("/issuer", require("./issuer/"));
 

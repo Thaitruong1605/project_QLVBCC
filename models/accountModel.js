@@ -28,7 +28,7 @@ let get_accountByUsername = (account_username) => {
 let get_accountById = (id) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT * FROM accounts WHERE student_id = ? OR school_id = ? OR issuer_id = ?',
+            'SELECT * FROM accounts WHERE user_id = ? OR school_id = ? OR issuer_id = ?',
             [id,id,id],
             function (err, results) {
                 if (err) { console.log(err); reject(); }
@@ -41,8 +41,8 @@ let get_stuAbyEmail = (email)=> {
     return new Promise ((resolve, reject) => {
         conn.query(
             `SELECT account_address FROM accounts a
-            LEFT JOIN students s ON a.student_id = s.student_id
-            WHERE s.student_email = ?`,
+            LEFT JOIN users s ON a.user_id = s.user_id
+            WHERE s.user_email = ?`,
             email,
             function(err, results){
                 if (err){ console.log(err); reject();}

@@ -18,7 +18,7 @@ var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json
 SystemContract.setProvider(provider);
 
 router.use('/school', require('./school'));
-router.use('/student', require('./student'));
+router.use('/user', require('./user'));
 router.use('/account', require('./account'));
 
 let get_school = async () => {
@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
 
   res.render('./admin',{title: 'Dashboard', page:''});
 })
-router.get('/create_student_contract', async (req,res) => {
+router.get('/create_user_contract', async (req,res) => {
   var stuAddr = '0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701'
   const StudentAtrifact = JSON.parse(fs.readFileSync('./src/abis/Student.json'));
   const StudentContract = contract(StudentAtrifact);
@@ -182,7 +182,7 @@ router.get('/transaction', async (req, res) => {
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_studentAddr",
+          "name": "_userAddr",
           "type": "address"
         },
         {
@@ -306,7 +306,7 @@ router.get('/transaction', async (req, res) => {
           "type": "uint256"
         }
       ],
-      "name": "studentAddresses",
+      "name": "userAddresses",
       "outputs": [
         {
           "internalType": "address",
@@ -373,7 +373,7 @@ router.get('/transaction', async (req, res) => {
       "inputs": [
         {
           "internalType": "address",
-          "name": "_studentAddr",
+          "name": "_userAddr",
           "type": "address"
         }
       ],
@@ -388,7 +388,7 @@ router.get('/transaction', async (req, res) => {
       "inputs": [
         {
           "internalType": "address",
-          "name": "_studentAddr",
+          "name": "_userAddr",
           "type": "address"
         },
         {
@@ -408,7 +408,7 @@ router.get('/transaction', async (req, res) => {
       "inputs": [
         {
           "internalType": "address",
-          "name": "_studentAddress",
+          "name": "_userAddress",
           "type": "address"
         },
         {

@@ -15,29 +15,26 @@
       <div class="col-2">
         <%- include('../partials/sidebar') %>
       </div>
-      <div class="col"> 
-          <div class="mb-3">
-            <label for="cert_name" class="form-label">Tên chứng chỉ:</label>
-            <select class="form-control" name="cert_name" id="cert_name">
-              <% namelist.forEach(function(name){%>
-                <option value="<%= name.cn_id%>"><%= name.cn_name%></option>
-              <%}) %>
-            </select>
+      <div class="col">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <select class="form-control" name="cert_kind" id="cert_kind">
+                <% kindlist.forEach(function(kind){%>
+                  <option value="<%= kind.ck_id%>"><%= kind.ck_name%></option>
+                <%}) %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select class="form-control" name="cert_name" id="cert_name">
+                <option value=""></option>
+              </select>
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="cert_kind" class="form-label">Loại chứng chỉ:</label>
-            <select class="form-control" name="cert_kind" id="cert_kind">
-              <% kindlist.forEach(function(kind){%>
-                <option value="<%= kind.ck_id%>"><%= kind.ck_name%></option>
-              <%}) %>
-            </select>
-          </div>
-          <div class="input-group mb-3">
-            <input type="file" class= "form-control" id="fileUpload" />
-            <button id="upload" value="Upload" class="btn btn-secondary">Đọc file</button>
-          </div>
-          <button type="submit" class="btn btn-primary" id="submit">Lưu chứng chỉ</button>
-          
+        <div class="input-group mb-3">
+          <input type="file" class= "form-control" id="fileUpload" />
+          <button id="upload" value="Upload" class="btn btn-secondary">Đọc file</button>
+        </div>
+        <button type="submit" class="btn btn-primary" id="submit" disabled>Lưu chứng chỉ</button> <span id="notice"></span>
         <hr />
         
         <div class="table-responsive d-none" id="table-div">
@@ -51,13 +48,10 @@
                 <th scope="col">Giới tính</th>
                 <th scope="col">Ngày sinh</th>
                 <th scope="col">Nơi sinh</th>
-                <th scope="col">Tên khoá học</th>
-                <th scope="col">Thời gian đào tạo</th>
-                <th scope="col">Ngày kiểm tra</th>
+                <th scope="col">Số CCCD/CMND</th>
                 <th scope="col">Xếp loại</th>
                 <th scope="col">Ngày ký</th>
-                <th scope="col">Số vào sổ </th>
-                <th scope="col">Email</th>
+                <th scope="col">Số vào sổ</th>
               </tr>
             </thead>
             <tbody id="cert_info">
@@ -71,12 +65,16 @@
   <%- include('../../layouts/scripts') %>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script type="text/javascript">
-    var temp = [];
     $(document).ready(function(){
+      // console.log ();
+
       //Submit
       $('#submit').on('click', function(event){
-        if(temp.length == 0) {
+        if ($('#cert_name option:selected').attr('value') == ''){
+          alert('Vui lòng chọn tên chứng chỉ!');
+        }else if(temp.length == 0) {
           alert('Vui lòng tải tập tin chứng chỉ!');
         }else {
           event.preventDefault();
@@ -100,9 +98,33 @@
           })
         }
       })
-
+      var nameList=[];
+      $("#cert_kind").on('change' ,async function(event){
+        event.preventDefault;
+        var ck_id = $('#cert_kind option:selected').attr('value');
+        if (typeof nameList[ck_id] == 'undefined'){
+          await $.ajax({
+            type: 'POST',
+            url: '/issuer/cert/get-certname',
+            dataType: "json",
+            data: {
+              ck_id: ck_id,
+            },
+            success: function(res){
+              console.log(res);
+              nameList[ck_id]= res.nameList;
+            }
+          })
+        }
+        var html= ``;
+        nameList[ck_id].forEach(function(row){
+          html+= `<option value="${row.cn_id}">${row.cn_name}</option>`
+        })
+        console.log(html)
+        $('#cert_name').html(html);
+      })
       //  Xử lý file excel
-      $("#upload").on("click", function () {
+      $("#upload").on("click", async function (event) {
         var fileUpload = $("#fileUpload")[0];
         //Validate whether File is valid Excel file.
         var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
@@ -111,19 +133,21 @@
             var reader = new FileReader();
             //For Browsers other than IE.
             if (reader.readAsBinaryString) {
-              reader.onload = function (e) {
-                  ProcessExcel(e.target.result);
+              reader.onload = async function (e) {
+                await ProcessExcel(e.target.result);
+                CheckExcel(event)
               };
               reader.readAsBinaryString(fileUpload.files[0]);
             } else {
               //For IE Browser.
-              reader.onload = function (e) {
-                  var data = "";
-                  var bytes = new Uint8Array(e.target.result);
-                  for (var i = 0; i < bytes.byteLength; i++) {
-                      data += String.fromCharCode(bytes[i]);
-                  }
-                  ProcessExcel(data);
+              reader.onload = async function (e) {
+                var data = "";
+                var bytes = new Uint8Array(e.target.result);
+                for (var i = 0; i < bytes.byteLength; i++) {
+                    data += String.fromCharCode(bytes[i]);
+                }
+                await ProcessExcel(data);
+                CheckExcel(event)
               };
               reader.readAsArrayBuffer(fileUpload.files[0]);
             }
@@ -139,27 +163,72 @@
         //Xoá dữ liệu cũ
         temp = [];
         $('#cert_info').text('');
-
         var workbook = XLSX.read(data, {
             type: 'binary'
         });
         var firstSheet = workbook.SheetNames[0];
         temp = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
-        // console.log(temp);
         var i =1;
         temp.forEach(function(row){
           // console.log(row);
           var temp_tr = `<tr>
-            <th scopee="row">`+(i++)+`</th>
-            `;
+            <th scopee="row">${i++}</th>`;
           for(const [key, value] of Object.entries(row)) {
-            temp_tr += '<td>'+value+'</td>';
+            temp_tr += `<td id="${key}-${value}" ` 
+            if (key == 'user_gender'){
+              if (!(value === 'Nam' || value === 'Nữ')) {
+                console.log(value)
+                temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="'Nam'/'Nữ'">${value}<i class="fas fa-times"></i></td>`;
+              }
+            }else if( key=="user_idNumber"){
+              if (value.length != 9 && value.length != 12){
+                temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Số CCCD/CMND phải có 9 hoặc 12 số!">${value}<i class="fas fa-times"></i></td>`;
+              }
+            }else if (key=="user_dayofbirth" || key == "signday" ){
+              if ( moment(value,'DD-MM-YYYY').format() == "Invalid date" || moment(value,'DD-MM-YYYY').format() > moment().format()){
+                temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Ngày không hợp lệ!">${value}<i class="fas fa-times"></i></td>`;
+              }
+            }
+            temp_tr += `>`+value+`</td>`;
           }
           temp_tr += '</tr>';
           $('#cert_info').append(temp_tr);
           $('#table-div').removeClass('d-none');
         })
       };
+      async function CheckExcel(event ){
+        // Kiểm tra file;
+        event.preventDefault;
+        var numberList = [], regnoList = [];
+        temp.forEach((row)=>{
+          numberList.push(row['number'])
+          regnoList.push(row['regno'])
+        })
+        await $.ajax({
+          method:'post',
+          url:'/issuer/check-cert-info',
+          dataType: "json",
+          data: {data: JSON.stringify({numberList,regnoList})},
+          success: function(res){
+            let data = res;
+            console.log(res)
+            data.forEach((row)=> {
+              for (const [key, value] of Object.entries(row)){
+                $(`#${key}-${value}`).addClass('text-danger').append('<i class="fas fa-times"></i>').attr({"data-bs-toggle":"tooltip","data-bs-placement":"Top","title":`${(key=='number')? '"Số hiệu" đã tồn tại':'"Số vào sổ" đã tồn tại' }`});
+              }
+            })
+            var times = $('.fa-times');
+            if (times.length > 0){
+              $('#submit').prop('disabled',true)
+              $("#notice").html(`<span class="text-danger">* Vui lòng kiểm tra và tải lại thông tin văn bằng, chứng chỉ từ excel!</span>`);
+            }else {
+              $('#submit').prop('disabled',false)
+              $("#notice").html(``);
+            }
+            $('[data-bs-toggle="tooltip"]').tooltip();
+          }
+        })
+      }
     })
   </script>
 </body>

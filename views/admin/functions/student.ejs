@@ -77,7 +77,7 @@
                     </td>
                     <td>
                       <% if (!student.student_isAuth) { %>
-                        <a href="/admin/student/auth?student_id=<%= student.student_id %>&student_email=<%= student.student_email %>" class="btn btn-primary" >Xác thực</a>
+                        <a href="/admin/student/auth?student_id=<%= student.student_id %>&student_idNumber=<%= student.student_idNumber %>" class="btn btn-primary" >Xác thực</a>
                       <%}%>
                       <button type="button" class="btn btn-outline-primary btn-detail" student_id="<%= student.student_id %>">Chi tiết</button>
                       <button type="button" class="btn btn-warning btn-update" student_id="<%= student.student_id %>">Sửa</button>

@@ -66,7 +66,7 @@
                     <a class="btn btn-warning" href="/school/cert/set-to-incorrect?number=<%= cert.number; %>">Sai</a>
                   <% } %>
                   <% if(cert.ipfs_hash == null){ %>
-                    <a class="btn btn-primary" href="/school/cert/issue?number=<%= cert.number %>&student_email=<%= cert.student_email %>&certHash=<%= cert.hash %>">Cấp phát</a>
+                    <a class="btn btn-primary" href="/school/cert/issue?number=<%= cert.number %>&student_idNumber=<%= cert.student_idNumber %>&certHash=<%= cert.hash %>">Cấp phát</a>
                   <% } %>
                 </td>
               </tr>

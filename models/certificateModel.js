@@ -49,7 +49,7 @@ let select_byNumber = (number) => {
         if (err) {
           reject();
         } else {
-          resolve(results);
+          resolve(results[0]);
         }
       }
     );
@@ -61,7 +61,7 @@ let select_byEmail = (email) => {
       `SELECT school_name, cn_name, number, regno, ipfs_hash FROM certificates c
       LEFT JOIN certname cn ON c.cn_id = cn.cn_id
       LEFT JOIN schools sch ON cn.school_id = sch.school_id
-      WHERE student_email=?`,
+      WHERE user_email=?`,
       email,
       function (err, results) {
         if (err) {
@@ -115,6 +115,21 @@ let update_ipfs_hash = (number, ipfs_hash) => {
     );
   });
 };
+let get_ipfs_hashbyhash = (hash) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT ipfs_hash FROM certificates  WHERE hash=?",
+      [hash],
+      function (err, results) {
+        if (err) {
+          reject();
+        } else {
+          resolve(results[0].ipfs_hash);
+        }
+      }
+    );
+  });
+};
 let get_ipfs_hash = (number) => {
   return new Promise((resolve, reject) => {
     conn.query(
@@ -161,15 +176,15 @@ let get_certformipfs = (url) => {
     reject("Fail")
   });
 };
-let cert_search = (cn_id,number,student_name,regno) => {
+let cert_search = (cn_id,number,user_name,regno) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      `SELECT cn.cn_name, c.student_name, ipfs_hash, student_birth, number, regno
+      `SELECT cn.cn_name, c.user_name, ipfs_hash, user_birth, number, regno
       FROM certificates c
       LEFT JOIN certname cn ON c.cn_id = cn.cn_id
       WHERE c.cn_id = ? AND status = 'Done' AND 
-      ( number = ? OR student_name = ? OR regno = ?)`,
-      [cn_id,number,student_name,regno],
+      ( number = ? OR user_name = ? OR regno = ?)`,
+      [cn_id,number,user_name,regno],
       function (err, results) {
         console.log(this.sql)
         if (err) {
@@ -180,6 +195,26 @@ let cert_search = (cn_id,number,student_name,regno) => {
       }
     );
   });
+}
+let check_cert = (numberList, regnoList) => {
+  console.log(numberList)
+  return new Promise((resolve, reject)=> {
+    conn.query(
+      `SELECT number, regno 
+      FROM certificates
+      WHERE NUMBER IN `+numberList+`
+        OR regno IN `+regnoList
+      
+      ,function(err,data){
+        console.log(this.sql)
+        if(err){
+          console.log(err);
+          reject();
+        }
+        resolve(data);
+      }
+    )
+  })
 }
 // CERT NAME ---------------------------------------------------
 let certname_get = (id) => { 
@@ -355,7 +390,7 @@ let certkind_remove = (id) => {
 };
 
 module.exports = {
-  select_byschool,select_byEmail,select_byissuer,select_byNumber,
+  select_byschool,select_byEmail,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,
   get_certformipfs,
   cert_search,
   create,

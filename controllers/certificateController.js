@@ -5,7 +5,7 @@ let create = async(req, res) => {
   var certificate = {
     number: req.body.number, 
     school_id: req.body.school_id, 
-    student_id: req.body.student_id, 
+    user_id: req.body.user_id, 
   }
   if (certificate.number == '' ){
     error.push("Vui lòng nhập số chứng chỉ");

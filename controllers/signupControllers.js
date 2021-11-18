@@ -3,6 +3,7 @@ const validator = require("validator");
 const moment = require("moment");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const fs= require('fs');
 
 let createUser = async (req, res) => {
   let error = [];
@@ -13,7 +14,7 @@ let createUser = async (req, res) => {
     account_username: req.body.account_username,
     account_password: "",
     account_status:"active",
-    account_type:"student"
+    account_type:"user"
   }
   //Kiểm tra username 
   if ( await signupModel.isExist_username(account.account_username)) error.push("Tên đăng nhập đã tồn tại!");
@@ -26,58 +27,61 @@ let createUser = async (req, res) => {
   else {
     account.account_password= await bcrypt.hashSync(req.body.account_password, saltRounds);
   }
-  var student={
-    student_name: req.body.student_name,
-    student_placeAddress: req.body.student_placeAddress,
-    student_gender: req.body.student_gender,
-    student_birth: moment(req.body.student_birth, "DD/MM/YYYY").format(),
-    student_phoneNumber: req.body.student_phoneNumber,
-    student_email: req.body.student_email,
-    student_idNumber: req.body.student_idNumber
+  var user={
+    user_name: req.body.user_name,
+    user_placeAddress: req.body.user_placeAddress,
+    user_gender: req.body.user_gender,
+    user_birth: moment(req.body.user_birth, "DD/MM/YYYY").format(),
+    user_phoneNumber: req.body.user_phoneNumber,
+    user_email: req.body.user_email,
+    user_idNumber: req.body.user_idNumber
   }
   if (
-    student.student_name == "" ||
-    student.student_placeAddress == "" ||
-    student.student_gender == "" ||
-    student.student_birth == "" ||
-    student.student_phoneNumber == "" ||
-    student.student_idNumber == "" ||
-    student.student_email == "" 
+    user.user_name == "" ||
+    user.user_placeAddress == "" ||
+    user.user_gender == "" ||
+    user.user_birth == "" ||
+    user.user_phoneNumber == "" ||
+    user.user_idNumber == "" ||
+    user.user_email == "" 
     ) error.push("Vui lòng nhập dầy đủ thông tin đăng ký!");
 
-  if (await signupModel.isExist_email(student.student_email)) error.push("Email đã được đăng ký!");
-  else if (!validator.isEmail(student.student_email)) error.push("Email không đúng định dạng");
+  if (await signupModel.isExist_email(user.user_email)) error.push("Email đã được đăng ký!");
+  else if (!validator.isEmail(user.user_email)) error.push("Email không đúng định dạng");
   
-  if (await signupModel.isExist_phoneNumber(student.student_phoneNumber)) error.push("Số điện thoại đã được đăng ký!");
-  else if (!validator.isMobilePhone(student.student_phoneNumber , "vi-VN" )) error.push("Số điện thoại không đúng định dạng");
+  if (await signupModel.isExist_phoneNumber(user.user_phoneNumber)) error.push("Số điện thoại đã được đăng ký!");
+  else if (!validator.isMobilePhone(user.user_phoneNumber , "vi-VN" )) error.push("Số điện thoại không đúng định dạng");
   
-  if (await signupModel.isExist_idNumber(student.student_idNumber)) error.push("Số căn cước đã được đăng ký!");
+  if (await signupModel.isExist_idNumber(user.user_idNumber)) error.push("Số căn cước đã được đăng ký!");
 
   if (error && error.length > 0) {
       req.flash("error", error);
-      res.redirect("/admin/student");
+      res.redirect("/admin/user");
   } else {
+    // try{
+    //   await systemContract.methods.addUser(req.body.account_address,user.user_idNumber).call({from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
+    // }catch(err){console.log(err)}
       try {
-        await signupModel.add_student(student, req.body.account_address);
+        await signupModel.add_user(user, req.body.account_address);
       } catch (err) {
         console.log(err);
-        return res.redirect("/admin/student");
+        return res.redirect("/admin/user");
       }
       try {
-        await signupModel.get_student_id(student.student_email).then(async function(data){
-          account.student_id = data; 
+        await signupModel.get_user_id(user.user_email).then(async function(data){
+          account.user_id = data; 
           try {
             await signupModel.add_account(account);
             req.flash("msg","Thêm tài khoản thành công!");
             res.redirect("/");
           }catch(err){
             console.log(err);
-            return res.redirect("/admin/student");
+            return res.redirect("/");
           }
         })
       }catch(err){
         console.log(err);
-        return res.redirect("/admin/student");
+        return res.redirect("/signup");
       }
   }
 }

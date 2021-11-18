@@ -8,9 +8,16 @@ const isStudent = require('../auth').isStudent;
 const router = express.Router();
 const fs = require("fs"); // file system
 const CryptoJS = require('crypto-js');
+
 // MODEL 
 const certificateModel = require('../models/certificateModel')
 const schoolModel = require('../models/schoolModel')
+
+
+const Web3 = require('web3');
+const web3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545');
+
+const systemContract = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'],'0x10D8a7B2Ae872CaB10E2aB6fC6574eD2B791AAE1');
 
 router.get('/signup',async (req, res) => {
   res.render('./signup');
@@ -33,27 +40,24 @@ router.get('/logout', function(req, res){
   res.redirect('/');
 });
 router.get('/', function (req, res) {
-  res.render('./', { page_name: 'Trang chủ' });
-});
-router.get('/test', function (req, res) {
-  console.log(JSON.stringify(JSON.parse(fs.readFileSync('./public/cert/cert_' + 3 +'.json'))));
+  res.redirect('/tra-cuu')
 });
 
 // Tra cứu chứng chỉ 
-router.post('/cert-search',async (req ,res) => {
-  if ((req.body.student_name == '' || req.body.number == '' || req.body.regno == '') && req.body.cn_id == '' ){
+router.post('/tra-cuu',async (req ,res) => {
+  if ((req.body.user_name == '' || req.body.number == '' || req.body.regno == '') && req.body.cn_id == '' ){
     req.flash('err','Vui lòng nhập thông tin tìm kiếm');
     return res.send();
   }
-  var student_name = (req.body.student_name).trim().toUpperCase(),
+  var user_name = (req.body.user_name).trim().toUpperCase(),
   number=  req.body.number.trim(),
   regno= req.body.regno.trim(),
   cn_id = req.body.cn_id;
   try{
-    await certificateModel.cert_search(cn_id,number,student_name,regno).then(async function(data){
+    await certificateModel.cert_search(cn_id,number,user_name,regno).then(async function(data){
       var certList = data;
       certList.forEach(function(elt){
-        elt.student_birth = moment(elt.student_birth).format('DD/MM/YYYY');
+        elt.user_birth = moment(elt.user_birth).format('DD/MM/YYYY');
       })
       return res.send({certList,moment});
     })
@@ -62,7 +66,7 @@ router.post('/cert-search',async (req ,res) => {
     return res.redirect('back');
   }
 })
-router.get('/cert-search',async (req ,res) => {
+router.get('/tra-cuu',async (req ,res) => {
   var schoolList ;
   try{
     await schoolModel.school_select().then(function(data){
@@ -72,8 +76,26 @@ router.get('/cert-search',async (req ,res) => {
     console.log(err);
   }
   res.render('./cert-search',{title:'Tra cứu văn bằng chứng chỉ',schoolList})
+  
 })
 router.get('/cert-detail', async (req, res) =>{
+  if (typeof req.query.data != 'undefined' ){
+    var ipfs = await certificateModel.get_ipfs_hashbyhash(req.query.data)
+    var url = "https://ipfs.io/ipfs/" + ipfs;
+    console.log(url)
+    request(
+      {
+        url: url,
+        json: true,
+      },
+      function (error, response, data) {
+        if (!error && response.statusCode === 200) {
+          console.log(data);
+          res.render('./cert-detail',{cert_info: data});
+        }
+      }
+    );
+  }else 
   try {
     certificateModel.select_byNumber(req.query.number).then(async function (data) {
       var filename = data[0].filename;
@@ -90,7 +112,7 @@ router.get('/cert-detail', async (req, res) =>{
           function (error, response, data) {
             if (!error && response.statusCode === 200) {
               console.log(data);
-              res.render('./issuer/certificate/detail',{cert_info: data});
+              res.render('./cert-detail',{cert_info: data});
             }
           }
         );
@@ -105,10 +127,10 @@ router.post('/activate', async (req, res) => {
     number: req.body.number,
     certname: req.body.certname,
     certkind: req.body.certkind,
-    student_name: req.body.student_name,
-    student_gender: req.body.student_gender,
-    student_dayofbirth: req.body.student_dayofbirth,
-    student_placeofbirth: req.body.student_placeofbirth,
+    user_name: req.body.user_name,
+    user_gender: req.body.user_gender,
+    user_dayofbirth: req.body.user_dayofbirth,
+    user_placeofbirth: req.body.user_placeofbirth,
     course_name: req.body.course_name,
     duration: req.body.duration,
     testday: req.body.testday,
@@ -145,7 +167,7 @@ router.post('/get-certName', async (req, res)=>{
   }
 })
 router.get('/qrscan', (req, res) => {
-  res.render('./qrscan')
+  res.render('./qrscan',{title:'Tua cứu chứng chỉ bằng mã QR'})
 })
 router.post('/get-detai-by-ipfs', async (req, res) => {
   console.log(req.body);
@@ -163,4 +185,15 @@ router.post('/get-detai-by-ipfs', async (req, res) => {
     }
   );
 })
+// router.get('/render-test', async (req, res)=> {
+//   var schoolList ;
+//   try{
+//     await schoolModel.school_select().then(function(data){
+//       return schoolList = data;
+//     })
+//   }catch(err){
+//     console.log(err);
+//   }
+//   res.render('./search-form.ejs',{title:'Tra cứu văn bằng chứng chỉ',schoolList});
+// })
 module.exports = router;

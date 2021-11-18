@@ -181,25 +181,29 @@ router.get("/issue", async (req, res) => {
   if(typeof req.query.number == 'undefined ') return;
   // create system Instance
     const systemInstance = await SystemContract.deployed();
-  // get student contract 
-    var stuCA = await systemInstance.getContractbyEmail(req.query.student_email);
+  // get user contract 
+    var stuCA = await systemInstance.getContractbyIDNumber(req.query.user_idNumber);
+    console.log(stuCA)
     if (stuCA == '0x0000000000000000000000000000000000000000'){
       try{
-        await systemInstance.createTempContractbyEmail(req.query.student_email);
+        await systemInstance.createTempContractbyIDNumber(req.query.user_idNumber, systemInstance.address ,{from: "0x3E5C773519D38EB7996A5cADFDb8C8256889cB79" });
       }catch(err){
         console.log(err);
       }
-      stuCA = await systemInstance.getContractbyEmail(req.query.student_email);
+      stuCA = await systemInstance.getContractbyIDNumber(req.query.user_idNumber);
     }
     // push cert to blockchain
-      // create student Instance
+      // create user Instance
     var StudentContract = contract(JSON.parse(fs.readFileSync('./src/abis/Student.json')));
     StudentContract.setProvider(provider);
     var stuI = await StudentContract.at(stuCA);
-      // up to ifps
+    //   // up to ifps
     var path= './public/cert/cert_' + req.query.number +'.json';
     var hashed_data = CryptoJS.SHA256(JSON.stringify(JSON.parse(fs.readFileSync(path))));
-    console.log('0x'+hashed_data);
+    QRCode.toFile('./public/qrCode/cert_'+ req.query.number +'.png', 'http://localhost:3000/cert-detail?data=0x'+hashed_data, function (err) {
+      if (err) throw err
+    })
+    console.log('hashed_data: 0x'+hashed_data);
     const file = await client.add(
       ipfsClient.globSource(path)
     );

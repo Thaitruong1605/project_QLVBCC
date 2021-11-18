@@ -69,18 +69,22 @@ contract Ownable {
   }
 }
 
+
 contract System is Ownable{ 
   address[] public schoolAddresses;
-  address[] public studentAddresses;
+  address[] public userAddresses;
   mapping (address => address) public mapSchool; // school address => contract
-  mapping (address => address) public mapStudent; // student address => contract
+  mapping (address => address) public mapUser; // user address => contract
 
-  mapping (string => address) public emailToContract;
+  mapping (string => address) public idnumberToContract;
 
   event addedSchool(address newSchool, address newContract);
-  event addedStudent(address newStudent, address newContract);
   event changedSchoolContract(address _schoolAddr,address _contractAddr);
-  event changedStudentContract(address _studentAddr,address _contractAddr);
+  
+  event addedUser(address newUser, address newContract);
+  event changedUserContract(address _userAddr,address _contractAddr);
+
+  event createdTempContractbyIDNumber(string _idnumber);
   
   constructor() public{
     transferOwnership(address(0x3E5C773519D38EB7996A5cADFDb8C8256889cB79));
@@ -99,16 +103,16 @@ contract System is Ownable{
     }
     return false;
   }
-  function _isStudent(address studentAddr) internal view returns(bool) {
-    for (uint i=0; i< studentAddresses.length; i++){
-      if (studentAddr == studentAddresses[i]) return true;
+  function _isUser(address userAddr) internal view returns(bool) {
+    for (uint i=0; i< userAddresses.length; i++){
+      if (userAddr == userAddresses[i]) return true;
     }
     return false;
   }
-  function addSchool( string memory name, string memory addressPlace, string memory phoneNumber, string memory email, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
+  function addSchool( string memory name, string memory addressPlace, string memory phoneNumber, string memory idnumber, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
     require(!(_isSchool(schoolAddr)));
     schoolAddresses.push(schoolAddr);
-    School schoolContract = new School(name, addressPlace, phoneNumber, email, fax, website, schoolAddr);
+    School schoolContract = new School(name, addressPlace, phoneNumber, idnumber, fax, website, schoolAddr);
     mapSchool[schoolAddr] = address(schoolContract);
     emit addedSchool(schoolAddr, address(schoolContract));
   }
@@ -128,45 +132,35 @@ contract System is Ownable{
     return mapSchool[_schoolAddr];
   }
   // STUDENT CONTRACT -----------------------------------
-  function addStudent(address _studentAddr, string memory _email) public onlyOwner(){
-    // check if studentAddress is exist
-    for(uint i = 0 ; i< studentAddresses.length; i++){
-      if (studentAddresses[i] == _studentAddr){
-        return;
-      }
-    }
-    Student stuContract;
-    studentAddresses.push(_studentAddr);
-    if(emailToContract[_email] == address(0)){
-      stuContract = new Student(_studentAddr);
-      emailToContract[_email] = address(stuContract);
-    }else {
-      stuContract = Student(emailToContract[_email]);
-      stuContract.transferOwnership(_studentAddr);
-    }
-    // push student address to array
-    mapStudent[_studentAddr] = address(stuContract);
-    emit addedStudent(_studentAddr, address(stuContract));
+  function addUser(address _userAddr, string memory _idnumber, address _stuCA) public onlyOwner(){
+    // check if userAddress is exist
+    require (idnumberToContract[_idnumber] == address(0));
+    userAddresses.push(_userAddr);
+    // push user address to array
+    idnumberToContract[_idnumber] = _stuCA;
+    mapUser[_userAddr] = _stuCA;
+    emit addedUser(_userAddr, _stuCA);
   }
-  function changeStudentContract(address _studentAddr, address _contractAddr) public onlyOwner(){
-    for (uint i = 0 ; i< studentAddresses.length; i++){
-      if (studentAddresses[i] == _studentAddr) {
-        mapStudent[_studentAddr] = _contractAddr;
-        emit changedStudentContract(_studentAddr, _contractAddr);
+  function changeUserContract(address _userAddr, address _contractAddr) public onlyOwner(){
+    for (uint i = 0 ; i< userAddresses.length; i++){
+      if (userAddresses[i] == _userAddr) {
+        mapUser[_userAddr] = _contractAddr;
+        emit changedUserContract(_userAddr, _contractAddr);
         break;
       }
     }
   }
-  function getStudentContractAddr(address stuAddr) public view returns(address) {
-    return (mapStudent[stuAddr] != address(0))? mapStudent[stuAddr] : address(0);
+  function getUserContractAddr(address stuAddr) public view returns(address) {
+    return (mapUser[stuAddr] != address(0))? mapUser[stuAddr] : address(0);
   }
-  function createTempContractbyEmail (string memory _email) public onlyOwner(){
-    require(emailToContract[_email] == address(0));
-    Student stuC = new Student(msg.sender);
-    emailToContract[_email] = address(stuC);
+  function createTempContractbyIDNumber (string memory _idnumber, address _sysCA) public onlyOwner(){
+    require(idnumberToContract[_idnumber] == address(0));
+    User stuC = new User(msg.sender,_sysCA);
+    idnumberToContract[_idnumber] = address(stuC);
+    emit createdTempContractbyIDNumber(_idnumber);
   }
-  function getContractbyEmail (string memory _email) public view returns(address){
-    return emailToContract[_email];
+  function getContractbyIDNumber (string memory _idnumber) public view returns(address){
+    return idnumberToContract[_idnumber];
   }
 } 
 
@@ -174,7 +168,7 @@ contract School is Ownable{
   string public name;
   string public addressPlace;
   string public phoneNumber;
-  string public email;
+  string public idnumber;
   string public fax; 
   string public website;
 
@@ -182,7 +176,7 @@ contract School is Ownable{
     string memory _name,
     string memory _addressPlace,
     string memory _phoneNumber,
-    string memory _email,
+    string memory _idnumber,
     string memory _fax,
     string memory _website,
     address schAddr
@@ -190,7 +184,7 @@ contract School is Ownable{
     name = _name;
     addressPlace = _addressPlace;
     phoneNumber = _phoneNumber;
-    email = _email;
+    idnumber = _idnumber;
     fax = _fax;
     website = _website;
     transferOwnership(schAddr);
@@ -199,13 +193,13 @@ contract School is Ownable{
     name;
     addressPlace;
     phoneNumber;
-    email;
+    idnumber;
     fax; 
     website;
   }
 }
 
-contract Student is Ownable{
+contract User is Ownable{
   struct Certificate {
     uint8 state;
     address schoolAddress;
@@ -220,8 +214,8 @@ contract Student is Ownable{
   event deactivatedCertificate(address _address, bytes32 _certHash);
   event deletedCertificate(address _address, bytes32 _certHash);
 
-  constructor(address stuAddr) public {
-    system = System(msg.sender);
+  constructor(address stuAddr, address _sysCA) public {
+    system = System(_sysCA);
     transferOwnership(stuAddr);
   }
   
@@ -229,7 +223,9 @@ contract Student is Ownable{
     require(system._isSchool(msg.sender));
     _;
   }
-
+  function isSchool() public view onlySchool() returns(bool){
+    return true;
+  }
   function addCertificate(bytes32 _hashedCert) public onlySchool(){
     certificateList.push(_hashedCert);
     mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _hashedCert);

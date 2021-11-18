@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang chủ</title>
+  <title><%= title %></title>
   <%- include('./layouts/styles.ejs')%>
 </head>
 <body>
@@ -14,21 +14,31 @@
   <div class="container">
     <div class="row">
       <div class="col">
+        <div id="output"></div>
         <form method="post" action="upload/post" enctype="multipart/form-data">
           <div class="form-group">
-              <input type="file" name="image" class="input-group input-file"/>
-              <button type="submit" name="upload" class="btn btn-primary pull-right">Upload</button>
-          </form>
+            <input type="file" name="image" class="input-group input-file"/>
+            <button type="button" name="upload" class="btn btn-primary pull-right">Upload</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
-
   <%- include('./layouts/scripts.ejs') %>
+  <script src="/vendors/ejs/ejs.min.js"></script>
   <script type="module">
-    import QrScanner from 'path/to/qr-scanner.min.js';
-    // do something with QrScanner
-
+    $('button').on('click',function(e){
+      e.preventDefault;
+      $.ajax({
+        url:"/render-test",
+        method:'get',
+        success: function(res){
+          $('#output').html(res);
+        }
+      })
+    })
+    let html = ejs.render('hello');
   </script>
 
 </body>

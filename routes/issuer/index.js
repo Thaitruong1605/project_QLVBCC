@@ -89,26 +89,22 @@ router.post("/cert/create-by-excel", async (req, res) => {
   cert_list.forEach(async function(elt){
     var cert_info = {
       number: elt.number.trim(),
-      student_name: elt.student_name.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
-      cert_name: req.body.cert_name.trim(),
       cert_kind: req.body.cert_kind.trim(),
-      student_gender: elt.student_gender.trim(),
-      student_dayofbirth: elt.student_dayofbirth.trim(),
-      student_placeofbirth: elt.student_placeofbirth.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
-      course_name: elt.course_name.trim(),
-      duration:  elt.duration.trim(),
-      testday: elt.testday.trim(),
+      cert_name: req.body.cert_name.trim(),
       classification: elt.classification.trim(),
       signday: elt.signday.trim(),
       regno: elt.regno.trim(),
+      user_name: elt.user_name.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+      user_gender: elt.user_gender.trim(),
+      user_dayofbirth: elt.user_dayofbirth.trim(),
+      user_placeofbirth: elt.user_placeofbirth.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+      user_idNumber: elt.user_idNumber.trim(),
     }
     
     var hashed_data = await '0x'+CryptoJS.SHA256(JSON.stringify(cert_info));
     var fname = "cert_" + elt.number + ".json";
     console.log(elt.number+':'+ hashed_data);
-    // QRCode.toFile('public//qrCode/cert_'+ elt.number +'.png', 'http://localhost:3000/cert-detail?data='+hashed_data, function (err) {
-    //   if (err) throw err
-    // })
+    
     var cert = {
       number: elt.number.trim(),
       regno: elt.regno.trim(),
@@ -116,9 +112,9 @@ router.post("/cert/create-by-excel", async (req, res) => {
       ck_id: req.body.ck_id.trim(),
       issuer_id: req.user.issuer_id,
       hash: hashed_data,
-      student_email: elt.student_email.trim(),
-      student_name: elt.student_name.trim(),
-      student_birth: moment(elt.student_dayofbirth.trim(),'DD/MM/YYYY').format(),
+      user_idNumber: elt.user_idNumber.trim(),
+      user_name: elt.user_name.trim(),
+      user_birth: moment(elt.user_dayofbirth.trim(),'DD/MM/YYYY').format(),
       status: "checking",
     };
     // Tạo file
@@ -147,53 +143,56 @@ router.post("/cert/create-by-excel", async (req, res) => {
   return res.status(200).send({result: 'redirect', url:'/issuer/cert'})
 });
 router.get('/cert/create',async (req, res) => {
-  var kindlist, namelist;
+  var kindList, nameList;
   try{
     await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
-      return kindlist =data;
+      return kindList =data;
     })
   }catch(err){
     console.log(err);
-    res.redirect('back')
   }
   try{
-    await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
-      return namelist =data;
+    await certificateModel.certname_getbyKindId(kindList[0].ck_id).then(function(data){
+      return nameList =data;
     })
   }catch(err){
     console.log(err);
-    res.redirect('back')
   }
-  res.render('./issuer/cert/createByForm',{page:'Cert', title:'Chứng chỉ', namelist, kindlist});
+  res.render('./issuer/cert/createByForm',{page:'Cert', title:'Thêm mới chứng chỉ', kindList, nameList});
 })
 router.post("/cert/create", async (req, res) => {
-  
   var data = {
-    number: req.body.number.toUpperCase().trim(),
-    certname: req.body.certname.toUpperCase().trim(),
-    certkind: req.body.certkind.toUpperCase().trim(),
-    student_name: req.body.student_name.toUpperCase().trim(),
-    student_gender: req.body.student_gender.toUpperCase().trim(),
-    student_dayofbirth: req.body.student_dayofbirth.toUpperCase().trim(),
-    student_placeofbirth: req.body.student_placeofbirth.toUpperCase().trim(),
-    course_name: req.body.course_name.toUpperCase().trim(),
-    duration: req.body.duration.toUpperCase().trim(),
-    testday: req.body.testday.trim(),
-    classification: req.body.classification.toUpperCase().trim(),
+    number: req.body.number.trim(),
+    cert_kind: req.body.cert_kind.trim(),
+    cert_name: req.body.cert_name.trim(),
+    classification: req.body.classification.trim(),
     signday: req.body.signday.trim(),
-    regno: req.body.regno.toUpperCase().trim(),
+    regno: req.body.regno.trim(),
+    user_name: req.body.user_name.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+    user_gender: (req.body.user_gender.trim() == 1)? "Nam":"Nữ",
+    user_dayofbirth: req.body.user_dayofbirth.trim(),
+    user_placeofbirth: req.body.user_placeofbirth.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+    user_idNumber: req.body.user_idNumber.trim(),
   }
+
+  var hashed_data = await '0x'+CryptoJS.SHA256(JSON.stringify(data));
+  console.log(req.body.number+':'+ hashed_data);
+
   var fname = "cert_" + data.number +".json";
-  // Tạo file
+  // // Tạo file
   var cert = {
-    number: req.body.number,
-    cn_id: req.body.cn_id,
-    ck_id: req.body.ck_id,
+    number: req.body.number.trim(),
+    regno: req.body.regno.trim(),
+    cn_id: req.body.cn_id.trim(),
+    ck_id: req.body.ck_id.trim(),
     issuer_id: req.user.issuer_id,
+    hash: hashed_data,
+    user_idNumber: req.body.user_idNumber.trim(),
+    user_name: req.body.user_name.trim(),
+    user_birth: moment(req.body.user_dayofbirth.trim(),'DD/MM/YYYY').format(),
     status: "checking",
-    hash: hashed_data
   };
-  fs.appendFile(
+  fs.writeFile(
     "./public/cert/" + fname,
     JSON.stringify(data),
     async function (err) {
@@ -203,7 +202,89 @@ router.post("/cert/create", async (req, res) => {
         // Thêm vào CSDL
         try {
           await certificateModel.create(cert);
-          req.flash('msg','Tạo chứng chỉ mới thành công')
+          req.flash('msg','Thêm mới chứng chỉ thành công!')
+          res.redirect("/issuer/cert");
+        } catch (err) {
+          console.log(err);
+          res.redirect("/issuer/cert/create");
+        }
+      }
+    }
+  );
+});
+router.get("/cert/update", async (req,res )=> {
+  if (typeof req.query.number == 'undefined'){
+    return res.redirect("/issuer/cert");
+  }
+  var kindList, cert_info, nameList;
+  try{
+    await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
+      return kindList =data;
+    })
+  }catch(err){
+    console.log(err);
+  }
+  try{
+    await certificateModel.select_byNumber(req.query.number).then(function(data){
+      return cert_info = data;
+    })
+  }catch(err){
+    console.log(err);
+  }
+  try{
+    await certificateModel.certname_getbyKindId(cert_info.ck_id).then(function(data){
+      return nameList = data;
+    })
+  }catch(err){
+    console.log(err);
+  }
+  var cert_data = JSON.parse(await fs.readFileSync('./public/cert/cert_' + req.query.number+'.json'));
+  res.render('./issuer/cert/update',{page:'Cert', title:'Cập nhật chứng chỉ', cert_data, cert_info , kindList, nameList});
+})
+router.post("/cert/update", async (req, res) => {
+  console.log(req.body);
+  var data = {
+    number: req.body.number.trim(),
+    cert_kind: req.body.cert_kind.trim(),
+    cert_name: req.body.cert_name.trim(),
+    classification: req.body.classification.trim(),
+    signday: req.body.signday.trim(),
+    regno: req.body.regno.trim(),
+    user_name: req.body.user_name.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+    user_gender: (req.body.user_gender.trim() == 1)? "Nam":"Nữ",
+    user_dayofbirth: req.body.user_dayofbirth.trim(),
+    user_placeofbirth: req.body.user_placeofbirth.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+    user_idNumber: req.body.user_idNumber.trim(),
+  }
+
+  var hashed_data = await '0x'+CryptoJS.SHA256(JSON.stringify(data));
+  console.log(req.body.number+':'+ hashed_data);
+
+  var fname = "cert_" + data.number +".json";
+  // // Tạo file
+  var cert = {
+    number: req.body.number.trim(),
+    regno: req.body.regno.trim(),
+    cn_id: req.body.cn_id.trim(),
+    ck_id: req.body.ck_id.trim(),
+    issuer_id: req.user.issuer_id,
+    hash: hashed_data,
+    user_idNumber: req.body.user_idNumber.trim(),
+    user_name: req.body.user_name.trim(),
+    user_birth: moment(req.body.user_dayofbirth.trim(),'DD/MM/YYYY').format(),
+    status: "checking",
+  };
+  fs.writeFile(
+    "./public/cert/" + fname,
+    JSON.stringify(data),
+    async function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        // Thêm vào CSDL
+        try {
+          await certificateModel.update(req.body.number, cert);
+          req.flash('msg','Cập nhật chứng chỉ thành công!')
           res.redirect("/issuer/cert");
         } catch (err) {
           console.log(err);
@@ -234,7 +315,7 @@ router.get('/cert/detail', async(req, res)=>{
         }
       );
     } 
-    res.render('./issuer/cert/detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info});
+    res.render('./issuer/cert/detail',{title:"Chi tiết chứng chỉ",page:"Cert" ,cert_info});
   }
 })
 router.get('/cert/delete', async(req, res)=>{
@@ -252,5 +333,25 @@ router.get('/cert/delete', async(req, res)=>{
     res.redirect('/issuer/cert');
   }
 })
-
+router.post('/cert/get-certname', async (req, res)=> {
+  await certificateModel.certname_getbyKindId(req.body.ck_id).then(function(data){
+    res.send({nameList:data});
+  })
+})
+router.post('/check-cert-info',async (req, res)=> {
+  var data = JSON.parse(req.body.data)
+  var numberList, regnoList;
+  numberList = JSON.stringify(data['numberList']).replace('[','(').replace(']',')').replace(/"/g,"'");
+  regnoList = JSON.stringify(data['regnoList']).replace('[','(').replace(']',')').replace(/"/g,"'");
+  
+  console.log(numberList)
+  console.log(regnoList)
+  try{
+    await certificateModel.check_cert(numberList, regnoList).then(function(data){
+      res.send(data)
+    })
+  }catch(err){  
+    console.log(err);
+  }
+})
 module.exports = router;

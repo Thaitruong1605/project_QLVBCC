@@ -1,17 +1,17 @@
 const conn = require('../dbconnect');
 
 
-let get_student_id = (student_email) => {
+let get_user_id = (user_email) => {
     return new Promise ((resolve, reject) => {
         try {
             conn.query(
-                'SELECT student_id FROM students WHERE student_email = ?',
-                student_email,
+                'SELECT user_id FROM users WHERE user_email = ?',
+                user_email,
                 function(err,results){
                     if(err){
                         console.log(err);
                     }else {
-                        resolve(results[0].student_id);
+                        resolve(results[0].user_id);
                     }
                 }
             )
@@ -66,11 +66,11 @@ let isExist_username = (account_username) => {
         )
     });
 }
-let isExist_idNumber = (student_idNumber) => { 
+let isExist_idNumber = (user_idNumber) => { 
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT student_id FROM students  WHERE student_idNumber=? ',
-            [student_idNumber],
+            'SELECT user_id FROM users  WHERE user_idNumber=? ',
+            [user_idNumber],
             function(error, results){
                 if(error){ console.log(error); reject()}
                 if (results != ''){
@@ -81,11 +81,11 @@ let isExist_idNumber = (student_idNumber) => {
         )   
     });
 }
-let isExist_email = (student_email) => { 
+let isExist_email = (user_email) => { 
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT student_id FROM students  WHERE student_email= ?',
-            [student_email],
+            'SELECT user_id FROM users  WHERE user_email= ?',
+            [user_email],
             function(error, results){
                 if(error){ console.log(error); reject()}
                 if (results != ''){
@@ -96,11 +96,11 @@ let isExist_email = (student_email) => {
         )   
     });
 }
-let isExist_phoneNumber = (student_phoneNumber) => { 
+let isExist_phoneNumber = (user_phoneNumber) => { 
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT student_id FROM students  WHERE student_phoneNumber= ?',
-            [student_phoneNumber],
+            'SELECT user_id FROM users  WHERE user_phoneNumber= ?',
+            [user_phoneNumber],
             function(error, results){
                 if(error){ console.log(error); reject()}
                 if (results != ''){
@@ -112,11 +112,11 @@ let isExist_phoneNumber = (student_phoneNumber) => {
     });
 }
 
-let add_student = (student, account_address) => {
+let add_user = (user, account_address) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'INSERT INTO students SET ?', 
-            student,
+            'INSERT INTO users SET ?', 
+            user,
             async function(err){
                 if (err) {
                     console.log(err);
@@ -128,8 +128,8 @@ let add_student = (student, account_address) => {
     });
 };
 module.exports = {
-    get_student_id,
-    add_student,
+    get_user_id,
+    add_user,
     add_account,
     isExist_username,
     isExist_address,
