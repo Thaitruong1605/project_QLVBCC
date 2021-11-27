@@ -6,79 +6,263 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <%- include('../layouts/styles'); %>
-
+  <%- include('../../layouts/styles'); %>
+  <style>
+  
+  </style>
 </head>
 
 <body>
   <%- include('../../partials/header') %>
   <%- include('../../partials/alert') %>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-2">
-        <%- include("../partials/sidebar.ejs"); %>
+      <div class="col-2 border-end">
+        <%- include('../partials/sidebar')%>
       </div>
-      <div class="col">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Số</th>
-              <th scope="col">Tên</th>
-              <th scope="col">Loại</th>
-              <th scope="col">Người tạo</th>
-              <th scope="col">Trạng thái</th>
-              <th scope="col">Thời gian tạo</th>
-              <th scope="col">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% i=1; %>
-            <% certlist.forEach(function(cert){ %>
-              <tr >
-                <th scope="row"><%= i++; %></th>
-                <td ><%= cert.number; %></td>
-                <td >
-                  <% namelist.forEach(function(name){ %>
-                    <%= (name.cn_id == cert.cn_id)? name.cn_name:'' %>
-                  <% }) %>
-                </td>
-                <td>
-                  <% kindlist.forEach(function (kind){ %>
-                    <%= (kind.ck_id == cert.ck_id)? kind.ck_name:'' %>
-                  <% }) %>
-                </td>
-                <td><%=cert.issuer_id%></td>
-                <td>
-                  <% if (cert.status == 'Incorrect') {%>
-                    <span class="text-danger fw-bold"><%= cert.status %></span>  
-                  <% } else if (cert.status == 'checking') { %>
-                    <span class="text-warning fw-bold"><%= cert.status %></span>  
-                  <%} else  {%>
-                    <span class="text-success fw-bold"><%= cert.status %></span>  
-                  <% } %>
-                </td> 
-                
-                <td><%= moment(cert.createTime).format('DD-MM-YYYY, h:mm:ss a'); %></td>
-                <td>
-                  <a class="btn btn-outline-primary" href="/school/cert/detail?number=<%= cert.number %>">Xem</a>
-                  <% if (cert.status == 'checking') {%>
-                    <a class="btn btn-warning" href="/school/cert/set-to-incorrect?number=<%= cert.number; %>">Sai</a>
-                  <% } %>
-                  <% if(cert.ipfs_hash == null){ %>
-                    <a class="btn btn-primary" href="/school/cert/issue?number=<%= cert.number %>&student_idNumber=<%= cert.student_idNumber %>&certHash=<%= cert.hash %>">Cấp phát</a>
-                  <% } %>
-                </td>
-              </tr>
-              <% }); %>
-          </tbody>
-        </table>
+      <div class="col-10 px-5">
+        <div class="row">
+          <div class="col">
+            <div class="btn-group dropend">
+              <button type="button" class="btn btn-outline-light text-dark dropdown-toggle mt-3" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-filter"></i>
+              </button>
+              <div class="dropdown-menu" style="width: 700px;">
+                <form id="filterForm" class="p-2">
+                  <div class="row g-1">
+                    <div class="col">
+                      <select id="ck_id" class="form-control">
+                        <option value=''>Chọn loại chứng chỉ</option>
+                        <% kindList.forEach((row) => {%>
+                          <option value='<%= row['ck_id'] %>'><%= row['ck_name'] %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <select id="cn_id" name="cn_id" class="form-control">
+                        <option value=''>Chọn tên chứng chỉ</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row g-1 mt-1">
+                    <div class="col text-start">
+                      <input type="text" class="form-control" name="fromDate" id="fromDate" value="01/01/2021" />
+                    </div>
+                    <div class="col text-start">
+                      <input type="text" class="form-control" name="toDate" id="toDate" value="" />
+                    </div>
+                  </div>
+                  <div class="row g-1 mt-1">
+                    <div class="col text-start">
+                      <input type="text" class="form-control" name="user_name" placeholder="Họ tên người nhận"/>
+                    </div>
+                    <div class="col-3 text-start">
+                      <input type="text" class="form-control" name="number" placeholder="Số chứng chỉ"/>
+                    </div>
+                    <div class="col-3 text-start">
+                      <input type="text" class="form-control" name="regno" placeholder="số vào sổ"/>
+                    </div>
+                  </div>
+                  <div class="col-auto text-end">
+                    <button type="button" id="btn-submit" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
+                  </div>
+                  <span id="count"></span>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="card mt-3">
+              <div class="card-body">
+                <table class="table " id="table-certList">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Số</th>
+                      <th scope="col">Số vào sổ</th>
+                      <th scope="col">Tên</th>
+                      <th scope="col">Người nhận</th>
+                      <th scope="col">Người nhập</th>
+                      <th scope="col">Trạng thái</th>
+                      <th scope="col">Ngày nhập</th>
+                      <th scope="col" style="width: 24px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="certList">
+                    <% var checkingCert = {} ,i=1; %>
+                    <% certlist.forEach(function(cert){ checkingCert[cert.number] = cert.status ;%>
+                      <tr >
+                        <th scope="row"><%= i++; %></th>
+                        <td ><%= cert.number; %></td>
+                        <td ><%= cert.regno; %></td>
+                        <td >
+                          <% namelist.forEach(function(name){ %>
+                            <%= (name.cn_id == cert.cn_id)? name.cn_name:'' %>
+                          <% }) %>
+                        </td>
+                        <td><%=cert.user_name%></td>
+                        <td><%=cert.issuer_id%></td>
+                        <td>
+                          <% if (cert.status == 'incorrect') {%>
+                            <span class="text-danger fw-bold"><%= cert.status %></span>  
+                          <% } else if (cert.status == 'checking') { %>
+                            <span class="text-info fw-bold"><%= cert.status %></span>  
+                          <%} else  {%>
+                            <span class="text-success fw-bold"><%= cert.status %></span>  
+                          <% } %>
+                        </td> 
+                        
+                        <td><%= moment(cert.createTime).format('DD-MM-YYYY'); %></td>
+                        <td >
+                          <i class="fas fa-external-link-alt btn-detail pe-2" number="<%=cert.number%>"></i>
+                        </td>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-  <%- include('../../layouts/scripts.ejs'); %>
   
+  <!-- Modal -->
+  <%- include("../../partials/cert-detail") %>
+
+  <!-- Script -->
+  <%- include('../../layouts/scripts.ejs'); %>
+
+  <script>
+    var nameList = [],
+    cert_info= [],
+    checkingCert = {<% var i=0; Object.entries(checkingCert).forEach(([key, value]) => { i++;%>
+      "<%= key %>":"<%= value %>"<%=(i< Object.keys(checkingCert).length)? ',':'' %>
+      <% })  %>};
+
+    $(document).ready(function (){
+      $("#table-certList").DataTable({
+        searching: false,
+        sort: false,
+      });
+      $( "#ck_id" ).change(function() {
+        $( "#ck_id option:selected" ).each(async function(event) {
+          event.preventDefault;
+          var ck_id = $(this).attr('value');
+          if (ck_id != '') {
+            await $.ajax({
+              url:'/get-certName',
+              method:'post',
+              data:{
+                ck_id
+              },
+              success: function(res) {
+                nameList[ck_id] = res.nameList; 
+              }
+            })
+            html = `<option value=''>Chọn tên chứng chỉ</option>`;
+            nameList[ck_id].forEach(function(row){
+              html += `<option value='${row.cn_id}'>${row.cn_name}</option>`
+            })
+            $('#cn_id').html(html);
+            $('#ck_id').html();
+          }else {
+            $('#cn_id').html();
+          }
+          
+        });
+      }).trigger( "change" );
+      $(document).on('click','.btn-detail', async function(event){
+        let number= $(this).attr('number');
+        $(this).append(`<span class="spinner-grow spinner-grow-sm" style="position:absolute"></span>`);
+        if (cert_info[number] == undefined){
+          event.preventDefault;
+          // $(this).addClass('spinner-grow')
+          await $.ajax({
+            method:"POST",
+            url:"/issuer/cert/detail",
+            data:{
+              number: number
+            },
+            success: function(res){
+              cert_info[number] = res.cert_info;
+            }
+          })
+        }
+        $(this).html("");
+        $('.modal-header').addClass('bg-opacity-25')
+        if (checkingCert[number] == 'checking'){
+          $('.modal-footer').html(`<a class="btn btn-warning" href="/school/cert/set-to-incorrect?number=${number}">Sai</a>
+            <a class="btn btn-primary" href="/school/cert/issue?number=${number}&user_idNumber=${cert_info[number]["user_idNumber"]}">Cấp phát</a>
+            `)
+          $('.modal-header').removeClass('bg-danger');
+          $('.modal-header').removeClass('bg-success');
+          $('.modal-header').addClass('bg-info');
+        }else if (checkingCert[number] == 'incorrect'){
+          $('.modal-header').removeClass('bg-success');
+          $('.modal-header').removeClass('bg-info');
+          $('.modal-header').addClass('bg-danger');
+        }else {
+          $('.modal-footer').html('');
+          $('.modal-header').removeClass('bg-danger');
+          $('.modal-header').removeClass('bg-info');
+          $('.modal-header').addClass('bg-success');
+        }
+        for (const [key, value] of Object.entries(cert_info[number])) {
+          $(`#${key}`).text(value);
+          
+        }
+        $("#certDetailModal").modal("show");
+      })
+      $( "#toDate" ).val(moment(Date.now()).format("DD/MM/YYYY"));
+      $( "#fromDate, #toDate" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: $(this).attr('value')
+      });
+      $("#btn-submit").on('click',async function(event){
+        event.preventDefault;
+        await $.ajax({
+          method: "POST",
+          url: "/school/cert/list-cert",
+          data: $("#filterForm").serialize(),
+          success: function(res){
+            var certList= res.certList,
+            html = ``,i =1;
+            $("#count").text('Có '+certList.length+' kết quả phù hợp:')
+            certList.forEach(function(elt){
+              html+= `<tr>
+                <th scope="row">${i++}</th>
+                <td>${elt['number']}</td>
+                <td>${elt['regno']}</td>
+                <td>${elt['cn_name']}</td>
+                <td>${elt['user_name']}</td>
+                <td>${elt['account_username']}</td>
+                <td>`;
+                if (elt['status'] == 'incorrect') {
+                  html+= `<span class="text-danger fw-bold">${elt['status']}</span>`
+                } else if (elt['status'] == 'checking'){
+                  html+= `<span class="text-info fw-bold">${elt['status']}</span>`  
+                }else  {
+                  html+= `<span class="text-success fw-bold">${elt['status']}</span>`  
+                }
+              html += `</td>
+                <td>${moment(elt['createTime']).format("DD/MM/YYYY")}</td>
+                <td><i class="fas fa-external-link-alt btn-detail pe-2" number="${elt['number']}"></i></td>
+              </tr>`
+            })
+            $('#certList').html(html).fadeIn(2000);
+            $(".spinner-border").attr('hidden',true).parent().attr('disabled',false)
+          }
+        })
+      })
+    })
+  </script>
 </body>
 
 </html>

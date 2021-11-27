@@ -68,8 +68,6 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script type="text/javascript">
     $(document).ready(function(){
-      // console.log ();
-
       //Submit
       $('#submit').on('click', function(event){
         if ($('#cert_name option:selected').attr('value') == ''){
@@ -111,7 +109,6 @@
               ck_id: ck_id,
             },
             success: function(res){
-              console.log(res);
               nameList[ck_id]= res.nameList;
             }
           })
@@ -120,7 +117,6 @@
         nameList[ck_id].forEach(function(row){
           html+= `<option value="${row.cn_id}">${row.cn_name}</option>`
         })
-        console.log(html)
         $('#cert_name').html(html);
       })
       //  Xử lý file excel
@@ -170,14 +166,26 @@
         temp = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
         var i =1;
         temp.forEach(function(row){
-          // console.log(row);
           var temp_tr = `<tr>
             <th scopee="row">${i++}</th>`;
-          for(const [key, value] of Object.entries(row)) {
-            temp_tr += `<td id="${key}-${value}" ` 
+            let row_data = {
+              number: row.number,
+              user_name: row.user_name,
+              user_gender: row.user_gender,
+              user_dayofbirth: row.user_dayofbirth,
+              user_placeofbirth: row.user_placeofbirth,
+              user_idNumber: row.user_idNumber,
+              classification: row.classification,
+              signday: row.signday,
+              regno: row.regno,
+            }
+          for(const [key, value] of Object.entries(row_data)){
+            temp_tr += `<td class="${key}-${value}" ` 
+            if (value == "" || value== undefined){
+              temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Dữ liệu không được rỗng"><i class="fas fa-times"></i></td>`;
+            }
             if (key == 'user_gender'){
-              if (!(value === 'Nam' || value === 'Nữ')) {
-                console.log(value)
+              if (!(value === 'Nam' || value === 'Nữ')){
                 temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="'Nam'/'Nữ'">${value}<i class="fas fa-times"></i></td>`;
               }
             }else if( key=="user_idNumber"){
@@ -211,11 +219,27 @@
           data: {data: JSON.stringify({numberList,regnoList})},
           success: function(res){
             let data = res;
-            console.log(res)
             data.forEach((row)=> {
               for (const [key, value] of Object.entries(row)){
                 $(`#${key}-${value}`).addClass('text-danger').append('<i class="fas fa-times"></i>').attr({"data-bs-toggle":"tooltip","data-bs-placement":"Top","title":`${(key=='number')? '"Số hiệu" đã tồn tại':'"Số vào sổ" đã tồn tại' }`});
               }
+            })
+            
+            numberList.forEach(function(number){
+              var i=0;
+              $(`.number-${number}`).each(function(){i++}) 
+              console.log(i)
+              if (i > 1){
+                $(`.number-${number}`).addClass('text-danger').html(`${number}<i class="fas fa-times"></i>`).attr({"data-bs-toggle":"tooltip","data-bs-placement":"Top","title":`Số chứng chỉ bị trùng`});
+              };
+            })
+            regnoList.forEach(function(regno){
+              var i=0;
+              $(`.regno-${regno}`).each(function(){i++}) 
+              console.log(i)
+              if (i > 1){
+                $(`.regno-${regno}`).addClass('text-danger').html(`${regno}<i class="fas fa-times"></i>`).attr({"data-bs-toggle":"tooltip","data-bs-placement":"Top","title":`Số vào sổ bị trùng`});
+              };
             })
             var times = $('.fa-times');
             if (times.length > 0){

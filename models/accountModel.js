@@ -99,12 +99,25 @@ let removeByIssuerId = (issuer_id) => {
         )
     });
 };
+let get_password = (account_username) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'SELECT account_password FROM accounts WHERE account_username=?', 
+            [account_username],
+            function(err,data){
+                if (err) { console.log(err); reject();}
+                resolve(data[0].account_password);
+            }
+        )
+    });
+};
 
 module.exports = {
     select,
     get_accountById,
     get_accountByUsername,
     get_stuAbyEmail,
+    get_password,
     create,
     update,
     remove,

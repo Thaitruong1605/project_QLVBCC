@@ -73,11 +73,26 @@ let remove = (id) =>{
   })
 }
 
+let countAll = (school_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT COUNT(*) AS number
+      FROM accounts
+      WHERE account_type = 'issuer' 
+        AND school_id = '${school_id}'`,
+      function(err , results){
+        if (err) { console.log(err) , reject(); }
+        resolve(results[0]['number']);
+      }
+    );
+  })
+}
+
 module.exports = {
   select,
   selectById,
   getIdbyEmail,
   create,
   update,
-  remove
+  remove,countAll
 }

@@ -1,31 +1,34 @@
-<div class="flex-shrink-0 bg-light bg-gradient ps-3 w-100 sidebar shadow">
-  <a href="/school" class="d-flex px-2 pt-3 my-3 link-dark text-decoration-none">
-    <b>HOME</b>
-  </a>
-  <hr>
-  <ul class="list-unstyled ps-0">
+<div class="flex-shrink-0 w-100 h-100">
+  <ul style="list-style-type: none; padding: 0;" class= "mt-3 fw-bold">
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#issuer-collapse" aria-expanded="<%= (page == "Degree")? "true":"flase" %>">
-        Issuer
-      </button>
-      <div class="collapse <%= (page == "Degree")? "show": "" %>" id="issuer-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/school/issuer" class="link-dark rounded">Danh sách</a></li>
-        </ul>
-      </div>
+      <a href="/school/dashboard" style="text-decoration: none; color:black;" class="sidebar-item text-start p-2 ps-3 <%= (page == "Dashboard")? "sidebar-item-active": "" %>">
+        <i class="fas fa-tachometer-alt" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Dashboard</span>
+      </a>
     </li>
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#cert-collapse" aria-expanded="<%= (page == "Certificate")? "true":"flase" %>">
-        Chứng chỉ
-      </button>
-      <div class="collapse <%= (page == "Cert")? "show": "" %>" id="cert-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/school/cert/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/school/cert/certname" class="link-dark rounded">Tên chứng chỉ</a></li>
-          <li><a href="/school/cert/certkind" class="link-dark rounded">Loại chứng chỉ</a></li>
-        </ul>
-      </div>
+      <a href="/school/issuer" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "Issuer")? "sidebar-item-active": "" %>">
+        <i class="fas fa-user" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Tài khoản nhập</span>
+      </a>
     </li>
-    <br>
+    <li class="mb-1">
+      <a href="/school/cert" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "Certificate")? "sidebar-item-active": "" %>">
+        <i class="fas fa-file-alt" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Chứng chỉ</span>
+      </a>
+    </li>
+    <li class="mb-1">
+      <a href="/school/cert/certkind" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "Certkind")? "sidebar-item-active": "" %>">
+        <i class="fas fa-list" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Loại chứng chỉ</span>
+      </a>
+    </li>
+    <li class="mb-1">
+      <a href="/school/cert/certname" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "Certname")? "sidebar-item-active": "" %>">
+        <i class="fas fa-font" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Tên chứng chỉ</span>
+      </a>
+    </li>
   </ul>
 </div>

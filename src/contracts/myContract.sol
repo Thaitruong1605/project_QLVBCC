@@ -69,7 +69,6 @@ contract Ownable {
   }
 }
 
-
 contract System is Ownable{ 
   address[] public schoolAddresses;
   address[] public userAddresses;
@@ -79,7 +78,7 @@ contract System is Ownable{
   mapping (string => address) public idnumberToContract;
 
   event addedSchool(address newSchool, address newContract);
-  event changedSchoolContract(address _schoolAddr,address _contractAddr);
+  event changedSchoolContract(address _schoolAddr, address _contractAddr);
   
   event addedUser(address newUser, address newContract);
   event changedUserContract(address _userAddr,address _contractAddr);
@@ -100,6 +99,12 @@ contract System is Ownable{
   function _isSchool(address schoolAddr) public view returns(bool) {
     for (uint i=0; i< schoolAddresses.length; i++){
       if (schoolAddr == schoolAddresses[i]) return true;
+    }
+    return false;
+  }
+  function _isSchoolContract(address schoolCA ) public view returns(bool) {
+    for (uint i=0; i< schoolAddresses.length; i++){
+      if (mapSchool[schoolAddresses[i]] == schoolCA) return true;
     }
     return false;
   }
@@ -132,14 +137,14 @@ contract System is Ownable{
     return mapSchool[_schoolAddr];
   }
   // STUDENT CONTRACT -----------------------------------
-  function addUser(address _userAddr, string memory _idnumber, address _stuCA) public onlyOwner(){
+  function addUser(address _userAddr, string memory _idnumber, address _userCA) public onlyOwner(){
     // check if userAddress is exist
     require (idnumberToContract[_idnumber] == address(0));
     userAddresses.push(_userAddr);
     // push user address to array
-    idnumberToContract[_idnumber] = _stuCA;
-    mapUser[_userAddr] = _stuCA;
-    emit addedUser(_userAddr, _stuCA);
+    idnumberToContract[_idnumber] = _userCA;
+    mapUser[_userAddr] = _userCA;
+    emit addedUser(_userAddr, _userCA);
   }
   function changeUserContract(address _userAddr, address _contractAddr) public onlyOwner(){
     for (uint i = 0 ; i< userAddresses.length; i++){
@@ -150,13 +155,13 @@ contract System is Ownable{
       }
     }
   }
-  function getUserContractAddr(address stuAddr) public view returns(address) {
-    return (mapUser[stuAddr] != address(0))? mapUser[stuAddr] : address(0);
+  function getUserContractAddr(address userAddr) public view returns(address) {
+    return (mapUser[userAddr] != address(0))? mapUser[userAddr] : address(0);
   }
   function createTempContractbyIDNumber (string memory _idnumber, address _sysCA) public onlyOwner(){
     require(idnumberToContract[_idnumber] == address(0));
-    User stuC = new User(msg.sender,_sysCA);
-    idnumberToContract[_idnumber] = address(stuC);
+    User userC = new User(msg.sender,_sysCA);
+    idnumberToContract[_idnumber] = address(userC);
     emit createdTempContractbyIDNumber(_idnumber);
   }
   function getContractbyIDNumber (string memory _idnumber) public view returns(address){
@@ -171,6 +176,10 @@ contract School is Ownable{
   string public idnumber;
   string public fax; 
   string public website;
+  
+  event addedCertificate(address _address, bytes32 _certHash);
+  event deactivatedCertificate(address _address, bytes32 _certHash);
+  event deletedCertificate(address _address, bytes32 _certHash);
 
   constructor(
     string memory _name,
@@ -197,6 +206,27 @@ contract School is Ownable{
     fax; 
     website;
   }
+  function addCertificate(bytes32 _hashedCert, address userCAddr ) public onlyOwner(){
+    User userI = User(userCAddr);
+    if (address(userI) != address(0)) {
+      userI.addCertificate(_hashedCert);
+      emit addedCertificate(msg.sender, _hashedCert);
+    }
+  }
+  function deactivateCertificate(bytes32 _certHash, address userCAddr) public onlyOwner(){
+    User userI = User(userCAddr);
+    if (address(userI) != address(0)) {
+      userI.deactivateCertificate(_certHash);
+      emit deactivatedCertificate(msg.sender, _certHash);
+    }
+  }
+  function deleteCertificate(bytes32 _certHash, address userCAddr) public onlyOwner(){
+    User userI = User(userCAddr);
+    if (address(userI) != address(0)) {
+      userI.deleteCertificate(_certHash);
+      emit deletedCertificate(msg.sender, _certHash);
+    }
+  }
 }
 
 contract User is Ownable{
@@ -214,21 +244,16 @@ contract User is Ownable{
   event deactivatedCertificate(address _address, bytes32 _certHash);
   event deletedCertificate(address _address, bytes32 _certHash);
 
-  constructor(address stuAddr, address _sysCA) public {
+  constructor(address userAddr, address _sysCA) public {
     system = System(_sysCA);
-    transferOwnership(stuAddr);
+    transferOwnership(userAddr);
   }
   
   modifier onlySchool() {
-    require(system._isSchool(msg.sender));
+    require(system._isSchoolContract(msg.sender));
     _;
   }
-  function isSchool() public view onlySchool() returns(bool){
-    return true;
-  }
   function addCertificate(bytes32 _hashedCert) public onlySchool(){
-    certificateList.push(_hashedCert);
-    mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _hashedCert);
     emit addedCertificate(msg.sender, _hashedCert);
   }
   function deactivateCertificate(bytes32 _certHash) public onlySchool(){

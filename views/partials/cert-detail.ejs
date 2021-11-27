@@ -1,55 +1,65 @@
-<table class="table table-borderless">
-  <tbody>
-    <tr >
-      <th colspan="2" scope="col"><h4 class="pb-3 border-bottom">THÔNG TIN CHI TIẾT CỦA CHỨNG CHỈ</h4></th>
-    </tr>
-    <tr>
-      <th>Số hiệu</th>
-      <td><%= cert_info.number %></td>
-    </tr>
-    <tr>
-      <th>Loại</th>
-      <td><%= cert_info.cert_kind %></td>
-    </tr>
-    <tr>
-      <th>Tên chứng chỉ</th>
-      <td><%= cert_info.cert_name %></td>
-    </tr>
-    <tr>
-      <th>Xếp loại</th>
-      <td><%= cert_info.classification %></td>
-    </tr>
-    <tr>
-      <th>Ngày ký</th>
-      <td><%= cert_info.signday %></td>
-    </tr>
-    <tr>
-      <th>Số vào sổ </th>
-      <td><%= cert_info.regno %></td>
-    </tr>
-    <tr >
-      <th colspan="2"><h6 class="ps-3 border-start">THÔNG TIN NGƯỜI NHẬN CHƯNG CHỈ</h6></th>
-    </tr>
-    <tr>
-      <th>Họ tên</th>
-      <td><%= cert_info.student_name %></td>
-    </tr>
-    <tr>
-      <th>Giới tính</th>
-      <td><%= cert_info.student_gender %></td>
-    </tr>
-    <tr>
-      <th>Ngày sinh</th>
-      <td><%= cert_info.student_dayofbirth %></td>
-    </tr>
-    <tr>
-      <th>Nơi sinh</th>
-      <td><%= cert_info.student_placeofbirth %></td>
-    </tr>
-    <tr>
-      <th>Số căn cước</th>
-      <td><%= cert_info.student_idNumber %></td>
-    </tr>
-    
-  </tbody>
-</table>
+<div class="modal fade" id="certDetailModal" tabindex="-1" aria-labelledby="certDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="certDetailModalLabel">Chi tiết chứng chỉ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <th>Số hiệu</th>
+              <td id="number"></td>
+            </tr>
+            <tr>
+              <th>Loại</th>
+              <td id="cert_kind"></td>
+            </tr>
+            <tr>
+              <th>Tên chứng chỉ</th>
+              <td id="cert_name"></td>
+            </tr>
+            <tr>
+              <th>Xếp loại</th>
+              <td id="classification"></td>
+            </tr>
+            <tr>
+              <th>Ngày ký</th>
+              <td id="signday"></td>
+            </tr>
+            <tr>
+              <th>Số vào sổ </th>
+              <td id="regno"></td>
+            </tr>
+            <tr >
+              <th colspan="2"><h6 class="ps-3 border-start">THÔNG TIN NGƯỜI NHẬN CHƯNG CHỈ</h6></th>
+            </tr>
+            <tr>
+              <th>Họ tên</th>
+              <td id="user_name"></td>
+            </tr>
+            <tr>
+              <th>Giới tính</th>
+              <td id="user_gender"></td>
+            </tr>
+            <tr>
+              <th>Ngày sinh</th>
+              <td id="user_dayofbirth"></td>
+            </tr>
+            <tr>
+              <th>Nơi sinh</th>
+              <td id="user_placeofbirth"></td>
+            </tr>
+            <tr>
+              <th>Số căn cước</th>
+              <td id="user_idNumber"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>

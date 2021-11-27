@@ -294,44 +294,48 @@ router.post("/cert/update", async (req, res) => {
     }
   );
 });
-router.get('/cert/detail', async(req, res)=>{
-  if (typeof req.query.number == ''){
-    req.flash('error','Không tìm thấy chứng chỉ');
-    res.redirect('back');
-  }else {
-    var data = fs.readFileSync('./public/cert/cert_' + req.query.number+'.json')
-    var cert_info = JSON.parse(data);
-    if(!cert_info){
-      var url = 'https://ipfs.io/ipfs/' + data[0].ipfs_hash;
-      request(
-        {
-          url: url,
-          json: true,
-        },
-        function (error, response, data) {
-          if (!error && response.statusCode === 200) {
-            return cert_info = data;
-          }
-        }
-      );
-    } 
-    res.render('./issuer/cert/detail',{title:"Chi tiết chứng chỉ",page:"Cert" ,cert_info});
-  }
-})
-router.get('/cert/delete', async(req, res)=>{
-  if (typeof req.query.number == ''){
-    req.flash('error','Không tìm thấy chứng chỉ');
-    res.redirect('back');
-  }else {
+router.post('/cert/detail', async(req, res)=>{
+  var cert_info = "";
+  try {
+    var data = fs.readFileSync('./public/cert/cert_' + req.body.number+'.json')
+    cert_info = JSON.parse(data);
+    return res.json({cert_info});
+  }catch {
     try {
-      await certificateModel.delete_byNumber(req.query.number);
-      fs.unlink('./public/cert/'+req.query.number+'.json');
-      req.flash('msg','Xoá chứng chỉ thành công');
-    }catch (err){
+      await certificateModel.get_ipfs_hash(req.body.number).then(function(data){
+        var ipfs= data;
+        var url = 'https://ipfs.io/ipfs/' + ipfs;
+        request(
+          {
+            url: url,
+            json: true,
+          },
+          function (error, response, data) {
+            if (!error && response.statusCode === 200) {
+              cert_info = data;
+              return res.json({cert_info});
+            }
+          }
+        );
+      })
+    }catch(err){
       console.log(err);
     }
-    res.redirect('/issuer/cert');
   }
+})
+router.post('/cert/delete', async(req, res)=>{
+  try {
+    await certificateModel.delete_byNumber(req.body.number);
+    try{
+      fs.unlink('./public/cert/'+req.body.number+'.json');
+    }catch(err){
+      console.log(err);
+    }
+    req.flash('msg',`Xoá chứng chỉ "${req.body.number}" thành công`);
+  }catch (err){
+    console.log(err);
+  }
+  return res.status(200).send({result: 'redirect', url:'/issuer/cert'})
 })
 router.post('/cert/get-certname', async (req, res)=> {
   await certificateModel.certname_getbyKindId(req.body.ck_id).then(function(data){

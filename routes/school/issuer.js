@@ -13,7 +13,7 @@ const saltRounds = 10;
 router.get('/', async(req, res) => {
   try {
     await issuerModel.select(req.user.school_id).then(function(data){
-      return res.render('./school/issuer',{page:'issuer', title:'Danh sách tài khoản', issuer_list: data});
+      return res.render('./school/issuer',{page:'Issuer', title:'Danh sách tài khoản', issuer_list: data});
     })
   }catch(err){
     console.log(err);

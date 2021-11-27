@@ -186,7 +186,6 @@ let cert_search = (cn_id,number,user_name,regno) => {
       ( number = ? OR user_name = ? OR regno = ?)`,
       [cn_id,number,user_name,regno],
       function (err, results) {
-        console.log(this.sql)
         if (err) {
           reject();
         } else {
@@ -197,7 +196,6 @@ let cert_search = (cn_id,number,user_name,regno) => {
   });
 }
 let check_cert = (numberList, regnoList) => {
-  console.log(numberList)
   return new Promise((resolve, reject)=> {
     conn.query(
       `SELECT number, regno 
@@ -206,7 +204,6 @@ let check_cert = (numberList, regnoList) => {
         OR regno IN `+regnoList
       
       ,function(err,data){
-        console.log(this.sql)
         if(err){
           console.log(err);
           reject();
@@ -388,9 +385,67 @@ let certkind_remove = (id) => {
     );
   })
 };
-
+let countall = (school_id) => { 
+  return new Promise((resolve, reject) =>{
+    conn.query(
+      `SELECT COUNT(ck.ck_name) AS certnum, ck.ck_name FROM certificates c
+      LEFT JOIN certkind ck ON c.ck_id = ck.ck_id
+      WHERE ck.school_id = "${school_id}"
+      GROUP BY ck.ck_name`,
+      function(err, results){
+        if (err){
+          console.log(err);
+          reject();
+        }
+        resolve(results);
+      }
+    );
+  })
+};
+let count_groupByIssuer = (school_id)=>{
+  return new Promise((resolve, reject) =>{
+    conn.query(
+      `SELECT account_username, tmp.* FROM accounts a 
+      LEFT JOIN (SELECT c.issuer_id,ck.ck_name, COUNT(ck.ck_id) AS number FROM certificates c
+      LEFT JOIN certkind ck ON ck.ck_id = c.ck_id 
+      WHERE ck.school_id = "${school_id}"
+      GROUP BY ck.ck_id, c.issuer_id) AS tmp ON tmp.issuer_id = a.issuer_id
+      WHERE a.account_type ='issuer' `,
+      function(err, results){
+        if (err){
+          console.log(err);
+          reject();
+        }
+        resolve(results);
+      }
+    );
+  })
+}
+let list_cert = (data) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT c.number, c.regno, cn.cn_name, a.account_username, c.user_name, c.status, c.createTime FROM certificates c
+      LEFT JOIN certname cn ON c.cn_id = cn.cn_id
+      LEFT JOIN accounts a ON a.issuer_id = c.issuer_id
+          WHERE c.cn_id LIKE '%${data.cn_id}%' AND
+          createTime >= '${data.fromDate}' AND
+          createTime <= '${data.toDate}' AND
+          user_name LIKE '%${data.user_name}%' AND
+          regno LIKE '%${data.regno}%' AND
+          number LIKE '%${data.number}%'`,
+      function(err, results){
+        console.log(this.sql);
+        if (err){
+          console.log(err);
+          reject();
+        }
+        resolve(results);
+      }
+    )
+  })
+}
 module.exports = {
-  select_byschool,select_byEmail,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,
+  select_byschool,select_byEmail,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,countall,count_groupByIssuer,
   get_certformipfs,
   cert_search,
   create,
@@ -399,5 +454,6 @@ module.exports = {
   update_ipfs_hash,
   delete_byNumber,
   certname_get, certname_getbyschool, certname_create, certname_update, certname_remove,certname_getbyKindId,
-  certkind_get, certkind_getbyschool, certkind_create, certkind_update, certkind_remove
+  certkind_get, certkind_getbyschool, certkind_create, certkind_update, certkind_remove,
+  list_cert
 };

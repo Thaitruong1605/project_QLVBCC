@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles') %>
+  <%- include('./layouts/styles') %>
+
+  <style>
+    .fa-edit:hover{
+      color: #ffc107;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/alert') %>
+  <div class="container-fuild">
+    <div class="row">
+      <div class="col-3">
+          <%- include("./partials/sidebar.ejs")%>
+      </div>
+      <div class="col">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <th scope="row" class="w-25">Địa chỉ</th>
+                <td id="account_address"><%= account.account_address %>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Tên đang nhập:</th>
+                <td><span id="account_username"><%= account.account_username %> </span>
+                </td>
+              </tr>
+              <tr>
+                <th colspan="3" class="h5">Thông tin sinh viên</th>
+              </tr>
+              <tr >
+                <th scope="row" class="w-25">ID</th>
+                <td ><span id="user_id"><%= user.user_id %></span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Họ tên:</th>
+                <td>
+                  <span id="user_name"><%= user.user_name %></span><i class="fas fa-edit ps-2"></i>
+                  <div class="input-group" style="display: none;">
+                    <input type="text" class="form-control" name="user_name" value="<%= user.user_name %>" />
+                    <button class="btn btn-outline-primary" type="button" >Lưu</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Ngày sinh:</th>
+                <td><span id="user_birth"><%= moment(user.user_birth).format('DD/MM/YYYY') %></span>
+                  <i class="fas fa-edit ps-2"></i>
+                  <div class="input-group" style="display: none;">
+                    <input type="text" class="form-control" name="user_birth" id="u-user_birth" value="<%= moment(user.user_birth).format('DD/MM/YYYY') %>" />
+                    <button class="btn btn-outline-primary" type="button" >Lưu</button>
+                  </div> 
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại:</th>
+                <td><span id="user_phoneNumber"><%= user.user_phoneNumber%></span>
+                  <i class="fas fa-edit ps-2" ></i>
+                  <div class="input-group" style="display: none;">
+                    <input type="text" class="form-control" name="user_phoneNumber" value="<%= user.user_phoneNumber %>" />
+                    <button class="btn btn-outline-primary" type="button" >Lưu</button>
+                  </div> 
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Giới tính:</th>
+                <td><span id="user_gender"><%= (user.user_gender == 1)? 'Nam':'Nữ'%></span>
+                  <i class="fas fa-edit ps-2"></i>
+                  <div class="input-group" style="display: none;">
+                    <select type="text" class="form-control" name="user_gender" value="<%= user.user_gender %>" >
+                      <option value="1" <%= (user.user_gender==1)? 'selected':'' %>>Nam</option>
+                      <option value="0" <%= (user.user_gender==0)? 'selected':'' %>>Nữ</option>
+                    </select>
+                    <button class="btn btn-outline-primary" type="button" >Lưu</button>
+                  </div> 
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Email:</th>
+                <td><span id="user_email"><%= user.user_email%></span>
+                  <i class="fas fa-edit ps-2"></i>
+                  <div class="input-group" style="display: none;">
+                    <input type="text" class="form-control" name="user_email" value="<%= user.user_email %>" />
+                    <button class="btn btn-outline-primary" type="button">Lưu</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Số CCCD/CMND:</th>
+                <td><span id="user_idNumber"><%= user.user_idNumber%></span>
+                  <i class="fas fa-edit ps-2"></i>
+                  <div class="input-group" style="display: none;">
+                    <input type="text" class="form-control" name="user_idNumber" value="<%= user.user_idNumber %>" />
+                    <button class="btn btn-outline-primary" type="button" >Lưu</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Địa chỉ:</th>
+                <td><span id="user_placeAddress"><%= user.user_placeAddress%></span>
+                  <i class="fas fa-edit ps-2"></i>
+                  <div class="input-group" style="display: none;">
+                    <input type="text" class="form-control" name="user_placeAddress" value="<%= user.user_placeAddress %>" />
+                    <button class="btn btn-outline-primary" type="button" >Lưu</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>  
+    </div>
+  </div>
+
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="/user/edit" method="POST" >  
+            <div class="row">
+              <div class="col-md-10">
+                <input type="input" class="form-control" id="update-input" name="" value="" />
+                <input type="text" class="form-control" id="u-user_birth" autocomplete="off">
+                <select class="form-control" id="u-user_gender"> 
+                  <option value = "">Chọn giới tính</option>
+                  <option value = "1">Nam</option>
+                  <option value = "0">Nữ</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Lưu</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/scripts') %>
+  <script>
+    $(document).ready(function(){
+      $("#u-user_birth" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: "03/09/1999"
+      });
+      $('.fa-edit').on('click',function(){
+        $(this).parent().children('div').toggle(300).children('input');
+      })
+      $(".btn-outline-primary").on('click', function(e){
+        console.log(`${$(this).parent().children('input').attr('name')} -- ${$(this).parent().children('input').val()}`)
+        e.preventDefault;
+        $.ajax({
+          method: "POST",
+          url:"/user/update-info",
+          data:{
+            name: $(this).parent().children('input').attr('name'),
+            value: $(this).parent().children('input').val()
+          },
+          success: function(res){
+            if (res.result == 'redirect') {
+              //redirecting to main page from here.
+              window.location.replace(res.url);
+            }
+          }
+        })
+      })
+      $( "#student_birth" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: $(this).val()
+      });
+    })  
+  </script>
+</body>
+</html>

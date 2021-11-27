@@ -10,6 +10,10 @@
      color: #0d6efd;
      cursor: pointer;
     }
+    #divSreach {
+      border-radius: 0 0 5px 5px;
+      background-color: rgba(108, 117, 125, 0.01);
+    }
   </style>
   <%- include('./layouts/styles.ejs')%>
 </head>
@@ -17,40 +21,39 @@
   <%- include('./partials/header.ejs') %>
   <%- include('./partials/alert.ejs') %>
 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
-        <div class="mp-3">
-          <form method="POST" action="/tra-cuu" id="frmSearch">
-            <div class="row g-3">
-              <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Nơi cấp phát chứng chỉ:</label></div>
+  <div id="main-content" class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-md-10 shadow" id="divSreach">
+        <div class="my-3 row justify-content-center">
+          <form method="POST" action="/tra-cuu" id="frmSearch" class="col-md-8">
+            <div class="row g-3 pt-4 mb-1">
+              <div class="col-2 text-start" style="min-width: 200px;"> <label for="school_id" class="col-form-label"><i>Nơi phát hành:</i></label></div>
               <div class="col text-start">
                 <select id="school_id" class="form-control">
-                  <option value=''>Chọn nơi cấp phát chứng chỉ</option>
+                  <option value='' disabled selected hidden>Chọn nơi cấp phát chứng chỉ</option>
                   <% schoolList.forEach(function(school){ %>
                     <option value='<%= school.school_id %>'><%= school.school_name %></option>
                   <%})%>
                 </select>
               </div>
             </div>
-            <div class="row g-3">
-              <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Loại chứng chỉ:</label></div>
+            <div class="row g-3 mb-1">
+              <div class="col-2 text-start" style="min-width: 200px;"> <label for="ck_id" class="col-form-label"><i>Loại chứng chỉ:</i></label></div>
               <div class="col text-start">
                 <select id="ck_id" class="form-control">
-                  <option value=''>Chọn loại chứng chỉ</option>
+                  <option value='' disabled selected hidden>Chọn loại chứng chỉ</option>
                 </select>
               </div>
             </div>
-            <div class="row g-3">
-              <div class="col-4 text-end"> <label for="school_id" class="col-form-label">Tên chứng chỉ:</label></div>
+            <div class="row g-3 mb-1">
+              <div class="col-2 text-start" style="min-width: 200px;"> <label for="cn_id" class="col-form-label"><i>Tên chứng chỉ:</i></label></div>
               <div class="col text-start">
                 <select id="cn_id" name="cn_id" class="form-control">
-                  <option value=''>Chọn tên chứng chỉ</option>
+                  <option value='' class="text-secondary" disabled selected hidden>Chọn tên chứng chỉ</option>
                 </select>
               </div>
             </div>
-            <div class="row g-1">
+            <div class="row g-1 mb-1">
               <div class="col text-start">
                 <input type="text" class="form-control" name="user_name" placeholder="Họ tên người nhận"/>
               </div>
@@ -60,35 +63,36 @@
               <div class="col-3 text-start">
                 <input type="text" class="form-control" name="regno" placeholder="số vào sổ"/>
               </div>
-              <div class="col-auto text-start">
-                <button type="submit" id="btn-submit" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
-              </div>
             </div>
-            <div class="form-text text-center">
-              * Điều kiện tìm kiếm: Họ tên, số hiệu, số vào sổ không phân biệt ký tự HOA, thường.
+            <div class="form-text text-center mt-2">
+              <span style="color:red">*</span><i> Điều kiện tìm kiếm: Họ tên, số hiệu, số vào sổ không phân biệt ký tự HOA, thường.</i>
+            </div>
+
+            <div class="col-auto text-end mt-3">
+              <button type="reset" id="btn-reset" class="btn btn-secondary btn-sm"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Xoá <i class="fas fa-undo"></i> </button>
+              <button type="submit" id="btn-submit" class="btn btn-primary btn-sm"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
             </div>
             <span id="count"></span>
           </form>
         </div>
-      </div>
-      <div class="row">
-
-        <div class="col">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Tên văn bằng</th>
-                <th scope="col">Họ và tên</th>
-                <th scope="col">Ngày sinh</th>
-                <th scope="col">Số hiệu</th>
-                <th scope="col">Số vào sổ</th>
-                <th scope="col">Chi tiết</th>
-              </tr>
-            </thead>
-            <tbody id="certList">
-            </tbody>
-          </table>
+        <div class="row">
+          <div class="col">
+            <table class="table table-striped invisible" >
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Tên văn bằng</th>
+                  <th scope="col">Họ và tên</th>
+                  <th scope="col">Ngày sinh</th>
+                  <th scope="col">Số hiệu</th>
+                  <th scope="col">Số vào sổ</th>
+                  <th scope="col">Chi tiết</th>
+                </tr>
+              </thead>
+              <tbody id="certList">
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -99,6 +103,7 @@
   <script>
     $(document).ready(function(){
       // $('#certModal').modal('show');
+      // $("#divSreach").height($('body').height() - $("#header").height());
       var kindList =[], nameList=[] ;
       $( "#school_id" ).change(function() {
         $( "#school_id option:selected" ).each(async function(event) {
@@ -115,7 +120,7 @@
                 kindList[school_id] = res.kindList; 
               }
             })
-            html = `<option value=''>Chọn loại chứng chỉ</option>`;
+            html = `<option value='' disabled selected hidden>Chọn loại chứng chỉ</option>`;
             kindList[school_id].forEach(function(row){
               html += `<option value='${row.ck_id}'>${row.ck_name}</option>`
             })
@@ -142,7 +147,7 @@
                 nameList[ck_id] = res.nameList; 
               }
             })
-            html = `<option value=''>Chọn tên chứng chỉ</option>`;
+            html = `<option value='' disabled selected hidden>Chọn tên chứng chỉ</option>`;
             nameList[ck_id].forEach(function(row){
               html += `<option value='${row.cn_id}'>${row.cn_name}</option>`
             })
@@ -154,6 +159,7 @@
           
         });
       }).trigger( "change" );
+      
       $("#frmSearch").submit(async function (event){
         $(".spinner-border").attr('hidden',false).parent().attr('disabled',true)
         event.preventDefault();
@@ -177,11 +183,12 @@
               </tr>`
             })
             $('#certList').html(html).fadeIn(2000);
+            $('#certList').removeClass('invisible');
             $(".spinner-border").attr('hidden',true).parent().attr('disabled',false)
             }
+          })
         })
       })
-    })
     $(document).on('click', '.fnDetail',async function(){
       $(this).parent('td').children(".spinner-border").attr('hidden',false);
       console.log('fnDetail');
@@ -206,6 +213,7 @@
         }
       })
       $(this).parent('td').children(".spinner-border").attr('hidden',true);
+
     });
   </script>
 </body>

@@ -75,7 +75,7 @@ router.get('/tra-cuu',async (req ,res) => {
   }catch(err){
     console.log(err);
   }
-  res.render('./cert-search',{title:'Tra cứu văn bằng chứng chỉ',schoolList})
+  res.render('./cert-search',{title:'Tra cứu văn bằng chứng chỉ',schoolList, tag:"tra-cuu"})
   
 })
 router.get('/cert-detail', async (req, res) =>{
@@ -167,7 +167,7 @@ router.post('/get-certName', async (req, res)=>{
   }
 })
 router.get('/qrscan', (req, res) => {
-  res.render('./qrscan',{title:'Tua cứu chứng chỉ bằng mã QR'})
+  res.render('./qrscan',{title:'Tua cứu chứng chỉ bằng mã QR', tag:"qrscan"})
 })
 router.post('/get-detai-by-ipfs', async (req, res) => {
   console.log(req.body);

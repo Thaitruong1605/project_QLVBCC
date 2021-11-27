@@ -5,49 +5,63 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <%- include('./layouts/styles') %>
+  <%- include('../layouts/styles') %>
 </head>
 <body>
   <%- include('../partials/header') %>
   <%- include('../partials/alert') %>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-2">
-        <%- include('./partials/sidebar')%>
-      </div>
-      <div class="col">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-          Thêm tài khoản cho người phát hành
-        </button>
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <th scope="col">#</th>
-              <th scope="col">ID</th>
-              <th scope="col">Tên đăng nhập</th>
-              <th scope="col">Tên đăng nhập</th>
-              <th scope="col">Trạng thái</th>
-              <th scope="col">Hành động</th>
-            </thead>
-            <tbody>
-              <% var i = 1; issuer_list.forEach(function(issuer){ %>
-                <tr>
-                  <th scope="row"><%= i++; %></th>
-                  <th><%= issuer.issuer_id%></th>
-                  <td><%= issuer.issuer_name%></td>
-                  <td><%= issuer.account_username%></td>
-                  <td><%= issuer.account_status%></td>
-                  <td>
-                    <button class="btn btn-primary btn-detail" issuer_id = "<%= issuer.issuer_id %>">Chi tiết</button>
-                    <button class="btn btn-warning btn-update" issuer_id = "<%= issuer.issuer_id %>">Sửa</button>
-                    <button class="btn btn-danger btn-delete" issuer_id = "<%= issuer.issuer_id %>">Xoá</button>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
+      <div class="col-2 border-end">
+          <%- include('./partials/sidebar')%>
         </div>
-      </div>
+        <div class="col px-5">
+          <div class="row d-flex pt-3 g-5">
+            <div class="col">
+              <span class = "h4">Danh sách tài khoản nhập chứng chỉ - <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                Thêm
+                </button> 
+              </span>
+              <div class="card mt-3 rounded border-2 shadow">
+                <div class="card-body ">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <th scope="col">#</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Tên đăng nhập</th>
+                        <th scope="col">Họ tên</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col" style="width: 110px;"></th>
+                      </thead>
+                      <tbody>
+                        <% var i = 1; issuer_list.forEach(function(issuer){ %>
+                          <tr>
+                            <th scope="row"><%= i++; %></th>
+                            <td><%= issuer.issuer_id%></td>
+                            <td><%= issuer.account_username%></td>
+                            <td><%= issuer.issuer_name%></td>
+                            <td><% if (issuer.account_status == 'active'){%>
+                              <span class="text-success fw-bold">active</span>
+                            <%} else {%>
+                              <span class="text-danger fw-bold">lock  </span>
+                              <%} %>
+                            </td>
+                            <td >
+                              <i class="fas fa-external-link-alt i-detail pe-3" issuer_id = "<%= issuer.issuer_id %>"></i>
+                              <i class="fas fa-edit i-edit pe-3" issuer_id = "<%= issuer.issuer_id %>"></i>
+                              <i class="fas fa-trash i-delete" issuer_id = "<%= issuer.issuer_id %>"></i>
+                            </td>
+                          </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
   <!-- MODAL CREATE-->
@@ -198,7 +212,7 @@
               </tr>
             </tbody>
           </table>
-          <h5 class="border-start border-3 ps-3">Thông tin sinh viên:</h5>
+          <h5 class="border-start border-3 ps-3">Thông tin cá nhân:</h5>
           <table class="table">
             <tbody>
               <tr>
@@ -247,7 +261,7 @@
         })
       }
 
-      $(".btn-detail").on('click',async function(event){
+      $(".i-detail").on('click',async function(event){
         event.preventDefault();
         
         let id = $(this).attr('issuer_id');
@@ -261,7 +275,7 @@
         $("#detailModal").modal('show');
       })
       //Cập nhật thông tin người phát hành
-      $(".btn-update").on('click',async function(event){
+      $(".i-edit").on('click',async function(event){
         event.preventDefault;
         let id = $(this).attr('issuer_id');
         if (typeof issuer_tempList[id] == 'undefined'){
@@ -276,7 +290,7 @@
         $("#updateModal").modal('show');
       })
       // Xoá 
-      $(".btn-delete").on('click', function(event){
+      $(".i-delete").on('click', function(event){
         if (confirm('Bạn có chắn chắn xoá? Hành động này không thể phục hồi!')) {
           event.preventDefault;
           let id = $(this).attr('issuer_id');

@@ -6,57 +6,63 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <%- include('../layouts/styles'); %>
+  <%- include('../../layouts/styles'); %>
 </head>
 
 <body>
   <%- include('../../partials/header') %>
-  <div class="container">
+  <%- include('../../partials/alert') %>
+
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-2">
-        <%- include('../partials/sidebar.ejs'); %>
+      <div class="col-2 border-end">
+        <%- include('../partials/sidebar')%>
       </div>
-      <div class="col">
-        <div class="row">
-          <%- include('../../partials/alert.ejs') %>
+      <div class="col-10 px-5">
+        <div class="row mt-3">
+          <div class="col">
+            <span class='h5 mt-3'> Danh sách tên chứng chỉ - <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createCNModal"> <i class="fas fa-plus"></i> </button></span>
+            <div class="card mt-3">
+              <div class="card-body">
+                <table class="table" id="table-certname">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">ID</th>
+                      <th scope="col">Tên chứng chỉ</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% i=1; %>
+                    <% name_list.forEach(function(elt){ %>
+                      <tr>
+                        <th scope="row"><%= i++; %></th>
+                        <td><%= elt.cn_id; %></td>
+                        <td><%= elt.cn_name; %></td>
+                        <td style="width: 70px;">
+                          <i class="fas fa-edit pe-2 u-cn" cn_id="<%= elt.cn_id; %>" cn_name="<%= elt.cn_name; %>" class="btn btn-warning btn-update" data-bs-toggle="modal" data-bs-target="#updateCNModal"></i>
+                          <i class="fas fa-trash d-cn" id="<%= elt.cn_id; %>"></i>
+                        </td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class='h3'> Danh sách tên chứng chỉ - </span>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"> Thêm </button>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Mã tên chứng chỉ</th>
-              <th scope="col">Tên chứng chỉ</th>
-              <th scope="col">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% i=1; %>
-            <% name_list.forEach(function(elt){ %>
-              <tr>
-                <th scope="row"><%= i++; %></th>
-                <td><%= elt.cn_id; %></td>
-                <td><%= elt.cn_name; %></td>
-                <td>
-                  <button type="button" cn_id="<%= elt.cn_id; %>" cn_name="<%= elt.cn_name; %>" class="btn btn-warning btn-update" data-bs-toggle="modal" data-bs-target="#updateModal">Sửa</button>
-                  <a class="btn btn-danger" href="/school/cert/certname/remove?id=<%= elt.cn_id; %>">Xoá</a>  
-                </td>
-              </tr>
-            <% }); %>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
 
   <!-- Modal -->
   <!-- Thêm mới -->
-  <div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+  <div class="modal fade" id="createCNModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="createCNModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="createModalLabel">Thêm tên chứng chỉ</h5>
+          <h5 class="modal-title" id="createCNModalLabel">Thêm tên chứng chỉ</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form action="/school/cert/certname/create" method="POST">
@@ -82,11 +88,11 @@
     </div>
   </div>
   <!-- Sửa -->
-  <div class="modal fade" id="updateModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+  <div class="modal fade" id="updateCNModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="updateCNModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="updateModalLabel">Sửa tên chứng chỉ</h5>
+          <h5 class="modal-title" id="updateCNModalLabel">Sửa tên chứng chỉ</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form action="/school/cert/certname/update" method="POST" >
@@ -106,15 +112,35 @@
   </div>
   <%- include('../../layouts/scripts.ejs'); %>
   <script type="text/javascript">
-    $(window).on('load', function() {
-        $('#msg-modal').modal('show');
-        $('#alert-modal').modal('show');
-        $('#error-modal').modal('show');
-
-        $('.btn-update').on('click',function(){
-          $('#upd_cn_id').val($(this).attr('cn_id')) ;
-          $('#upd_cn_name').val($(this).attr('cn_name')) ;
-        })
+    $(document).ready(function() {
+      $('.u-cn').on('click',function(){
+        $('#upd_cn_id').val($(this).attr('cn_id')) ;
+        $('#upd_cn_name').val($(this).attr('cn_name')) ;
+      })
+      $('.d-cn').on('click',function(event){
+        if (confirm("Bạn có chắc chắn xoá! Hành động này không thể hoàn tác.")){
+          event.preventDefault;
+          $.ajax({
+            method:"POST",
+            url:"/school/cert/certname/remove",
+            data:{
+              id: $(this).attr('id')
+            },
+            success: function(res){
+              if (res.result == "redirect"){
+                window.location.replace(res.url);
+              }else {
+              }
+            }
+          })
+        }
+      })
+      $('#table-certname').DataTable({
+        info:false,
+        sort: false,
+        lengthChange: false,
+        length: 5
+      })
     });
   </script>
 </body>

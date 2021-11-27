@@ -4,24 +4,157 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title + " - " + page; %></title>
-  <%- include('./layouts/styles') %>
+  <title><%= title; %></title>
+  <%- include('../layouts/styles') %>
+  <style>
+    #table-transaction_filter {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <%- include('../partials/header') %>
   <%- include('../partials/alert') %>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-2">
+      <div class="col-2 border-end">
         <%- include('./partials/sidebar')%>
       </div>
-      <div class="col">
-        
+      <div class="col-10 px-5">
+        <div class="row">
+          <div class="col">
+            <div class="card mt-3">
+              <div class="card-header">
+                TÀi KHOẢN NHẬP CHỨNG CHỈ - Số lượng: <%= issuerNumber%>
+              </div>
+              <div class="card-body">
+                <table class="table" id="issuerTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Tài khoản</th>
+                      <th scope="col">Chi tiết</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (const [key, value] of Object.entries(countList)) { %>
+                      <tr>
+                        <td scope="row"><%= key %></td>
+                        <% var data = value %>
+                        <td>
+                          <% var i =0 ;for (const [key, value] of Object.entries(data)) { %>
+                            <%= (key != "null")? key+': '+ value : "0" %><%= (i < Object.keys(data).length -1)? ";":""%>
+                            <%i++;%>
+                          <% } %>
+                        </td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+          </div>
+          <div class="col">
+            <div class="card mt-3">
+              <div class="card-header">
+                THỐNG KÊ SỐ LƯỢNG CHỨNG CHỈ, VĂN BẰNG THEO LOẠI
+              </div>
+              <div class="card-body">
+                <div>
+                  <canvas id="myChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="card mt-3">
+              <div class="card-header">
+                <div class="row row-cols-auto g-3">
+                  <label for="inputEmail3" class="col col-form-label ">DANH SÁCH CÁC GIAO DỊCH:</label>
+                  <div class="col">
+                    <input type ="text" style="width: 650px;" class="form-control" id="myInput" placeholder="Tìm kiếm... ">
+                  </div>
+                </div>
+              </div>
+              <div class="card-body table-responsive">
+                <table class="table" id="table-transaction">
+                  <thead>
+                    <tr>
+                      <th scope="col">Transaction Hash</th>
+                      <th scope="col">Tên sự kiện</th>
+                      <th scope="col">Số khối</th>
+                      <th scope="col">Thời gian</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% transactionList.forEach(element => { %>
+                      <tr>
+                        <td scope="row"><%= element.transactionHash %></td>
+                        <td scope="row"><%= element.event %></td>
+                        <td scope="row"><%= element.blockNumber %></td>
+                        <td scope="row"><%= element.timestamp %></td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   
-  <%- include('../layouts/scripts') %>
-
+  <%- include('../layouts/scripts') %> 
+  <script src="/vendors/chart.js/Chart.min.js"></script>
+  <script>
+    $('#issuerTable').DataTable({
+      searching: false,
+      pageLength: 5,
+      lengthChange: false,
+      ordering: false,
+      info: false
+    })
+    var table_transaction = $("#table-transaction").DataTable({
+      pageLength: 10, 
+      lengthChange: false,
+      "order": [[ 3, "desc" ]]
+    })
+    $('#myInput').on( 'keyup', function () {
+      table_transaction.search( this.value ).draw();
+    } );
+    // CHART 
+    const data = {
+      labels: [ <% certNumber.forEach(function(row) { %>
+        '<%= row['ck_name'] %>', 
+      <% }) %> ],
+    datasets: [{
+      label: 'Số lượng chứng chỉ văn bằng',
+      data: [<% certNumber.forEach(function(row) { %>
+          <%= row['certnum'] %>, 
+        <% }) %> ],
+      backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)'
+      ],
+      hoverOffset: 4
+      }]
+    };
+    const config = {
+      type: 'doughnut',
+      data: data,
+    };
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
+    // 
+    $(document).ready(function(){
+     
+    })
+  </script>
 </body>
 </html>

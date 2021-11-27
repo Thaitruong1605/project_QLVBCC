@@ -35,30 +35,32 @@ const client = ipfsClient.create({
 });
 
 client.pin.add("QmeGAVddnBSnKc1DLE7DLV9uuTqo5F7QbaveTjr45JUdQn").then((res) => {
-  // console.log(res)
 });
 
 // CHỨNG CHỈ ------------------------------------------------------------------------------------
 router.get("/", async (req, res) => {
-  var kindlist, namelist, certlist;
-  try{
-    await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
+  var kindlist, namelist, certlist, kindList;
+  try { await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
+      return kindList = data;
+    })
+  }catch(err){
+    console.log(err);
+  }
+  try{ await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
       return namelist= data;
     });
   }catch(err){
     console.log(err);
     return res.redirect('/school');
   }
-  try{
-    await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
+  try{ await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
       return kindlist= data;
     });
   }catch(err){
     console.log(err);
     return res.redirect('/school');
   }
-  try {
-    await certificateModel.select_byschool(req.user.school_id).then(function (data) {
+  try { await certificateModel.select_byschool(req.user.school_id).then(function (data) {
       return certlist= data;
     });
   } catch (err) {
@@ -66,122 +68,19 @@ router.get("/", async (req, res) => {
     return res.redirect('/school');
   }
   if (kindlist !='' && namelist !=''){
-    res.render("./school/cert/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment });
-  }else {
-    req.flash('err','Không thể truy cập');
-    res.redirect('/school');
+    return res.render("./school/cert/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment ,kindList});
   }
-});
-router.get("/create",async (req, res) => {
-  var kindlist, namelist;
-  try{
-    await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
-      return namelist= data;
-    });
-  }catch(err){
-    console.log(err);
-    res.redirect("back");
-  }
-  try{
-    await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
-      return kindlist= data;
-    });
-  }catch(err){
-    console.log(err);
-    res.redirect("back");
-  }
-  res.render("./school/cert/create",{title:'Nhập chứng chỉ',namelist, kindlist , page:'Certificate'});
-});
-router.get("/update",async (req, res) => {
-  // lay du lieu
-  var kindlist, namelist;
-  try{
-    await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
-      return namelist= data;
-    });
-  }catch(err){
-    console.log(err);
-    res.redirect("back");
-  }
-  try{
-    await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
-      return kindlist= data;
-    });
-  }catch(err){
-    console.log(err);
-    res.redirect("back");
-  }
-  // 
-  try {
-    certificateModel.select_byNumber(req.query.number).then(async function (data) {
-      var filename = data[0].filename;
-     
-        data = JSON.parse(fs.readFileSync("./public/cert/" + filename));
-        res.render('./school/cert/update',{title:"Cập nhật chứng chỉ",page:"Certificate" ,cert_info: data,kindlist,namelist});
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
-router.get("/detail", async (req, res) => {
-  if (typeof req.query.number == ''){
-    req.flash('error','Không tìm thấy chứng chỉ');
-    res.redirect('back');
-  }else {
-    try {
-      var data = await fs.readFileSync('./public/cert/cert_' + req.query.number+'.json');
-      var cert_info = JSON.parse(data);
-      res.render('./school/cert/detail',{title:"Chi tiết chứng chỉ",page:"Cert" ,cert_info});
-    }catch(err){
-      ipfs_hash = await certificateModel.get_ipfs_hash(req.query.number);
-      var url = 'https://ipfs.io/ipfs/' + ipfs_hash;
-      request(
-        {
-          url: url,
-          json: true,
-        },
-        function (error, response, data) {
-          if (!error && response.statusCode === 200) {
-            cert_info = data;
-            res.render('./school/cert/detail',{title:"Chi tiết chứng chỉ",page:"Cert" ,cert_info});
-          }
-        }
-      );
-    }
-  }
-});
-router.get("/delete", async (req, res) => {
-  // lay ten file
-  try {
-    certificateModel.select_byNumber(req.query.number).then(function (data) {
-      var cert = data[0];
-      if (cert.ipfs_hash == null) {
-        fs.unlink("./public/cert/" + cert.filename, (err) => {
-          // xoa file
-          // Xoá thông tin trong csdl
-          if (err) console.log(err);
-          else {
-            try {
-              certificateModel.delete_byNumber(req.query.number);
-              res.redirect("/school/cert/");
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        });
-      } else {
-        console.log("File đã được up lên ipfs");
-      }
-    });
-  } catch (err) {
-    console.log(err);
-  }
+  req.flash('err','Không thể truy cập');
+  return res.redirect('/school');
 });
 router.get("/issue", async (req, res) => {
-  if(typeof req.query.number == 'undefined ') return;
-  // create system Instance
+  if(typeof req.query.number == 'undefined '){
+    req.flash("error","Phát hành chứng chỉ thất bại!");
+    return res.redirect("/school/cert");
+  } 
+  // I. Create system Instance
     const systemInstance = await SystemContract.deployed();
-  // get user contract 
+  // II. Get user contract 
     var stuCA = await systemInstance.getContractbyIDNumber(req.query.user_idNumber);
     console.log(stuCA)
     if (stuCA == '0x0000000000000000000000000000000000000000'){
@@ -192,35 +91,38 @@ router.get("/issue", async (req, res) => {
       }
       stuCA = await systemInstance.getContractbyIDNumber(req.query.user_idNumber);
     }
-    // push cert to blockchain
-      // create user Instance
+  // III. Add cert to user's contracts
+    // 1. Create user Instance
     var StudentContract = contract(JSON.parse(fs.readFileSync('./src/abis/Student.json')));
-    StudentContract.setProvider(provider);
+    StudentContract.setProvider(provider); // set provider.
     var stuI = await StudentContract.at(stuCA);
-    //   // up to ifps
+    // 4. Hash cert_json
     var path= './public/cert/cert_' + req.query.number +'.json';
     var hashed_data = CryptoJS.SHA256(JSON.stringify(JSON.parse(fs.readFileSync(path))));
-    QRCode.toFile('./public/qrCode/cert_'+ req.query.number +'.png', 'http://localhost:3000/cert-detail?data=0x'+hashed_data, function (err) {
-      if (err) throw err
-    })
-    console.log('hashed_data: 0x'+hashed_data);
+    // 3. Up cert_json to IPFS. 
     const file = await client.add(
       ipfsClient.globSource(path)
     );
     var ipfs_hash = file.cid.toString();
+    // 4. Generate QR for cert.
+    QRCode.toFile(
+      './public/qrCode/cert_'+ req.query.number +'.png', 
+      'http://localhost:3000/cert-detail?data=0x'+hashed_data, 
+      function (err) { if (err) console.log(err); }
+    );
+    // 5. Update cert_hash to user's contract.
     try {
       await stuI.addCertificate('0x'+hashed_data,{from: req.user.account_address});
-      // update info in database
-      try {
-        await certificateModel.update_ipfs_hash(req.query.number, ipfs_hash);
-        // Xoa file tren server
-        fs.unlink(path,(err=>{if(err) console.log(err);}));
-        req.flash('msg','Cáp phát chứng chỉ thành công!');
-        res.redirect('/school/cert');
-      } catch (err) {
-        console.log(err);
-      }
     }catch (err){
+      console.log(err);
+    }
+    // 6. Update cert_info in database.
+    try {
+      await certificateModel.update_ipfs_hash(req.query.number, ipfs_hash);
+      fs.unlink(path,(err=>{if(err) console.log(err);}));
+      req.flash('msg','Cáp phát chứng chỉ thành công!');
+      return res.redirect('/school/cert');
+    } catch (err) {
       console.log(err);
     }
 });
@@ -230,7 +132,7 @@ router.get('/set-to-incorrect', async(req, res )=> {
     res.redirect('back');
   }else {
     var cert = {
-      status: 'Incorrect'
+      status: 'incorrect'
     }
     try {
       await certificateModel.update(req.query.number, cert);
@@ -242,8 +144,25 @@ router.get('/set-to-incorrect', async(req, res )=> {
     }
   }
 })
-
-// 2. Tên chứng chỉ
+router.post('/list-cert', async (req, res) => {
+  data = {
+    cn_id: req.body.cn_id,
+    fromDate: moment(req.body.fromDate,'DD/MM/YYYY').format(),
+    toDate: moment(req.body.toDate,'DD/MM/YYYY').format(),
+    user_name: req.body.user_name,
+    number: req.body.number,
+    regno: req.body.regno,
+  }
+  console.log(data);
+  try {
+    await certificateModel.list_cert(data).then(function(results){
+      return res.send({certList:results});
+    })
+  }catch(err){
+    console.log(err);
+  }
+})
+// CERTNAME ---------------------------------------------------------------------------------------------
 router.get('/certname',async (req, res) => {
   var kind_list, name_list;
   try {
@@ -263,7 +182,7 @@ router.get('/certname',async (req, res) => {
   if (kind_list == '' && name_list == ''){
     return res.redirect('/school');
   }else {
-    return res.render('./school/cert/certname',{page:'Certificate',title:'Danh sách tên chứng chỉ',kind_list, name_list})
+    return res.render('./school/cert/certname',{page:'Certname',title:'Danh sách tên chứng chỉ',kind_list, name_list})
   }
 })
 router.post('/certname/create', async (req, res) => {
@@ -292,26 +211,23 @@ router.post('/certname/update', (req, res) => {
     res.redirect('/school/cert/certname');
   }
 })
-router.get('/certname/remove', (req, res )=> {
-  if (typeof req.query.id != 'undefined'){
-    try{
-      certificateModel.certname_remove(req.user.school_id, req.query.id).then(function(){
-        req.flash("msg","Xoá tên chứng chỉ thành công!");
-        res.redirect('/school/cert/certname');
-      })
-    }catch(err){
-      console.log(err);
-      req.flash("msg","Xoá tên chứng chỉ thất bại!");
-      res.redirect('/school/cert/certname');
-    }
+router.post('/certname/remove', async (req, res )=> {
+  try{
+    await certificateModel.certname_remove(req.user.school_id, req.body.id).then(function(){
+      req.flash("msg","Xoá tên chứng chỉ thành công!");
+    })
+  }catch(err){
+    console.log(err);
+    req.flash("error","Xoá tên chứng chỉ thất bại!");
   }
+  return res.status(200).send({result: 'redirect', url:'/school/cert/certname'});
 })
-// 3. Loại chứng chỉ
 
+// 3. CERTKIND -----------------------------------------------------------------------------
 router.get('/certkind', async (req, res) => {
   try{
     certificateModel.certkind_getbyschool(req.user.school_id).then(function(data) {
-      res.render('./school/cert/certkind',{page:'Certificate',title:'Danh sách loại chứng chỉ',data})
+      res.render('./school/cert/certkind',{page:'Certkind',title:'Danh sách loại chứng chỉ',kind_list:data})
     })
   }catch(err){
     console.log(err);
@@ -335,7 +251,7 @@ router.post('/certkind/create', async (req, res) => {
 })
 router.post('/certkind/update', (req, res) => {
   try{
-    certificateModel.certkind_update(req.body.ck_id,req.body.ck_name).then(function(){
+    certificateModel.certkind_update(req.body.ck_id, req.body.ck_name).then(function(){
       req.flash('msg',"Cập nhập loại chứng chỉ thành công!");
       res.redirect('/school/cert/certkind');
     })

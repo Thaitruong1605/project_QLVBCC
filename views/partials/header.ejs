@@ -1,13 +1,13 @@
-<div class="container-fluid">
+<div class="container-fluid shadow" id="header" style="background-image: url('/imgs/header-background.jpg');background-size: 100% auto;">
   <header class="pt-3 pb-2 px-5">
     <a href="/" class="ps-2">
       <img src="/logo.png" />
     </a>
   </header>
-  <nav class="pb-2 px-5 border-bottom">
+  <nav class="pb-2 px-5">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between ">
       <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 font-header">
-        <li><a href="/tra-cuu" class="nav-link pe-4 link-secondary">Tra cứu chứng chỉ</a></li>
+        <li><a href="/tra-cuu" class="nav-link pe-4 link-dark">Tra cứu chứng chỉ</a></li>
         <li><a href="/qrscan" class="nav-link pe-4 link-dark">QRscan</a></li>
         <% if (typeof currentUser != "undefined" ) { %>
           <% if (currentUser.account_type == "admin" ) { %>
@@ -16,22 +16,21 @@
           <% if (currentUser.account_type == "issuer" ) { %>
           <li><a href="/issuer" class="nav-link pe-4 link-dark">Quản lý</a></li>
           <% }else %>
-          <% if (currentUser.account_type == "student" ) { %>
-          <li><a href="/student" class="nav-link pe-4 link-dark">Sinh viên</a></li>
+          <% if (currentUser.account_type == "user" ) { %>
+          <li><a href="/user" class="nav-link pe-4 link-dark">Sinh viên</a></li>
           <% }else %>
           <% if (currentUser.account_type == "school" ) { %>
           <li><a href="/school" class="nav-link pe-4 link-dark">Quản lý</a></li>
           <% } %>
         <% } %>
       </ul>
-      <ul class="nav">
-        <li>
-        <% if (typeof currentUser == "undefined" ) { %>
-            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal"> Đăng nhập </button>
-        <a class="btn btn-primary" href="/signup"> Đăng ký </a>
-          <% }else{ %>
-            <a class="btn btn-warning" href="/logout">Đăng xuất</a>
-          <% } %></li>
+      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 font-header">
+        <% if (typeof currentUser == 'undefined') {%>
+          <li><a href="" class="nav-link pe-4 link-dark" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</a></li>
+          <li><a class="btn btn-primary" href="/signup"> Đăng ký </a></li>
+        <% }else { %>
+          <li style="display: inherit;" ><span class="mt-2">Xin chào, <%= currentUser.account_username %> / </span><a href="/logout" class="nav-link ps-1 link-secondary">Đăng xuất</a> </li>
+        <% } %>
       </ul>
     </div>
   </nav>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles') %>
+  <%- include('./layouts/styles') %>
+
+  <style>
+    .fa-edit:hover{
+      color: #ffc107;
+      cursor: pointer;
+    }
+    .row{
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/alert') %>
+  <div class="container-fuild">
+    <div class="row">
+      <div class="col-3" style="padding-left: 45px;">
+          <%- include("./partials/sidebar.ejs")%>
+      </div>
+      <div class="col-6">
+        <form action="/user/doi-mat-khau" method="POST"> 
+          <div class="row g-3">
+            <label for="old_password" class="col-form-label col-3">Mật khẩu cũ</label>
+            <input type="password" class="form-control col" autocomplete="none" name="old_password" id="old_password" value="" />
+          </div>
+          <hr />
+          <div class="row g-3">
+            <label for="new_password" class="col-form-label col-3">Mật khẩu mới</label>
+            <input type="password" class="form-control col" autocomplete="none" name="new_password" id="new_password" value="" />
+          </div>
+          <div class="row g-3">
+            <label for="new_repassword" class="col-form-label col-3">Nhập lại mật khẩu</label>
+            <input type="password" class="form-control col" autocomplete="none" name="new_repassword" id="new_repassword" value="" />
+          </div>
+          <br />
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </form> 
+    </div>
+  </div>
+
+  <%- include('../layouts/scripts') %>
+  <script>
+  </script>
+</body>
+</html>

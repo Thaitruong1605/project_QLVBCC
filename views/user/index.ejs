@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles') %>
+  
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.css"/>
+
+  <style>
+    .fa-external-link-alt:hover {
+     color: #0d6efd;
+     cursor: pointer;
+    }
+    li:hover{
+      cursor: pointer;
+      color: blue;
+    }
+  </style>
+
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/alert') %>
+  <div class="container-fuild">
+    <div class="row">
+      <div class="col-3">
+        <%- include("./partials/sidebar.ejs")%>
+      </div>
+      <div class="col-6">
+        <div class="row table-responsive">
+          <table class="table" id="dataTable">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tên văn bằng</th>
+                <th scope="col">Tên trường</th>
+                <th scope="col">Số hiệu</th>
+                <th scope="col">Số vào sổ</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% i=0; certList.forEach(function(cert){%>
+                <tr>
+                  <td><%= i++;%></td>
+                  <td><%= cert.cn_name%></td>
+                  <td><%= cert.school_name%></td>
+                  <td><%= cert.number %></td>
+                  <td><%= cert.regno%></td>
+                  <td><i class="fnDetail fas fa-external-link-alt" ipfs="<%= cert.ipfs_hash %>" ></i><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col-6"></div> -->
+  </div>
+  <%- include('../layouts/scripts') %>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js"></script>
+  <script type="text/javascript" >
+    $(document).ready(function() {
+      $('#dataTable').DataTable( {
+        search: {
+          return: true
+        },
+        columnDefs: [
+          { targets: -1, orderable: false },
+        ]
+        
+      });
+    });
+  </script>
+</body>
+</html>

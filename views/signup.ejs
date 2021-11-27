@@ -42,41 +42,41 @@
                 </div>
                 <h6 class="border-start border-3 ps-3">Đăng ký tài khoản sinh viên</h6>
                 <div class="mb-3">
-                    <label for="student_name">Họ tên: </label>
-                    <input type="text" name="student_name" id="student_name" value="" class="form-control" />
+                    <label for="user_name">Họ tên: </label>
+                    <input type="text" name="user_name" id="user_name" value="" class="form-control" />
                 </div>
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
-                            <label for="student_email">Email: </label>
-                            <input type="text" name="student_email" id="student_email" value="" class="form-control" />
+                            <label for="user_email">Email: </label>
+                            <input type="text" name="user_email" id="user_email" value="" class="form-control" />
                         </div>
 
                     </div>
                     <div class="col">
                         <div class="mb-3">
-                            <label for="student_phoneNumber">Số điện thoại: </label>
-                            <input type="text" name="student_phoneNumber" id="student_phoneNumber" value="" class="form-control" />
+                            <label for="user_phoneNumber">Số điện thoại: </label>
+                            <input type="text" name="user_phoneNumber" id="user_phoneNumber" value="" class="form-control" />
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md">
                         <div class="mb-3">
-                            <label for="student_idNumber">Số căn cước công dân: </label>
-                            <input type="text" name="student_idNumber" id="student_idNumber" value="" class="form-control" />
+                            <label for="user_idNumber">Số căn cước công dân: </label>
+                            <input type="text" name="user_idNumber" id="user_idNumber" value="" class="form-control" />
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="mb-3">
-                            <label for="student_birth">Ngày sinh: </label>
-                            <input type="text" name="student_birth" id="student_birth" value="03/09/1999" class="form-control" autocomplete="off"/>
+                            <label for="user_birth">Ngày sinh: </label>
+                            <input type="text" name="user_birth" id="user_birth" value="03/09/1999" class="form-control" autocomplete="off"/>
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="mb-3">
-                            <label for="student_birth">Giới tính: </label>
-                            <select class="form-control" name="student_gender">
+                            <label for="user_birth">Giới tính: </label>
+                            <select class="form-control" name="user_gender">
                                 <option value="1" selected>Nam</option>
                                 <option value="0">Nữ</option>
                             </select>
@@ -84,8 +84,8 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="student_placeAddress">Địa chỉ: </label>
-                    <input type="text" name="student_placeAddress" id="student_placeAddress" value="" class="form-control" />
+                    <label for="user_placeAddress">Địa chỉ: </label>
+                    <input type="text" name="user_placeAddress" id="user_placeAddress" value="" class="form-control" />
                 </div>
                 <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
             </form>
@@ -95,7 +95,7 @@
   <%- include('./layouts/scripts.ejs') %>
     <script>
         $(document).ready( async function(){
-            $( "#student_birth" ).datepicker({
+            $( "#user_birth" ).datepicker({
                 changeMonth: true,
                 changeYear: true,
                 dateFormat: "dd/mm/yy",
