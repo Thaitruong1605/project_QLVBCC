@@ -1,6 +1,6 @@
 const express = require("express");
-var router = express.Router();
-var Auth = require('../auth'); // kiem tra trang thai dang nhap
+const router = express.Router();
+const Auth = require('../auth'); // kiem tra trang thai dang nhap
 
 router.use(function(req,res,next){
     res.locals.currentUser = req.user;
@@ -11,10 +11,9 @@ router.use(function(req,res,next){
 })
 
 router.use("/", require('./home'));
-// router.use("/issuer", require('./issuer/function'));
-router.use("/admin", require("./admin/function"));
-router.use("/user", require("./user/function"));
-router.use("/school", require("./school/function"));
-router.use("/issuer", require("./issuer/"));
+router.use("/admin",Auth.isAdmin , require("./admin/function"));
+router.use("/user",Auth.isUser, require("./user/function"));
+router.use("/school",Auth.isSchool, require("./school/function"));
+router.use("/issuer",Auth.isIssuer, require("./issuer/"));
 
 module.exports = router;

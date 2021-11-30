@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
   var schI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/School.json'))['abi'], schCA);
   // II. list transactions 
   var data = await schI.getPastEvents('allEvents',{
-    fromBlock: 0, toBlock: 'latest'
+    fromBlock: 0
   },async function(error, event){ 
     if(error) console.log(error);
     return event;
@@ -36,6 +36,7 @@ router.get("/", async (req, res) => {
   var transactionList = []
   console.log(Object.keys(data).length)
   for (i= Object.keys(data).length-2; i>= 0; i-- ){
+    console.log(data[i].returnValues._certHash);
     transactionList.push({
       transactionHash: data[i].transactionHash,
       address: data[i].address,

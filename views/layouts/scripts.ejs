@@ -10,5 +10,8 @@
     $('#msg-modal').modal('show');
     $('#alert-modal').modal('show');
     $('#error-modal').modal('show');
+
+    $("#sidebar").css({"height":$('body').height() - $("#header").height()+"px"});
+    console.log($('body').height() - $("#header").height())
   });
 </script>

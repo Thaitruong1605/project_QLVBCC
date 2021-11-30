@@ -10,12 +10,12 @@
 <body>
   <%- include('../../partials/header') %>
   <%- include('../../partials/alert') %>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-2">
-        <%- include('../partials/sidebar') %>
+      <div class="col-2 border-end" id="sidebar" style=" width: fit-content; ">
+        <%- include('../partials/sidebar')%>
       </div>
-      <div class="col"> 
+      <div class="col px-5  pt-3">
         <form id="frmUpdate" action="/issuer/cert/create" method="POST">
           <div class="mb-3 row">
             <label for="number" class="col-form-label col-sm-2">Số hiệu</label>

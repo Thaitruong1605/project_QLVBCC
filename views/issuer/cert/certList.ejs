@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../../layouts/styles') %>
+  <style>
+    .fa-external-link-alt:hover {
+      cursor: pointer;
+      color: #0d6efd;
+    }
+    .fa-trash:hover {
+      cursor: pointer;
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../../partials/header') %>
+  <%- include('../../partials/alert') %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-2 border-end" id="sidebar" style=" width: fit-content;">
+        <%- include('../partials/sidebar')%>
+      </div>
+      <div class="col px-5 pt-3">
+        <div class="row mt-3">
+          <div class="col">
+            <div class="card">
+              <form id="filterForm" class="p-2">
+                <div class="row g-1">
+                  <div class="col">
+                    <select id="ck_id" class="form-control">
+                      <option value=''>Chọn loại chứng chỉ</option>
+                      <% kindlist.forEach((row) => {%>
+                        <option value='<%= row['ck_id'] %>'><%= row['ck_name'] %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <select id="cn_id" name="cn_id" class="form-control">
+                      <option value=''>Chọn tên chứng chỉ</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row g-1 mt-1">
+                  <div class="col text-start">
+                    <input type="text" class="form-control" name="fromDate" id="fromDate" value="01/01/2021" />
+                  </div>
+                  <div class="col text-start">
+                    <input type="text" class="form-control" name="toDate" id="toDate" value="" />
+                  </div>
+                </div>
+                <div class="row g-1 mt-1">
+                  <div class="col text-start">
+                    <input type="text" class="form-control" name="user_name" placeholder="Họ tên người nhận"/>
+                  </div>
+                  <div class="col-3 text-start">
+                    <input type="text" class="form-control" name="number" placeholder="Số chứng chỉ"/>
+                  </div>
+                  <div class="col-3 text-start">
+                    <input type="text" class="form-control" name="regno" placeholder="số vào sổ"/>
+                  </div>
+                </div>
+                <div class="col-auto text-end">
+                  <button type="button" id="btn-submit"  class="btn btn-primary mt-1"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
+                </div>
+                <span id="count"></span>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Số</th>
+                        <th scope="col">Số vào sổ</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Tên người nhận</th>
+                        <th scope="col">Ngày sinh</th>
+                        <th scope="col">Id number</th>
+                        <th scope="col">Trạng Thái</th>
+                        <th scope="col">Ngày nhập</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% cert_list.forEach(function(row){%>
+                        <tr>
+                          <th scope="row"><%= row.number %></th>
+                          <th scope="row"><%= row.regno %></th>
+                          <td><%= row.cn_name %></td>
+                          <td><%= row.user_name %></td>
+                          <td><%= moment(row.user_birth).format("DD/MM/YYYY") %></td>
+                          <td><%= row.user_idNumber %></td>
+                          <td>
+                            <% if (row.status == 'incorrect') {%>
+                              <span class="text-danger fw-bold"><%= row.status %></span>  
+                            <% } else if (row.status == 'checking') { %>
+                              <span class="text-warning fw-bold"><%= row.status %></span>  
+                            <%} else  {%>
+                              <span class="text-success fw-bold"><%= row.status %></span>  
+                            <% } %>
+                          </td> 
+                          <td class="date-format"><%= moment(row.createTime).format("DD-MM-YYYY, h:mm:ss a") %></td>
+                          <td>
+                            <i class="fas fa-external-link-alt btn-detail pe-2" number="<%=row.number%>"></i>
+                            <% if(row.ipfs_hash == null){ %>
+                              <i class="fas fa-trash btn-delete" number="<%=row.number%>"></i>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <%}) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <%- include("../../partials/cert-detail") %>
+  
+
+  <%- include('../../layouts/scripts') %>
+  <script type="text/javascript">
+    
+    var nameList = [],
+    cert_info= [];
+    $(document).ready(function(){
+      $( "#toDate" ).val(moment(Date.now()).format("DD/MM/YYYY"));
+      $( "#fromDate, #toDate" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd/mm/yy",
+        yearRange: "1960:2021",
+        defaultDate: $(this).attr('value')
+      });
+      $( "#ck_id" ).change(function() {
+        $( "#ck_id option:selected" ).each(async function(event) {
+          event.preventDefault;
+          var ck_id = $(this).attr('value');
+          if (ck_id != '') {
+            await $.ajax({
+              url:'/get-certName',
+              method:'post',
+              data:{
+                ck_id
+              },
+              success: function(res) {
+                nameList[ck_id] = res.nameList; 
+              }
+            })
+            html = `<option value=''>Chọn tên chứng chỉ</option>`;
+            nameList[ck_id].forEach(function(row){
+              html += `<option value='${row.cn_id}'>${row.cn_name}</option>`
+            })
+            $('#cn_id').html(html);
+            $('#ck_id').html();
+          }else {
+            $('#cn_id').html();
+          }
+
+        });
+      }).trigger( "change" );
+      $('.btn-detail').on('click', async function(event){
+        let number= $(this).attr('number');
+        if (cert_info[number] == undefined){
+          event.preventDefault;
+          await $.ajax({
+            method:"POST",
+            url:"/issuer/cert/detail",
+            data:{
+              number: number
+            },
+            success: function(res){
+              cert_info[number] = res.cert_info;
+            }
+          })
+        }
+        for (const [key, value] of Object.entries(cert_info[number])) {
+          $(`#${key}`).text(value);
+        }
+        console.log(cert_info[number]);
+        if (cert_info[number].status != "done"){
+          $(".modal-footer").html(
+            `<button class="btn btn-warning" id="cert_edit">Sửa</button>`
+          )
+        }
+        $("#certDetailModal").modal("show");
+      })
+      $(document).on("click" , "#cert_edit", function(e){
+        // $("#cert_edit").hide();
+        $(".modal-footer").html(
+          `<button style="button" class="btn btn-secondary" id="cert_cancel">Huỷ</button>
+          <button style="button" class="btn btn-primary" id="cert_submit">Lưu</button>`
+        )
+        var number = $("#number").text();
+        // console.log(cert_info[number])
+        for (const [key, value] of Object.entries(cert_info[number])) {
+          if (key != "cert_kind" && key != "cert_name"){
+            if (key == "user_gender"){
+              $(`#${key}`).html(
+                `<select class="form-control py-0" name="${key}" >
+                  <option value="1" ${ (value == "Nam")? "selected": "" }>Nam</option>  
+                  <option value="2" ${ (value == "Nữ")? "selected": "" }>Nữ</option>  
+                </select>`
+              );
+            }else{
+              $(`#${key}`).html(
+                `<input type="text" class="form-control py-0" name="${key}" value="${value}" />`
+              );
+            } if (key == "user_dayofbirth" || key == "signday"){
+              $(`#${key}`).children('input').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: "dd/mm/yy",
+                yearRange: "1960:2021",
+                defaultDate: value
+              });
+            }
+          }
+        }
+      })
+      $('.btn-delete').on('click',function(event){
+        if (confirm("Bạn có chắc chắn xoá! Hành động này không thể hoàn tác.")){
+          event.preventDefault;
+          $.ajax({
+            method:"POST",
+            url:"/issuer/cert/delete",
+            data:{
+              number: $(this).attr('number')
+            },
+            success: function(res){
+              if (res.result == "redirect"){
+                window.location.replace(res.url);
+              }else {
+              }
+            }
+          })
+        }
+      })
+      
+      $(document).on("click","#cert_submit", function(e){
+        var cert_info = {
+          number: $("#number").children("input").val(),
+          classification: $("#classification").children("input").val(),
+          cert_kind: $("#cert_kind").text(),
+          cert_name: $("#cert_name").text(),
+          regno: $("#regno").children("input").val(),
+          signday: $("#signday").children("input").val(),
+          user_dayofbirth: $("#user_dayofbirth").children("input").val(),
+          user_gender: $("#user_gender select").val(),
+          user_idNumber: $("#user_idNumber").children("input").val(),
+          user_name: $("#user_name").children("input").val(),
+          user_placeofbirth: $("#user_placeofbirth").children("input").val()
+        }
+        e.preventDefault;
+        $.ajax({
+          method:"POST",
+          url:"/issuer/cert/update",
+          data: cert_info
+          ,success: function(res){
+            if (res.result == "redirect"){
+              window.location.replace(res.url);
+            }
+          }
+        })
+      })
+    })
+  </script>
+</body>
+</html>

@@ -183,12 +183,13 @@
           // $(this).addClass('spinner-grow')
           await $.ajax({
             method:"POST",
-            url:"/issuer/cert/detail",
+            url:"/school/cert/detail",
             data:{
               number: number
             },
             success: function(res){
               cert_info[number] = res.cert_info;
+              console.log(cert_info[number])
             }
           })
         }

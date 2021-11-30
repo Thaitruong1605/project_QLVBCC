@@ -31,19 +31,15 @@ client.pin.add("QmeGAVddnBSnKc1DLE7DLV9uuTqo5F7QbaveTjr45JUdQn").then((res) => {
   // console.log(res)
 });
 router.get('/',async (req, res)=> {
-  res.render('./issuer/',{page:'', title:'trang chủ'});
+  res.redirect('/issuer/dashboard');
 });
+router.get('/dashboard',async (req, res)=> {
+  res.render('./issuer/', {title:"Dashboard", page:"dashboard"})
+})
 // Quan ly chung chi -------------------------------------------
 router.get('/cert', async (req, res)=> {
+  
   var kindlist, namelist, cert_list;
-  try{  
-    await certificateModel.select_byissuer(req.user.issuer_id).then(function(data){
-      return cert_list = data ;
-    })
-  }catch(err){
-    console.log(err);
-    return res.redirect('back')
-  }
   try{
     await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
       return kindlist = data;
@@ -51,6 +47,25 @@ router.get('/cert', async (req, res)=> {
   }catch(err){
     console.log(err);
     return res.redirect('back')
+  }
+  if (typeof req.query.status == 'undefined'){
+    try{  
+      await certificateModel.select_byissuer(req.user.issuer_id).then(function(data){
+        return cert_list = data ;
+      })
+    }catch(err){
+      console.log(err);
+      return res.redirect('back')
+    }
+  }else {
+    try{
+      await certificateModel.select_recentlyCert(req.user.issuer_id).then(function(data){
+        return cert_list = data;
+      })
+    }catch(err){
+      console.log(err);
+      return res.redirect('back')
+    }
   }
   try{
     await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
@@ -60,7 +75,7 @@ router.get('/cert', async (req, res)=> {
     console.log(err);
     return res.redirect('back')
   }
-  res.render('./issuer/cert/',{page:'Cert', title:'Danh sách chứng chỉ', namelist, kindlist, cert_list})
+  res.render('./issuer/cert/certList',{page:'cert', title:'Danh sách chứng chỉ', namelist, kindlist, cert_list, moment})
 })
 // create-by-excel
 router.get('/cert/create-by-excel',async (req, res) => {
@@ -81,7 +96,7 @@ router.get('/cert/create-by-excel',async (req, res) => {
     console.log(err);
     res.redirect('back')
   }
-  res.render('./issuer/cert/createByExcel',{page:'Cert', title:'Chứng chỉ', namelist, kindlist});
+  res.render('./issuer/cert/createByExcel',{page:'create-by-excel', title:'Chứng chỉ', namelist, kindlist});
 })
 router.post("/cert/create-by-excel", async (req, res) => {
   var error = [];
@@ -140,7 +155,7 @@ router.post("/cert/create-by-excel", async (req, res) => {
   }else {
     req.flash('error',error)
   }
-  return res.status(200).send({result: 'redirect', url:'/issuer/cert'})
+  return res.status(200).send({result: 'redirect', url:'/issuer/cert', status: 'recently'})
 });
 router.get('/cert/create',async (req, res) => {
   var kindList, nameList;
@@ -158,7 +173,7 @@ router.get('/cert/create',async (req, res) => {
   }catch(err){
     console.log(err);
   }
-  res.render('./issuer/cert/createByForm',{page:'Cert', title:'Thêm mới chứng chỉ', kindList, nameList});
+  res.render('./issuer/cert/createByForm',{page:'create', title:'Thêm mới chứng chỉ', kindList, nameList});
 })
 router.post("/cert/create", async (req, res) => {
   var data = {
@@ -239,10 +254,10 @@ router.get("/cert/update", async (req,res )=> {
     console.log(err);
   }
   var cert_data = JSON.parse(await fs.readFileSync('./public/cert/cert_' + req.query.number+'.json'));
-  res.render('./issuer/cert/update',{page:'Cert', title:'Cập nhật chứng chỉ', cert_data, cert_info , kindList, nameList});
+  res.render('./issuer/cert/update',{page:'update', title:'Cập nhật chứng chỉ', cert_data, cert_info , kindList, nameList});
 })
 router.post("/cert/update", async (req, res) => {
-  console.log(req.body);
+  var data = req.body;
   var data = {
     number: req.body.number.trim(),
     cert_kind: req.body.cert_kind.trim(),
@@ -258,15 +273,13 @@ router.post("/cert/update", async (req, res) => {
   }
 
   var hashed_data = await '0x'+CryptoJS.SHA256(JSON.stringify(data));
-  console.log(req.body.number+':'+ hashed_data);
-
   var fname = "cert_" + data.number +".json";
-  // // Tạo file
+  // Tạo file
   var cert = {
     number: req.body.number.trim(),
     regno: req.body.regno.trim(),
-    cn_id: req.body.cn_id.trim(),
-    ck_id: req.body.ck_id.trim(),
+    // cn_id: req.body.cn_id.trim(),
+    // ck_id: req.body.ck_id.trim(),
     issuer_id: req.user.issuer_id,
     hash: hashed_data,
     user_idNumber: req.body.user_idNumber.trim(),
@@ -285,10 +298,10 @@ router.post("/cert/update", async (req, res) => {
         try {
           await certificateModel.update(req.body.number, cert);
           req.flash('msg','Cập nhật chứng chỉ thành công!')
-          res.redirect("/issuer/cert");
+          res.send ({result: "redirect",url:"/issuer/cert"});
         } catch (err) {
           console.log(err);
-          res.redirect("/issuer/cert/create");
+          res.send ({result: "redirect",url:"/issuer/cert"});
         }
       }
     }
@@ -327,7 +340,7 @@ router.post('/cert/delete', async(req, res)=>{
   try {
     await certificateModel.delete_byNumber(req.body.number);
     try{
-      fs.unlink('./public/cert/'+req.body.number+'.json');
+      fs.unlink('./public/cert/cert_'+req.body.number+'.json');
     }catch(err){
       console.log(err);
     }
@@ -347,9 +360,6 @@ router.post('/check-cert-info',async (req, res)=> {
   var numberList, regnoList;
   numberList = JSON.stringify(data['numberList']).replace('[','(').replace(']',')').replace(/"/g,"'");
   regnoList = JSON.stringify(data['regnoList']).replace('[','(').replace(']',')').replace(/"/g,"'");
-  
-  console.log(numberList)
-  console.log(regnoList)
   try{
     await certificateModel.check_cert(numberList, regnoList).then(function(data){
       res.send(data)

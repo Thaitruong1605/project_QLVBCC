@@ -254,15 +254,15 @@ contract User is Ownable{
     _;
   }
   function addCertificate(bytes32 _hashedCert) public onlySchool(){
+    mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _hashedCert );
+    certificateList.push(_hashedCert);
     emit addedCertificate(msg.sender, _hashedCert);
   }
   function deactivateCertificate(bytes32 _certHash) public onlySchool(){
-    require(msg.sender == mapCertificates[_certHash].schoolAddress);
     mapCertificates[_certHash].state = uint8(0);
     emit deactivatedCertificate(msg.sender, _certHash);
   }
   function deleteCertificate(bytes32 _certHash) public onlySchool(){
-    require(msg.sender == mapCertificates[_certHash].schoolAddress);
     mapCertificates[_certHash].state = uint8(2);
     emit deletedCertificate(msg.sender, _certHash);
   }
@@ -270,5 +270,4 @@ contract User is Ownable{
     Certificate storage cert = mapCertificates[_certHash];
     return (cert.state, cert.schoolAddress, cert.certHash);
   }
-  
 }

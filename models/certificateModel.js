@@ -55,14 +55,19 @@ let select_byNumber = (number) => {
     );
   });
 };
-let select_byEmail = (email) => {
+let select_byIdNumber = (user_idNumber) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      `SELECT school_name, cn_name, number, regno, ipfs_hash FROM certificates c
-      LEFT JOIN certname cn ON c.cn_id = cn.cn_id
-      LEFT JOIN schools sch ON cn.school_id = sch.school_id
-      WHERE user_email=?`,
-      email,
+      `SELECT 
+        c.number, c.regno, c.createTime,
+        cn.cn_name, 
+        ck.ck_name, ck.school_name 
+      FROM certificates c 
+      LEFT JOIN ( 
+        SELECT ck.ck_id, ck.ck_name, sch.school_name FROM certkind ck
+        LEFT JOIN schools sch ON ck.school_id = sch.school_id ) ck ON ck.ck_id = c.ck_id
+      LEFT JOIN certname cn ON cn.cn_id = c.cn_id 
+      WHERE user_idNumber = "${user_idNumber}" `,
       function (err, results) {
         if (err) {
           reject();
@@ -73,6 +78,25 @@ let select_byEmail = (email) => {
     );
   });
 };
+let select_recentlyCert = (issuer_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT number,regno,cn_name,user_name,user_idNumber,user_birth,status, createTime
+        FROM certificates c
+        LEFT JOIN certname cn ON c.cn_id = cn.cn_id
+        WHERE createTime IN (SELECT MAX(createTime) FROM certificates) AND 
+        issuer_id = '${issuer_id}'`,
+      function (err, results) {
+        if (err) {
+          reject();
+        } else {
+          resolve(results);
+        }
+      }
+    );
+  });
+};
+
 let create = (data) => {
   return new Promise((resolve, reject) => {
     conn.query("INSERT INTO certificates SET ?", data, function (err) {
@@ -103,7 +127,7 @@ let update = (number, data) => {
 let update_ipfs_hash = (number, ipfs_hash) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "UPDATE certificates SET ipfs_hash = ?, status='Done'  WHERE number=?",
+      "UPDATE certificates SET ipfs_hash = ?, status='done'  WHERE number=?",
       [ipfs_hash, number],
       function (err, results) {
         if (err) {
@@ -445,7 +469,7 @@ let list_cert = (data) => {
   })
 }
 module.exports = {
-  select_byschool,select_byEmail,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,countall,count_groupByIssuer,
+  select_byschool,select_byIdNumber,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,countall,count_groupByIssuer,select_recentlyCert,
   get_certformipfs,
   cert_search,
   create,

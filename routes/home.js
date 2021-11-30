@@ -75,35 +75,20 @@ router.get('/tra-cuu',async (req ,res) => {
   }catch(err){
     console.log(err);
   }
-  res.render('./cert-search',{title:'Tra cứu văn bằng chứng chỉ',schoolList, tag:"tra-cuu"})
+  res.render('./cert-search',{title:'Tra cứu văn bằng chứng chỉ',schoolList, page:"tra-cuu"})
   
 })
-router.get('/cert-detail', async (req, res) =>{
-  if (typeof req.query.data != 'undefined' ){
-    var ipfs = await certificateModel.get_ipfs_hashbyhash(req.query.data)
-    var url = "https://ipfs.io/ipfs/" + ipfs;
-    console.log(url)
-    request(
-      {
-        url: url,
-        json: true,
-      },
-      function (error, response, data) {
-        if (!error && response.statusCode === 200) {
-          console.log(data);
-          res.render('./cert-detail',{cert_info: data});
-        }
-      }
-    );
-  }else 
+router.post('/cert-detail', async (req, res) =>{
+  var cert_info = "";
   try {
-    certificateModel.select_byNumber(req.query.number).then(async function (data) {
-      var filename = data[0].filename;
-      if (filename != null) {
-        data = JSON.parse(fs.readFileSync("./public/cert/" + filename));
-        res.render('./cert-detail',{title:"Chi tiết chứng chỉ",page:"Certificate" ,cert_info: data});
-      } else {
-        var url = "https://ipfs.io/ipfs/" + data[0].ipfs_hash;
+    var data = fs.readFileSync('./public/cert/cert_' + req.body.number+'.json')
+    cert_info = JSON.parse(data);
+    return res.json({cert_info});
+  }catch {
+    try {
+      await certificateModel.get_ipfs_hash(req.body.number).then(function(data){
+        var ipfs= data;
+        var url = 'https://ipfs.io/ipfs/' + ipfs;
         request(
           {
             url: url,
@@ -111,15 +96,15 @@ router.get('/cert-detail', async (req, res) =>{
           },
           function (error, response, data) {
             if (!error && response.statusCode === 200) {
-              console.log(data);
-              res.render('./cert-detail',{cert_info: data});
+              cert_info = data;
+              return res.json({cert_info});
             }
           }
         );
-      }
-    });
-  } catch (err) {
-    console.log(err);
+      })
+    }catch(err){
+      console.log(err);
+    }
   }
 })
 router.post('/activate', async (req, res) => {
@@ -143,9 +128,6 @@ router.post('/activate', async (req, res) => {
   req.flash("msg", msg);
   res.redirect('back');
 })
-router.get('/nhap-chung-chi', (req, res)=>{
-  res.render('./cert-input');
-})
 //qrscan 
 router.post('/get-certkind', async (req, res)=>{
   // console.log(req.body.school_id);
@@ -166,9 +148,6 @@ router.post('/get-certName', async (req, res)=>{
     console.log(err);
   }
 })
-router.get('/qrscan', (req, res) => {
-  res.render('./qrscan',{title:'Tua cứu chứng chỉ bằng mã QR', tag:"qrscan"})
-})
 router.post('/get-detai-by-ipfs', async (req, res) => {
   console.log(req.body);
   var url = 'https://ipfs.io/ipfs/' + req.body.ipfs;
@@ -185,15 +164,4 @@ router.post('/get-detai-by-ipfs', async (req, res) => {
     }
   );
 })
-// router.get('/render-test', async (req, res)=> {
-//   var schoolList ;
-//   try{
-//     await schoolModel.school_select().then(function(data){
-//       return schoolList = data;
-//     })
-//   }catch(err){
-//     console.log(err);
-//   }
-//   res.render('./search-form.ejs',{title:'Tra cứu văn bằng chứng chỉ',schoolList});
-// })
 module.exports = router;

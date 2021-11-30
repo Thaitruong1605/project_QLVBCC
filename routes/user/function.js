@@ -33,48 +33,20 @@ router.get('/test',async (req, res)=> {
   // console.log(stuI.options.jsonInterface)
 })
 router.get('/', async (req, res)=> {
-  var user_id = req.user.user_id;
-  var email = await userModel.select_emailbyId(user_id);
-  var certList;
-  try{
-    await certificateModel.select_byEmail(email.user_email).then(function(data){
-      return certList = data;
-    })
-  }catch (err){
-    console.log(err)
-  }
-  res.render('./user/',{title:'Danh sách văn bằng chứng chỉ.', certList, page: "Cert"});
-  // var account_address = req.query.account_address
-  // var stuI = new web3.eth.Contract( JSON.parse(fs.readFileSync('./src/abis/User.json'))['abi'],'0x1a4c9c0B32bAc586636da5A7e90E15F6bBEAAe5f');
-  // await web3.eth.getTransaction('0x9a541439842a3299fcfc7eabb0da5614a4a7dc2b8be92affcf1196bca59ec58f').then(console.log);
-  // console.log('account_address: '+account_address);
-  // var sysI = await SystemContract.deployed();
-  // var stuI = await UserContract.at('0x1a4c9c0B32bAc586636da5A7e90E15F6bBEAAe5f');
-  // console.log(stuI)
-  // try {
-  //   await stuI.viewCertificate('0xef719f8145efc268e37cc5837e2419d9b11968a87b17f7ba7012af29a6b6aabc').then(function(data){
-  //     console.log(web3.utils.soliditySha3(data['0']));
-  //   });
-
-  // }catch (err){
-  //   console.log(err);
-  // }
-  // await stuI.once('addedCertificate', {
-  //   fromBlock: 0
-  // }, function(error, event){ console.log(event); });
-  //   // console.log(stuI._address)
-
-
-  // res.send("hello")
+  res.redirect('/user/danh-sach-chung-chi');
 })
 router.get('/danh-sach-chung-chi',async (req, res) => {
-  var user_id = req.user.user_id;
-  var email = await userModel.select_emailbyId(user_id);
-  var certList;
+  var user_idNumber
+  try {
+    await userModel.select_idNumberbyId(req.user.user_id).then(function(data){
+      return user_idNumber = data;
+    })
+  }catch(err){
+    console.log(err)
+  }
   try{
-    await certificateModel.select_byEmail(email.user_email).then(function(data){
-      console.log(data)
-      return certList = data; 
+    await certificateModel.select_byIdNumber(user_idNumber).then(function(data){
+      return res.render("./user",{title:"Danh sách văn bằng chứng chỉ",certList:data, page:"danh-sach-chung-chi", moment}); 
     })
   }catch (err){
     console.log(err)
@@ -104,7 +76,7 @@ router.post('/doi-mat-khau',  async(req, res)=>{
   }catch(err){
     console.log(err);
   }
-  res.redirect('/user/doi-mat-khau');
+  res.redirect('/user/doi-mat-khau',{page:'doi-mat-khau'});
 })
 router.get('/thong-tin-ca-nhan',async(req, res)=>{
   var user, account ;
@@ -122,7 +94,7 @@ router.get('/thong-tin-ca-nhan',async(req, res)=>{
   }catch(err){
     console.log(err);
   }
-  res.render('./user/info',{title: 'Thông tin cá nhân',page:'user',user, account, moment});
+  res.render('./user/info',{title: 'Thông tin cá nhân',user, account, moment, page:'thong-tin-ca-nhan'});
 })
 router.post('/edit',async (req, res)=>{
   var user_info = req.body;

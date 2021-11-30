@@ -27,16 +27,15 @@ let select_byId = (user_id) => {
     }catch(err){console.log(err)}
   })
 }
-let select_emailbyId = (user_id) => {
+let select_idNumberbyId = (user_id) => {
   return new Promise((resolve, reject)=> {
     conn.query(
-      `SELECT user_email
+      `SELECT user_idNumber
       FROM users
-      WHERE user_id =?`,
-      [user_id],
+      WHERE user_id = '${user_id}'`,
       function(error, results){
         if (error) {console.log(error); reject();}
-        resolve(results[0]);
+        resolve(results[0]['user_idNumber']);
       }
     )
   })
@@ -100,7 +99,7 @@ let auth = (user_id) => {
 module.exports = {
   select,
   select_byId,
-  select_emailbyId,
+  select_idNumberbyId,
   insert,
   update,
   remove,

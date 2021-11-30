@@ -1,21 +1,28 @@
-<div class="flex-shrink-0 bg-light bg-gradient ps-3 w-100 sidebar shadow">
-  <a href="/issuer" class="d-flex px-2 pt-3 my-3 link-dark text-decoration-none">
-    <b>HOME</b>
-  </a>
-  <hr>
-  <ul class="list-unstyled ps-0">
+<div class="flex-shrink-0 w-100 h-100">
+  <ul style="list-style-type: none; padding: 0;" class= "pt-3 fw-bold">
     <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed " data-bs-toggle="collapse" data-bs-target="#cert-collapse" aria-expanded="<%= (page == "Certificate")? "true":"flase" %>">
-        Chứng chỉ
-      </button>
-      <div class="collapse <%= (page == "Cert")? "show": "" %>" id="cert-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/issuer/cert/" class="link-dark rounded">Danh sách</a></li>
-          <li><a href="/issuer/cert/create-by-excel" class="link-dark rounded">Nhập chứng chỉ bằng excel</a></li>
-          <li><a href="/issuer/cert/create" class="link-dark rounded">Nhập chứng chỉ bằng biểu mẫu</a></li>
-        </ul>
-      </div>
+      <a href="/issuer/dashboard" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "dashboard")? "sidebar-item-active": "" %>">
+        <i class="fas fa-tachometer-alt" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Dashboard</span>
+      </a>
     </li>
-    <br>
+    <li class="mb-1">
+      <a href="/issuer/cert" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "cert")? "sidebar-item-active": "" %>">
+        <i class="fas fa-certificate" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Chứng chỉ</span>
+      </a>
+    </li>
+    <li class="mb-1">
+      <a href="/issuer/cert/create-by-excel" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "create-by-excel")? "sidebar-item-active": "" %>">
+        <i class="fas fa-file-excel" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Nhập chứng chỉ bằng excel</span>
+      </a>
+    </li>
+    <li class="mb-1">
+      <a href="/issuer/cert/create" style="text-decoration: none; color:black" class="sidebar-item text-start p-2 ps-3 <%= (page == "create")? "sidebar-item-active": "" %>">
+        <i class="fas fa-align-left" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <span class="ps-3">Nhập chứng chỉ bằng biểu mẫu</span>
+      </a>
+    </li>
   </ul>
 </div>

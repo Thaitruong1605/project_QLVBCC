@@ -6,73 +6,123 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
   <%- include('../layouts/styles') %>
-  
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.css"/>
-
   <style>
-    .fa-external-link-alt:hover {
-     color: #0d6efd;
-     cursor: pointer;
-    }
-    li:hover{
+    .fa-arrow-right:hover {
       cursor: pointer;
-      color: blue;
+      color: #17a2b8;
     }
   </style>
-
 </head>
-<body>
+<body class="bg-light">
   <%- include('../partials/header') %>
   <%- include('../partials/alert') %>
-  <div class="container-fuild">
-    <div class="row">
-      <div class="col-3">
-        <%- include("./partials/sidebar.ejs")%>
-      </div>
-      <div class="col-6">
-        <div class="row table-responsive">
-          <table class="table" id="dataTable">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Tên văn bằng</th>
-                <th scope="col">Tên trường</th>
-                <th scope="col">Số hiệu</th>
-                <th scope="col">Số vào sổ</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% i=0; certList.forEach(function(cert){%>
+
+  <div class="container-fluid">
+    <div class="row mt-3 px-5">
+      <div class="col">
+        <div class="card">
+          <h5 class="ps-3 mt-2">Danh sách văn bằng chứng chỉ</h5>
+          <div class="card-body table-responsive">
+            <table class="table" id="dataTable">
+              <thead>
                 <tr>
-                  <td><%= i++;%></td>
-                  <td><%= cert.cn_name%></td>
-                  <td><%= cert.school_name%></td>
-                  <td><%= cert.number %></td>
-                  <td><%= cert.regno%></td>
-                  <td><i class="fnDetail fas fa-external-link-alt" ipfs="<%= cert.ipfs_hash %>" ></i><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></td>
+                  <th scope="col">Số hiệu</th>
+                  <th scope="col">Số vào sổ</th>
+                  <th scope="col">Loại</th>
+                  <th scope="col">Tên</th>
+                  <th scope="col">Nơi phát hành</th>
+                  <th scope="col">Ngày tạo</th>
+                  <th scope="col" style="width: 18px;"></th>
                 </tr>
-              <% }) %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <% certList.forEach(function(elt) {%>
+                  <tr>
+                    <th scope="row"><%= elt.number %></th>
+                    <th><%= elt.regno %></th>
+                    <td><%= elt.ck_name %></td>
+                    <td><%= elt.cn_name %></td>
+                    <td><%= elt.school_name %></td>
+                    <td><%= moment(elt.createTime).format("DD/MM/YYYY") %></td>
+                    <td>
+                      <i class="fas fa-arrow-right" number="<%= elt.number %>"></i>
+                    </td>
+                  </tr>
+                <%})%>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col" style="max-width: fit-content;">
+        <div class="card" id="cert_card">
+          <img src="/certificate-bg-2.png" />
+          <div class="modal-body"  id="cert_template" >
+            <div class="" id="">
+              <div class=" text-center" >
+                Thông tin về
+              </div>
+              <div class="text-center" >
+                <span id="c-cert_name" class="cert_title">
+                  <span class="placeholder-glow"> <span class="placeholder col-10"></span> </span>
+                </span>
+              </div>
+              <div class="text-center">
+                của
+              </div>
+              <div class=" text-center">
+                <span id="c-user_name"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>
+              </div>
+              <div class=" text-center">
+                Giới tính: <span id="c-user_gender"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>
+                -Ngày sinh: <span id="c-user_dayofbirth"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>
+                -Nơi sinh: <span id="c-user_placeofbirth"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>
+              </div>
+              <div class=" text-center">
+                Ngày ký: <span id="c-signday"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>
+              </div>
+              <div class=" text-center">
+                Số hiệu: <span id="c-number"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>-Số vào sổ: <span id="c-regno"><span class="placeholder-glow"> <span class="placeholder col-1"></span></span></span>
+              </div>
+              <div class=" text-center">
+                <img id="qrImg" src="" style="width: 7vw; left: 6vw; bottom: 2.6vw; position: absolute;">
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <!-- <div class="col-6"></div> -->
   </div>
+
+
+
   <%- include('../layouts/scripts') %>
-  <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js"></script>
   <script type="text/javascript" >
     $(document).ready(function() {
-      $('#dataTable').DataTable( {
-        search: {
-          return: true
-        },
-        columnDefs: [
-          { targets: -1, orderable: false },
-        ]
-        
+      $('#dataTable').DataTable({
+        // filter: false,
+        sort:false,
+        info: false,
       });
+      $(document).on("click",".fa-arrow-right",function(e){
+        console.log('fa-edit')
+        e.preventDefault;
+        var number = $(this).attr('number');
+        $.ajax({
+          method: "POST",
+          url: "/cert-detail",
+          data:{
+            number: number
+          }, success: function(res){
+            var cert_info = res.cert_info
+            console.log(cert_info)
+            for (const [key, value] of Object.entries(cert_info)) {
+              $(`#c-${key}`).text(`${value}`)
+            } 
+            $("#qrImg").attr("src", "/qrCode/cert_"+number+".png")
+          }
+        })
+      })
     });
   </script>
 </body>

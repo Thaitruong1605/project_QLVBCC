@@ -36,7 +36,35 @@ const client = ipfsClient.create({
 
 client.pin.add("QmeGAVddnBSnKc1DLE7DLV9uuTqo5F7QbaveTjr45JUdQn").then((res) => {
 });
-
+router.post('/detail', async(req, res)=>{
+  var cert_info = "";
+  try {
+    var data = fs.readFileSync('./public/cert/cert_' + req.body.number+'.json')
+    cert_info = JSON.parse(data);
+    return res.json({cert_info});
+  }catch {
+    try {
+      await certificateModel.get_ipfs_hash(req.body.number).then(function(data){
+        var ipfs= data;
+        var url = 'https://ipfs.io/ipfs/' + ipfs;
+        request(
+          {
+            url: url,
+            json: true,
+          },
+          function (error, response, data) {
+            if (!error && response.statusCode === 200) {
+              cert_info = data;
+              return res.json({cert_info});
+            }
+          }
+        );
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+})
 // CHỨNG CHỈ ------------------------------------------------------------------------------------
 router.get("/", async (req, res) => {
   var kindlist, namelist, certlist, kindList;
@@ -78,54 +106,62 @@ router.get("/issue", async (req, res) => {
     req.flash("error","Phát hành chứng chỉ thất bại!");
     return res.redirect("/school/cert");
   } 
+  var user_idNumber = req.query.user_idNumber;
   // I. Create system Instance
-    const systemInstance = await SystemContract.deployed();
-  // II. Get user contract 
-    var stuCA = await systemInstance.getContractbyIDNumber(req.query.user_idNumber);
-    console.log(stuCA)
-    if (stuCA == '0x0000000000000000000000000000000000000000'){
-      try{
-        await systemInstance.createTempContractbyIDNumber(req.query.user_idNumber, systemInstance.address ,{from: "0x3E5C773519D38EB7996A5cADFDb8C8256889cB79" });
-      }catch(err){
-        console.log(err);
-      }
-      stuCA = await systemInstance.getContractbyIDNumber(req.query.user_idNumber);
+  const systemInstance = await SystemContract.deployed();
+// II. Get user contract address
+  var userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
+  if (userCA == '0x0000000000000000000000000000000000000000'){
+    try{
+      await systemInstance.createTempContractbyIDNumber(user_idNumber, systemInstance.address ,{from: process.env.SYSTEM_ADDRESS });
+    }catch(err){
+      console.log(err);
     }
+    userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
+  }
+
   // III. Add cert to user's contracts
-    // 1. Create user Instance
-    var StudentContract = contract(JSON.parse(fs.readFileSync('./src/abis/Student.json')));
-    StudentContract.setProvider(provider); // set provider.
-    var stuI = await StudentContract.at(stuCA);
-    // 4. Hash cert_json
+    // 1. Create school Instance
+    var SchoolContract = contract(JSON.parse(fs.readFileSync('./src/abis/School.json')));
+    SchoolContract.setProvider(provider); // set provider.
+    var schCA = await systemInstance.getSchoolContractAddr(req.user.account_address);
+    var schI = await SchoolContract.at(schCA);
+
+    // 2. Hash cert_json
     var path= './public/cert/cert_' + req.query.number +'.json';
     var hashed_data = CryptoJS.SHA256(JSON.stringify(JSON.parse(fs.readFileSync(path))));
+    
     // 3. Up cert_json to IPFS. 
     const file = await client.add(
       ipfsClient.globSource(path)
     );
     var ipfs_hash = file.cid.toString();
+
     // 4. Generate QR for cert.
     QRCode.toFile(
       './public/qrCode/cert_'+ req.query.number +'.png', 
       'http://localhost:3000/cert-detail?data=0x'+hashed_data, 
       function (err) { if (err) console.log(err); }
     );
-    // 5. Update cert_hash to user's contract.
+
+    // 5. push certhash to blockchain. 
     try {
-      await stuI.addCertificate('0x'+hashed_data,{from: req.user.account_address});
+      await schI.addCertificate('0x'+hashed_data,userCA,{from: req.user.account_address});
     }catch (err){
       console.log(err);
     }
+
     // 6. Update cert_info in database.
     try {
       await certificateModel.update_ipfs_hash(req.query.number, ipfs_hash);
       fs.unlink(path,(err=>{if(err) console.log(err);}));
-      req.flash('msg','Cáp phát chứng chỉ thành công!');
+      req.flash('msg','Cấp phát chứng chỉ thành công!');
       return res.redirect('/school/cert');
     } catch (err) {
       console.log(err);
     }
 });
+
 router.get('/set-to-incorrect', async(req, res )=> {
   if (typeof req.query.number == 'undefined'){
     req.flash('error','Không tìm thấy thông tin');
@@ -153,7 +189,6 @@ router.post('/list-cert', async (req, res) => {
     number: req.body.number,
     regno: req.body.regno,
   }
-  console.log(data);
   try {
     await certificateModel.list_cert(data).then(function(results){
       return res.send({certList:results});
