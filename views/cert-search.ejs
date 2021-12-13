@@ -10,10 +10,10 @@
      color: #0d6efd;
      cursor: pointer;
     }
-    #divSreach {
+    /* #divSreach {
       border-radius: 0 0 5px 5px;
       background-color: rgba(108, 117, 125, 0.01);
-    }
+    } */
   </style>
   <%- include('./layouts/styles.ejs')%>
 </head>
@@ -21,11 +21,11 @@
   <%- include('./partials/header.ejs') %>
   <%- include('./partials/alert.ejs') %>
 
-  <div id="main-content" class="container-fluid">
-    <div class="row justify-content-center">
-      <div class="col-md-10 shadow" id="divSreach">
-        <div class="my-3 row justify-content-center">
-          <form method="POST" action="/tra-cuu" id="frmSearch" class="col-md-8">
+  <div id="main-content" class="container-fluid bg-light">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-10" id="divSreach">
+        <div class="bg-white mt-3 card">
+          <form method="POST" action="/tra-cuu" id="frmSearch" class="col-md-8 mx-auto">
             <div class="row g-3 pt-4 mb-1">
               <div class="col-2 text-start" style="min-width: 200px;"> <label for="school_id" class="col-form-label"><i>Nơi phát hành:</i></label></div>
               <div class="col text-start">
@@ -67,17 +67,15 @@
             <div class="form-text text-center mt-2">
               <span style="color:red">*</span><i> Điều kiện tìm kiếm: Họ tên, số hiệu, số vào sổ không phân biệt ký tự HOA, thường.</i>
             </div>
-
+      
             <div class="col-auto text-end mt-3">
               <button type="reset" id="btn-reset" class="btn btn-secondary btn-sm"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Xoá <i class="fas fa-undo"></i> </button>
               <button type="submit" id="btn-submit" class="btn btn-primary btn-sm"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
             </div>
             <span id="count"></span>
           </form>
-        </div>
-        <div class="row">
-          <div class="col">
-            <table class="table table-striped invisible" >
+          <div class="table-responsive mx-5">
+            <table class="table table-hover invisible" id="search_table">
               <thead>
                 <tr>
                   <th scope="col">#</th>
@@ -86,7 +84,7 @@
                   <th scope="col">Ngày sinh</th>
                   <th scope="col">Số hiệu</th>
                   <th scope="col">Số vào sổ</th>
-                  <th scope="col">Chi tiết</th>
+                  <th scope="col" style="width: 45px;"></th>
                 </tr>
               </thead>
               <tbody id="certList">
@@ -97,13 +95,14 @@
       </div>
     </div>
   </div>
+
+
   <%- include('./cert_template.ejs') %>
   
   <%- include('./layouts/scripts.ejs') %>
   <script>
     $(document).ready(function(){
-      // $('#certModal').modal('show');
-      // $("#divSreach").height($('body').height() - $("#header").height());
+      $("#divSreach").height($('body').height() - $("#header").height());
       var kindList =[], nameList=[] ;
       $( "#school_id" ).change(function() {
         $( "#school_id option:selected" ).each(async function(event) {
@@ -129,7 +128,6 @@
           }else {
             
           }
-          
         });
       }).trigger( "change" );
       $( "#ck_id" ).change(function() {
@@ -159,9 +157,8 @@
           
         });
       }).trigger( "change" );
-      
       $("#frmSearch").submit(async function (event){
-        $(".spinner-border").attr('hidden',false).parent().attr('disabled',true)
+        $(".spinner-border").attr('hidden',false).parent().attr('disabled',true);
         event.preventDefault();
         await $.ajax({
           method: $(this).attr('method'),
@@ -179,19 +176,49 @@
                 <td>${elt['user_name']}</td>
                 <td>${elt['number']}</td>
                 <td>${elt['regno']}</td>
-                <td><i class="fnDetail fas fa-external-link-alt" ipfs="${elt['ipfs_hash']}" ></i><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></td>
+                <td><i class="fnDetail fas fa-external-link-alt" number="${elt['number']}" ipfs="${elt['ipfs_hash']}" ></i><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></td>
               </tr>`
             })
             $('#certList').html(html).fadeIn(2000);
             $('#certList').removeClass('invisible');
             $(".spinner-border").attr('hidden',true).parent().attr('disabled',false)
-            }
-          })
+            $("#search_table").removeClass('invisible');
+          }
         })
       })
-    $(document).on('click', '.fnDetail',async function(){
+    });
+    async function getAuth(e, cert_number){
+      e.preventDefault;
+      var hash;
+      await $.ajax({
+        method:"POST",
+        url:"/verification",
+        data:{
+          number: cert_number
+        },
+        success: function (res){
+          return hash= res.hash;
+        }
+      })
+      return hash
+    }
+    async function check_hash(e, hash){
+      let status;
+      e.preventDefault;
+      await $.ajax({
+        method:"POST",
+        url:"/check-hash",
+        data:{
+          hash: hash,
+        },
+        success: function (res){
+          status= (res.status)
+        }
+      })
+      return status;
+    }
+    $(document).on('click', '.fnDetail',async function(e){
       $(this).parent('td').children(".spinner-border").attr('hidden',false);
-      console.log('fnDetail');
       event.preventDefault();
       var ipfs = $(this).attr('ipfs')
       await $.ajax({
@@ -212,8 +239,27 @@
           } 
         }
       })
-      $(this).parent('td').children(".spinner-border").attr('hidden',true);
+      var hash = await getAuth(e,$(this).attr("number"));
+      $("#verification_result").html(`
+        hash: <span> ${hash} </span><br />
+      `)
+      let certCheck = await check_hash(e, hash)
+      console.log ("certCheck: "+ certCheck );
+      if (certCheck == 1){
+        $("#verification_result").append(`
+          <span class="text-success fw-bold" title="Giá trị băm từ tệp thi được public trên ipfs">Văn bằng/chứng chỉ toàn vẹn<span>
+        `);
+      }else if (certCheck == 0){
+        $("#verification_result").append(`
+          <span class="text-warning fw-bold" title="Giá trị băm từ tệp thi được public trên ipfs">Văn bằng/chứng chỉ đã được thu hồi<span>
+        `);
+      }else{
+        $("#verification_result").append(`
+          <span class="text-danger fw-bold" title="Tính xác thưc được xác định bằng so giá trị hash của văn bằng trên blockchain">Văn bằng/chứng chỉ không toàn vẹn<span>
+        `);
+      }
 
+      $(this).parent('td').children(".spinner-border").attr('hidden',true);
     });
   </script>
 </body>

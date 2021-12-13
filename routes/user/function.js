@@ -5,35 +5,48 @@ const moment = require('moment');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-
 const userModel = require('../../models/userModel');
 const accountModel = require('../../models/accountModel');
 const certificateModel = require('../../models/certificateModel')
 
 
 const Web3 = require ('web3');
-const { reset } = require("nodemon");
-// const provider = new Web3.providers.HttpProvider('');
-const web3 = new Web3(new Web3.providers.WebsocketProvider("http://localhost:7545"))
-// const web3 = new Web3( provider );
-// const contract = require('@truffle/contract');
+const provider = new Web3.providers.WebsocketProvider("ws://localhost:7545");
+const web3 = new Web3( provider );
+const contract = require('@truffle/contract');
 
-// var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
-// SystemContract.setProvider(provider);
+var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
+SystemContract.setProvider(provider);
 
 // var UserContract = contract(JSON.parse(fs.readFileSync('./src/abis/User.json')));
-// UserContract.setProvider(provider);
-router.get('/test',async (req, res)=> {
-  // var account_address = '0xE729e45f44EBD8AEC64460F1f0cCAA76D5024701';
-  var sysI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'],'0x10D8a7B2Ae872CaB10E2aB6fC6574eD2B791AAE1');
-  // var sysI = await SystemContract.deployed();
-  // console.log(await sysI.getContractbyIDNumber('111111111122'));
-  // var stuI = new web3.eth.Contract( JSON.parse(fs.readFileSync('./src/abis/User.json'))['abi'],await sysI.getContractbyIDNumber('111111111122'));
-  // console.log(stuI.methods.viewCertificate('0x63feafc9f8c3ce83825633d05b14e80b035ss599a8e95a3e83d178896caed61e6d'))
-  // console.log(stuI.options.jsonInterface)
-})
+// UserContract.setProvider(provider)
 router.get('/', async (req, res)=> {
   res.redirect('/user/danh-sach-chung-chi');
+})
+router.get('/danh-sach-giao-dich',async (req, res) => {
+  let user_idNumber;
+  try {
+    await userModel.select_idNumberbyId(req.user.user_id).then(function(data){
+      return user_idNumber = data;
+    })
+  }catch(err){
+    console.log(err)
+  }
+  const sysI = await SystemContract.deployed();
+  let userCA;
+  try{
+    userCA = await sysI.getUserContractAddr(user_idNumber);
+  }catch(err){ console.log(err); return; }
+  var userI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/User.json'))['abi'], userCA);
+
+  let data = await userI.getPastEvents('allEvents',{
+    fromBlock: 0
+  },async function(error, event){ 
+    if(error) console.log(error);
+    return event;
+  })
+  console.log(data);
+
 })
 router.get('/danh-sach-chung-chi',async (req, res) => {
   var user_idNumber

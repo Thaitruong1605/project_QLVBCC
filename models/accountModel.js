@@ -3,7 +3,7 @@ const conn = require('../dbconnect');
 let select = () => {
     return new Promise( (resolve, reject) => {
         conn.query(
-            'SELECT * FROM accounts',
+            `SELECT * FROM accounts WHERE account_type != 'issuer'`,
             function (err, results) {
                 if (err) { console.log(err); reject(); }
                 else {
@@ -28,8 +28,7 @@ let get_accountByUsername = (account_username) => {
 let get_accountById = (id) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT * FROM accounts WHERE user_id = ? OR school_id = ? OR issuer_id = ?',
-            [id,id,id],
+            `SELECT * FROM accounts WHERE user_id = '${id}' OR school_id = '${id}' OR issuer_id = '${id}' `,
             function (err, results) {
                 if (err) { console.log(err); reject(); }
                 resolve(results[0]);
@@ -37,20 +36,21 @@ let get_accountById = (id) => {
         )
     });
 }
-let get_stuAbyEmail = (email)=> {
-    return new Promise ((resolve, reject) => {
+let number_school_user = () => {
+    return new Promise((resolve, reject) => {
         conn.query(
-            `SELECT account_address FROM accounts a
-            LEFT JOIN users s ON a.user_id = s.user_id
-            WHERE s.user_email = ?`,
-            email,
-            function(err, results){
-                if (err){ console.log(err); reject();}
-                resolve(results[0]);
+            `SELECT account_type, COUNT(account_username) AS number FROM accounts WHERE 
+            account_type ='school' OR 
+            account_type = 'user'
+            GROUP BY account_type`,
+            function (err, results) {
+                if (err) { console.log(err); reject(); }
+                resolve(results);
             }
         )
-    })
+    });
 }
+
 let create = (account_inf) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
@@ -111,13 +111,12 @@ let get_password = (account_username) => {
         )
     });
 };
-
 module.exports = {
     select,
     get_accountById,
     get_accountByUsername,
-    get_stuAbyEmail,
     get_password,
+    number_school_user,
     create,
     update,
     remove,

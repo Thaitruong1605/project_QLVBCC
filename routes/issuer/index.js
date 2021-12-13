@@ -189,7 +189,18 @@ router.post("/cert/create", async (req, res) => {
     user_placeofbirth: req.body.user_placeofbirth.trim().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
     user_idNumber: req.body.user_idNumber.trim(),
   }
+  let isExist = false;
+  try {
+    await certificateModel.isExist_cert(data.user_idNumber, data.cn_id).then(function(data){
+      return isExist = data;
+    })
+  }catch (err) { console.log(err)}
 
+  if (isExist ){ 
+    req.flash("error","Văn bằng/chứng chỉ đã tồn tại!");
+    return res.redirect('/issuer/cert/create');
+  }
+  
   var hashed_data = await '0x'+CryptoJS.SHA256(JSON.stringify(data));
   console.log(req.body.number+':'+ hashed_data);
 
@@ -356,8 +367,8 @@ router.post('/cert/get-certname', async (req, res)=> {
   })
 })
 router.post('/check-cert-info',async (req, res)=> {
-  var data = JSON.parse(req.body.data)
-  var numberList, regnoList;
+  let data = JSON.parse(req.body.data)
+  let numberList, regnoList;
   numberList = JSON.stringify(data['numberList']).replace('[','(').replace(']',')').replace(/"/g,"'");
   regnoList = JSON.stringify(data['regnoList']).replace('[','(').replace(']',')').replace(/"/g,"'");
   try{
@@ -367,5 +378,14 @@ router.post('/check-cert-info',async (req, res)=> {
   }catch(err){  
     console.log(err);
   }
+})
+router.post('/isExist_cert',async (req, res)=> {
+  let user_idNumber = req.body.user_idNumber,
+  cn_id = req.body.cn_id;
+  try {
+    await certificateModel.isExist_cert(user_idNumber, cn_id).then(function (data) {
+      return res.send({data});
+    })
+  }catch (err){console.log (err) }
 })
 module.exports = router;

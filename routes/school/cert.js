@@ -1,20 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const certificateModel = require("../../models/certificateModel");
-const accountModel = require("../../models/accountModel");
 const moment = require("moment");
 const fs = require("fs"); // file system
 const request = require("request"); 
-const hash = require('object-hash'); 
 const CryptoJS = require('crypto-js');
 const ipfsClient = require("ipfs-http-client");
-const { Certificate } = require("crypto");
+// const accountModel = require("../../models/accountModel");
+// const hash = require('object-hash'); 
+// const { Certificate } = require("crypto");
 
 const projectId = process.env.PROJECT_ID;
 const projectSecret = process.env.PROJECT_SECRET;
 
 const Web3 = require ('web3');
-const provider = new Web3.providers.HttpProvider('http://localhost:7545');
+const provider = new Web3.providers.WebsocketProvider("ws://localhost:7545");
 const web3 = new Web3( provider );
 const contract = require('@truffle/contract');
 
@@ -71,33 +71,27 @@ router.get("/", async (req, res) => {
   try { await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
       return kindList = data;
     })
-  }catch(err){
-    console.log(err);
-  }
+  }catch(err){ console.log(err); }
+  
   try{ await certificateModel.certname_getbyschool(req.user.school_id).then(function(data){
       return namelist= data;
     });
-  }catch(err){
-    console.log(err);
-    return res.redirect('/school');
-  }
+  }catch(err){ console.log(err); return res.redirect('/school'); }
+
   try{ await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
       return kindlist= data;
     });
-  }catch(err){
-    console.log(err);
-    return res.redirect('/school');
-  }
+  }catch(err){  console.log(err); return res.redirect('/school');  }
+  
   try { await certificateModel.select_byschool(req.user.school_id).then(function (data) {
       return certlist= data;
     });
-  } catch (err) {
-    console.log(err);
-    return res.redirect('/school');
-  }
+  } catch (err) { console.log(err); return res.redirect('/school'); }
+
   if (kindlist !='' && namelist !=''){
     return res.render("./school/cert/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment ,kindList});
   }
+
   req.flash('err','Không thể truy cập');
   return res.redirect('/school');
 });
@@ -113,7 +107,7 @@ router.get("/issue", async (req, res) => {
   var userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
   if (userCA == '0x0000000000000000000000000000000000000000'){
     try{
-      await systemInstance.createTempContractbyIDNumber(user_idNumber, systemInstance.address ,{from: process.env.SYSTEM_ADDRESS });
+      await systemInstance.createUserContractWithIDNumber(user_idNumber, systemInstance.address ,{from: process.env.SYSTEM_ADDRESS });
     }catch(err){
       console.log(err);
     }
@@ -146,7 +140,7 @@ router.get("/issue", async (req, res) => {
 
     // 5. push certhash to blockchain. 
     try {
-      await schI.addCertificate('0x'+hashed_data,userCA,{from: req.user.account_address});
+      await schI.addCertificate('0x'+hashed_data, req.query.number, userCA, {from: req.user.account_address});
     }catch (err){
       console.log(err);
     }
@@ -161,7 +155,6 @@ router.get("/issue", async (req, res) => {
       console.log(err);
     }
 });
-
 router.get('/set-to-incorrect', async(req, res )=> {
   if (typeof req.query.number == 'undefined'){
     req.flash('error','Không tìm thấy thông tin');
@@ -179,6 +172,43 @@ router.get('/set-to-incorrect', async(req, res )=> {
       res.redirect('back');
     }
   }
+})
+router.get('/deactivate', async (req, res) => {
+  if(typeof req.query.number == 'undefined'){
+    req.flash("error","Phát hành chứng chỉ thất bại!");
+    return res.redirect("/school/cert");
+  } 
+  let number = req.query.number;
+  
+  const sysI = await SystemContract.deployed();
+  // I. Create school intance 
+  const schAddr = req.user.account_address ;
+  const schCA = await sysI.getSchoolContractAddr(schAddr);
+ 
+  var schI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/School.json'))['abi'], schCA);
+  // II. list transactions 
+  var data = await schI.getPastEvents('allEvents',{
+    fromBlock: 0
+  },async function(error, event){ 
+    if(error) console.log(error);
+    return event;
+  })
+  
+  let certHash, userCAddr;
+  data.forEach(function(row){
+    if(row.returnValues._certNumber == number){
+      return certHash = row.returnValues._certHash, userCAddr=  row.returnValues._userCAddr;
+    }
+  })
+  // console.log({certHash, userCAddr});
+  try {
+    await schI.methods.deactivateCertificate(certHash, number, userCAddr).send({from: req.user.account_address});
+  }catch (err) {console.log(err); return }
+  try {
+    await certificateModel.update(number, {status: 'deactivate'})
+  }catch (err) {console.log(err); return }
+  req.flash("msg",`Thu hồi chứng chỉ "${number}" thành công`);
+  return res.redirect("/school/cert");
 })
 router.post('/list-cert', async (req, res) => {
   data = {

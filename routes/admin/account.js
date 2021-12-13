@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
   // Lay du lieu account
   try{
     accountModel.select().then(function(data){
-      return res.render('./admin/functions/account',{title:'Danh sách tài khoản', account_list:data, moment, page:'User'});
+      return res.render('./admin/functions/account',{title:'Danh sách tài khoản', account_list:data, moment, page:'account'});
     })
   }catch(err){
     console.log(err);

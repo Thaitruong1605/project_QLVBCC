@@ -3,30 +3,30 @@ const passport = require('passport');
 const session = require('express-session').Session;
 const moment = require('moment');
 const request = require("request"); 
-
-const isStudent = require('../auth').isStudent;
-const router = express.Router();
-const fs = require("fs"); // file system
 const CryptoJS = require('crypto-js');
 
-// MODEL 
+const router = express.Router();
+const fs = require("fs"); // file system
+
 const certificateModel = require('../models/certificateModel')
 const schoolModel = require('../models/schoolModel')
 
+const Web3 = require ('web3');
+const provider = new Web3.providers.HttpProvider('http://localhost:7545');
+const web3 = new Web3( provider );
+const contract = require('@truffle/contract');
 
-const Web3 = require('web3');
-const web3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545');
-
-const systemContract = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'],'0x10D8a7B2Ae872CaB10E2aB6fC6574eD2B791AAE1');
+var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
+SystemContract.setProvider(provider);
 
 router.get('/signup',async (req, res) => {
-  res.render('./signup');
+  res.render('./signup',{title:"Đăng ký",page:'signup'});
 })
 router.post('/signup', (req, res) => {
   require('../controllers/signupControllers').createUser(req, res);
 });
 router.get('/login', (req, res) => { 
-  res.render('./login',{title:"Đăng nhập"});
+  res.render('./login',{title:"Đăng nhập",page:'login'});
 })
 router.post('/login',
   passport.authenticate('local', {
@@ -107,26 +107,56 @@ router.post('/cert-detail', async (req, res) =>{
     }
   }
 })
-router.post('/activate', async (req, res) => {
-  var data = {
-    number: req.body.number,
-    certname: req.body.certname,
-    certkind: req.body.certkind,
-    user_name: req.body.user_name,
-    user_gender: req.body.user_gender,
-    user_dayofbirth: req.body.user_dayofbirth,
-    user_placeofbirth: req.body.user_placeofbirth,
-    course_name: req.body.course_name,
-    duration: req.body.duration,
-    testday: req.body.testday,
-    classification: req.body.classification,
-    signday: req.body.signday,
-    regno: req.body.regno,
+router.post('/verification', async (req, res) => {
+  var ipfs_hash;
+  try{
+    await certificateModel.get_ipfs_hash(req.body.number).then(function(data){
+      return ipfs_hash = data;
+    })
+  }catch(err) {
+    console.log(err);
   }
-  var hashed_data = CryptoJS.SHA256(Object.toString(data), {asBytes: true});
-  msg = hashed_data.toString(CryptoJS.enc.Hex);
-  req.flash("msg", msg);
-  res.redirect('back');
+  var url = 'https://ipfs.io/ipfs/' + ipfs_hash;
+  await request( { url: url, json: true }, function (error, response, data) {
+        if (!error && response.statusCode === 200) {
+          // console.log("0x"+CryptoJS.SHA256(JSON.stringify(data)));
+          res.send({hash:"0x"+CryptoJS.SHA256(JSON.stringify(data))})
+        }
+      }
+    );
+})
+router.post('/check-hash', async (req, res) => {
+  var hash = req.body.hash,
+  user_idNumber;
+  try {
+    await certificateModel.get_idNumberByHash(hash).then(function(data){
+      return user_idNumber = data
+    })
+  }catch(err){
+    console.log(err)
+  }
+  console.log(user_idNumber)
+  const systemInstance = await SystemContract.deployed();
+  var userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
+  
+  var UserContract = contract(JSON.parse(fs.readFileSync('./src/abis/User.json')));
+  UserContract.setProvider(provider); // set provider.
+  var userI = await UserContract.at(userCA);
+  var rlt ;
+  var certStatus = -1; // 1 - Đã xác thực; 0 - Thu hồi;
+  try {
+    rlt = await userI.viewCertificate(hash);
+  }catch (err){ throw(err)
+  }
+  if(parseInt(rlt[0], 2) == 0 ){
+    certStatus = 0;
+  }else if ( parseInt(rlt[0], 2) == 1 ){
+    certStatus = 1; 
+  }
+
+  // var digit = parseInt(rlt[0], 2);
+  console.log("Chứng thực văn bằng: "+ certStatus)
+  res.send({status: certStatus})
 })
 //qrscan 
 router.post('/get-certkind', async (req, res)=>{

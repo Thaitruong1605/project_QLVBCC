@@ -180,24 +180,25 @@
               signday: row.signday,
             }
           for(const [key, value] of Object.entries(row_data)){
-            temp_tr += `<td class="${key}-${value}" ` 
+            temp_tr += `<td class="${key}-${value} ` 
             if (value == "" || value== undefined){
-              temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Dữ liệu không được rỗng"><i class="fas fa-times"></i></td>`;
+              temp_tr += `text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Dữ liệu không được rỗng"><i class="fas fa-times"></i></td>`;
+            }else {
+              if (key == 'user_gender'){
+                if (!(value === 'Nam' || value === 'Nữ')){
+                  temp_tr += `text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="'Nam'/'Nữ'">${value}<i class="fas fa-times"></i></td>`;
+                }
+              }else if(key=="user_idNumber"){
+                if (value.length != 9 && value.length != 12){
+                  temp_tr += `text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Số CCCD/CMND phải có 9 hoặc 12 số!">${value}<i class="fas fa-times"></i></td>`;
+                }
+              }else if (key=="user_dayofbirth" || key == "signday" ){
+                if ( moment(value,'DD-MM-YYYY').format() == "Invalid date" || moment(value,'DD-MM-YYYY').format() > moment().format()){
+                  temp_tr += `text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Ngày không hợp lệ!">${value}<i class="fas fa-times"></i></td>`;
+                }
+              }
+              temp_tr += `" >${value}</td>`;
             }
-            if (key == 'user_gender'){
-              if (!(value === 'Nam' || value === 'Nữ')){
-                temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="'Nam'/'Nữ'">${value}<i class="fas fa-times"></i></td>`;
-              }
-            }else if( key=="user_idNumber"){
-              if (value.length != 9 && value.length != 12){
-                temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Số CCCD/CMND phải có 9 hoặc 12 số!">${value}<i class="fas fa-times"></i></td>`;
-              }
-            }else if (key=="user_dayofbirth" || key == "signday" ){
-              if ( moment(value,'DD-MM-YYYY').format() == "Invalid date" || moment(value,'DD-MM-YYYY').format() > moment().format()){
-                temp_tr += `class="text-danger" data-bs-toggle="tooltip" data-bs-placement="Top" data-bs-original-title="Ngày không hợp lệ!">${value}<i class="fas fa-times"></i></td>`;
-              }
-            }
-            temp_tr += `>`+value+`</td>`;
           }
           temp_tr += '</tr>';
           $('#cert_info').append(temp_tr);

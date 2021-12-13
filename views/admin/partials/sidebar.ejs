@@ -1,24 +1,35 @@
-<div class="flex-shrink-0 bg-light bg-gradient ps-3 w-100 sidebar shadow">
-  <a href="/admin" class="d-flex px-2 pt-3 my-3 link-dark text-decoration-none">
-    <b>DASHBOARD</b>
-  </a>
-  <hr>
-  <ul class="list-unstyled ps-0">
-    <li class="mb-1">
-      <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="<%= (page == "User")? "true":"flase" %>">
-        Quản lý người dùng
-      </button>
-      <div class="collapse <%= (page == "User")? "show":"" %>" id="account-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-          <li><a href="/admin/account/" class="link-dark rounded">Tài khoản</a></li>
-          <li><a href="/admin/school/" class="link-dark rounded">Trường học</a></li>
-          <li><a href="/admin/student/" class="link-dark rounded">Sinh viên</a></li>
-        </ul>
-      </div>
+<div class="d-flex flex-column flex-shrink-0 p-3 shadow shadow-lg" style="width: 280px; height: 100vh; border-right: 4px solid #8ECAE6;" id="sidebarAdmin">
+  <header class="pt-3 pb-2 ps-2">
+    <a href="/admin"><img src="/logo.png" /></a>
+  </header>
+  <a href="/logout" class="fw-bold link-dark">Đăng xuất</a>
+  <hr />
+  <ul class="nav nav-pills flex-column mb-auto sticky-top">
+    <h4 style="color:#3D6395;"><span class="sb-text">Dashboard<span></h4>
+    <li class="nav-item">
+      <a href="/admin/dashboard/" class="nav-link <%= (page=="dashboard")? "active":"link-dark"%>">
+        <i class="fas fa-tachometer-alt pe-2" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <b class="sb-text">Dashboard</b>
+      </a>
     </li>
-    <li class="mb-1">
-      <a class="btn align-items-center rounded" href="/admin/transaction">Transaction</a>
+    <h4 class="mt-3"style="color:#3D6395;"><span class="sb-text">Tài khoản</span></h4>
+    <li class="nav-item">
+      <a href="/admin/account" class="nav-link <%= (page=="account")? "active":"link-dark"%>">
+        <i class="fas fa-tachometer-alt pe-2" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <b>Tài khoản</b>
+      </a>
     </li>
-    <br />
+    <li class="nav-item">
+      <a href="/admin/school" class="nav-link <%= (page=="school")? "active":"link-dark"%>">
+        <i class="fas fa-school pe-2" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <b>Trường học</b>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/user" class="nav-link <%= (page=="user")? "active":"link-dark"%>">
+        <i class="fas fa-users pe-2" style="width: 30px; text-align: center;font-size: 22px;"></i>
+        <b>Người dùng</b>
+      </a>
+    </li>
   </ul>
 </div>

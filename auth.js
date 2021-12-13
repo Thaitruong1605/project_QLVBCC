@@ -1,10 +1,3 @@
-// var ensureAuth = function ensureAuthenticated(req, res, next){
-//   if(req.isAuthenticated()){
-//    next();
-//   }
-//   req.flash("error", "Bạn phải đăng nhập để thực hiện chức năng này!!");
-//   res.redirect("/");
-// }     
 let isUser = (req, res, next) => {
   if (req.isAuthenticated() && req.user.account_type == 'user')   
     return next();

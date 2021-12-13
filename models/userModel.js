@@ -82,12 +82,11 @@ let remove = (user_id)=>{
     }catch(err){console.log(err)}
   })
 }
-let auth = (user_id) => {
+let auth = (user_idNumber) => {
   return new Promise((resolve, reject)=> {
     try{
       conn.query(
-        `UPDATE users SET user_isAuth='1' WHERE user_id = ?`,
-        [user_id],
+        `UPDATE users SET user_isAuth='1' WHERE user_idNumber = ${user_idNumber}`,
         function(error){
           if (error) {console.log(error); reject();}
           resolve();

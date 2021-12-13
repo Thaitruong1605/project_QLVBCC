@@ -1,4 +1,5 @@
 pragma solidity >=0.4.22 <0.9.0;  
+pragma experimental ABIEncoderV2;
 
 contract Ownable {
   address private _owner;
@@ -83,10 +84,10 @@ contract System is Ownable{
   event addedUser(address newUser, address newContract);
   event changedUserContract(address _userAddr,address _contractAddr);
 
-  event createdTempContractbyIDNumber(string _idnumber);
+  event createdUserContractWithIDNumber(string _idnumber);
   
   constructor() public{
-    transferOwnership(address(0x3E5C773519D38EB7996A5cADFDb8C8256889cB79));
+    transferOwnership(address(msg.sender));
   } 
   modifier onlySchool() {
     require(isSchool());
@@ -139,7 +140,7 @@ contract System is Ownable{
   // STUDENT CONTRACT -----------------------------------
   function addUser(address _userAddr, string memory _idnumber, address _userCA) public onlyOwner(){
     // check if userAddress is exist
-    require (idnumberToContract[_idnumber] == address(0));
+    // require (idnumberToContract[_idnumber] != address(0));
     userAddresses.push(_userAddr);
     // push user address to array
     idnumberToContract[_idnumber] = _userCA;
@@ -158,15 +159,16 @@ contract System is Ownable{
   function getUserContractAddr(address userAddr) public view returns(address) {
     return (mapUser[userAddr] != address(0))? mapUser[userAddr] : address(0);
   }
-  function createTempContractbyIDNumber (string memory _idnumber, address _sysCA) public onlyOwner(){
+  function createUserContractWithIDNumber (string memory _idnumber, address _sysCA) public onlyOwner(){
     require(idnumberToContract[_idnumber] == address(0));
     User userC = new User(msg.sender,_sysCA);
     idnumberToContract[_idnumber] = address(userC);
-    emit createdTempContractbyIDNumber(_idnumber);
+    emit createdUserContractWithIDNumber(_idnumber);
   }
   function getContractbyIDNumber (string memory _idnumber) public view returns(address){
     return idnumberToContract[_idnumber];
   }
+  
 } 
 
 contract School is Ownable{
@@ -177,9 +179,8 @@ contract School is Ownable{
   string public fax; 
   string public website;
   
-  event addedCertificate(address _address, bytes32 _certHash);
-  event deactivatedCertificate(address _address, bytes32 _certHash);
-  event deletedCertificate(address _address, bytes32 _certHash);
+  event addedCertificate(address _userCAddr,string _certNumber, bytes32 _certHash);
+  event deactivatedCertificate(address _userCAddr,string _certNumber, bytes32 _certHash);
 
   constructor(
     string memory _name,
@@ -189,15 +190,15 @@ contract School is Ownable{
     string memory _fax,
     string memory _website,
     address schAddr
-  ) public {
-    name = _name;
-    addressPlace = _addressPlace;
-    phoneNumber = _phoneNumber;
-    idnumber = _idnumber;
-    fax = _fax;
-    website = _website;
-    transferOwnership(schAddr);
-  }
+    ) public {
+      name = _name;
+      addressPlace = _addressPlace;
+      phoneNumber = _phoneNumber;
+      idnumber = _idnumber;
+      fax = _fax;
+      website = _website;
+      transferOwnership(schAddr);
+    }
   function getSchool() public view{
     name;
     addressPlace;
@@ -206,26 +207,17 @@ contract School is Ownable{
     fax; 
     website;
   }
-  function addCertificate(bytes32 _hashedCert, address userCAddr ) public onlyOwner(){
+  function addCertificate(bytes32 _hashedCert,string memory _certNumber,string memory _ipfs, address userCAddr) public onlyOwner(){
     User userI = User(userCAddr);
-    if (address(userI) != address(0)) {
-      userI.addCertificate(_hashedCert);
-      emit addedCertificate(msg.sender, _hashedCert);
-    }
+    require (address(userI) != address(0));
+    userI.addCertificate(_hashedCert, _certNumber, _ipfs);
+    emit addedCertificate(userCAddr, _certNumber,  _hashedCert);
   }
-  function deactivateCertificate(bytes32 _certHash, address userCAddr) public onlyOwner(){
+  function deactivateCertificate(bytes32 _certHash, string memory _certNumber, address userCAddr) public onlyOwner(){
     User userI = User(userCAddr);
-    if (address(userI) != address(0)) {
-      userI.deactivateCertificate(_certHash);
-      emit deactivatedCertificate(msg.sender, _certHash);
-    }
-  }
-  function deleteCertificate(bytes32 _certHash, address userCAddr) public onlyOwner(){
-    User userI = User(userCAddr);
-    if (address(userI) != address(0)) {
-      userI.deleteCertificate(_certHash);
-      emit deletedCertificate(msg.sender, _certHash);
-    }
+    require (address(userI) != address(0));
+    userI.deactivateCertificate(_certHash);
+    emit deactivatedCertificate(userCAddr, _certNumber, _certHash);
   }
 }
 
@@ -234,15 +226,15 @@ contract User is Ownable{
     uint8 state;
     address schoolAddress;
     bytes32 certHash;
+    string ipfs;
   }
 
   bytes32[] public certificateList; // mang hashed_cert
   mapping (bytes32 => Certificate) mapCertificates; // hashed_cert => Certificate
   System public system;
 
-  event addedCertificate(address _address, bytes32 _certHash);
-  event deactivatedCertificate(address _address, bytes32 _certHash);
-  event deletedCertificate(address _address, bytes32 _certHash);
+  event addedCertificate(string _certNumber, bytes32 _certHash, string _ipfs);
+  event deactivatedCertificate(bytes32 _certHash);
 
   constructor(address userAddr, address _sysCA) public {
     system = System(_sysCA);
@@ -253,21 +245,26 @@ contract User is Ownable{
     require(system._isSchoolContract(msg.sender));
     _;
   }
-  function addCertificate(bytes32 _hashedCert) public onlySchool(){
-    mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _hashedCert );
+  function addCertificate(bytes32 _hashedCert, string memory _certNumber, string memory _ipfs) public onlySchool(){
+    mapCertificates[_hashedCert] = Certificate(uint8(1), msg.sender, _hashedCert, _ipfs);
     certificateList.push(_hashedCert);
-    emit addedCertificate(msg.sender, _hashedCert);
+    emit addedCertificate(_certNumber, _hashedCert, _ipfs);
   }
   function deactivateCertificate(bytes32 _certHash) public onlySchool(){
+    require( mapCertificates[_certHash].schoolAddress == msg.sender);
     mapCertificates[_certHash].state = uint8(0);
-    emit deactivatedCertificate(msg.sender, _certHash);
+    emit deactivatedCertificate( _certHash);
   }
-  function deleteCertificate(bytes32 _certHash) public onlySchool(){
-    mapCertificates[_certHash].state = uint8(2);
-    emit deletedCertificate(msg.sender, _certHash);
-  }
-  function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32){
+  function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32,  string memory){
     Certificate storage cert = mapCertificates[_certHash];
-    return (cert.state, cert.schoolAddress, cert.certHash);
+    return (cert.state, cert.schoolAddress, cert.certHash, cert.ipfs );
+  }
+  function getAllCertificate() public view returns(Certificate[] memory) {
+    Certificate[] memory returnData = new Certificate[](certificateList.length);
+    uint i=0;
+    for (i; i<= certificateList.length-1; i++){
+      returnData[i] = (mapCertificates[certificateList[i]]);
+    }
+    return returnData;
   }
 }

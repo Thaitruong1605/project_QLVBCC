@@ -9,7 +9,7 @@
     <%= title + " - " + page; %>
   </title>
   <!-- styles from vendors  -->
-  <%- include('../layouts/styles.ejs'); %>
+  <%- include('../../layouts/styles.ejs'); %>
   <style>
     .bd-placeholder-img {
       font-size: 1.125rem;
@@ -28,66 +28,71 @@
 </head>
 
 <body>
-  <%- include('../partials/navbar.ejs') %>
-  <%- include('../../partials/alert.ejs') %>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-2 ps-0">
-        <%- include('../partials/sidebar.ejs'); %>
+      <div class="col-1" style="width: fit-content;padding :0;">
+        <%- include('../partials/sidebar')%>
       </div>
-      <div class="col-md-10">
+      <div class="col p-0 pt-3 bg-light" id="contentAdmin" style="height: 100vh;">
         <!-- main content -->
-        <h3 class = "pt-3">Danh sách học viên</h3>
-        <hr >
-        <div class="table-responsive">
-          <table class="table">
-            <caption>List of students</caption>
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">ID</th>
-                <th scope="col">Tên sinh viên</th>
-                <th scope="col">Giới tính</th>
-                <th scope="col">Email</th>
-                <th scope="col">Số điện thoại</th>
-                <th scope="col">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% let i=1 ;%>
-                <% student_list.forEach(function(student){ %>
+        <div class="px-3" >
+          <div class="d-flex justify-content-between">
+            <span class = "h4 fw-bold" style="color: #3D6395;">QUẢN LÝ NGƯỜI DÙNG</span>
+            <button type="button" class="btn btn-sm btn-info text-white" data-bs-toggle="modal" data-bs-target="#createModal">
+              Thêm mới
+            </button>
+          </div>
+          <hr >
+          <div class="card shadow">
+            <div class="card-body">
+              <table class="table table-hover" id="userTable">
+                <thead>
                   <tr>
-                    <th scope="row">
-                      <%= i++; %>
-                    </th>
-                    <th id="u-student_id<%= i %>">
-                      <%= student.student_id %>
-                    </th>
-                    <td id="u-student_name<%= i %>">
-                      <%= student.student_name %>
-                    </td>
-                    <td id="u-student_gender<%= i %>">
-                      <%= (student.student_gender == 1)? "Nam":"Nữ" %>
-                    </td>
-                    <td id="u-student_email<%= i %>">
-                      <%= student.student_email %>
-                    </td>
-                    <td id="u-student_phoneNumber<%= i %>">
-                      <%= student.student_phoneNumber %>
-                    </td>
-                    <td>
-                      <% if (!student.student_isAuth) { %>
-                        <a href="/admin/student/auth?student_id=<%= student.student_id %>&student_idNumber=<%= student.student_idNumber %>" class="btn btn-primary" >Xác thực</a>
-                      <%}%>
-                      <button type="button" class="btn btn-outline-primary btn-detail" student_id="<%= student.student_id %>">Chi tiết</button>
-                      <button type="button" class="btn btn-warning btn-update" student_id="<%= student.student_id %>">Sửa</button>
-                    </td>
+                    <th scope="col">#</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Tên sinh viên</th>
+                    <th scope="col">Giới tính</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Số điện thoại</th>
+                    <th scope="col" style="width: max-content;"></th>
                   </tr>
-                  <% }); %>
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  <% let i=1 ;%>
+                    <% user_list.forEach(function(user){ %>
+                      <tr>
+                        <th scope="row">
+                          <%= i++; %>
+                        </th>
+                        <th id="u-user_id<%= i %>">
+                          <%= user.user_id %>
+                        </th>
+                        <td id="u-user_name<%= i %>">
+                          <%= user.user_name %>
+                        </td>
+                        <td id="u-user_gender<%= i %>">
+                          <%= (user.user_gender == 1)? "Nam":"Nữ" %>
+                        </td>
+                        <td id="u-user_email<%= i %>">
+                          <%= user.user_email %>
+                        </td>
+                        <td id="u-user_phoneNumber<%= i %>">
+                          <%= user.user_phoneNumber %>
+                        </td>
+                        <td class="text-end">
+                          <% if (!user.user_isAuth) { %>
+                            <a href="/admin/user/auth?user_id=<%= user.user_id %>&user_idNumber=<%= user.user_idNumber %>" class="btn btn-primary" >Xác thực</a>
+                          <%}%>
+                          <i class="fas fa-external-link-alt pe-2" user_id="<%= user.user_id %>"></i>
+                          <i class="fas fa-edit" user_id="<%= user.user_id %>"></i>
+                        </td>
+                      </tr>
+                      <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      
       </div>
     </div>
   </div>
@@ -127,35 +132,35 @@
             <tbody>
               <tr>
                 <th scope="row" class="w-25">ID:</th>
-                <td  id="d-student_id"></td>
+                <td  id="d-user_id"></td>
               </tr>
               <tr>
                 <th scope="row">Họ tên:</th>
-                <td  id="d-student_name"></td>
+                <td  id="d-user_name"></td>
               </tr>
               <tr>
                 <th scope="row">Ngày sinh:</th>
-                <td  id="d-student_birth"></td>
+                <td  id="d-user_birth"></td>
               </tr>
               <tr>
                 <th scope="row">Số điện thoại:</th>
-                <td  id="d-student_phoneNumber"></td>
+                <td  id="d-user_phoneNumber"></td>
               </tr>
               <tr>
                 <th scope="row">Giới tính:</th>
-                <td  id="d-student_gender"></td>
+                <td  id="d-user_gender"></td>
               </tr>
               <tr>
                 <th scope="row">Email:</th>
-                <td  id="d-student_email"></td>
+                <td  id="d-user_email"></td>
               </tr>
               <tr>
                 <th scope="row">Số căn cước công dân:</th>
-                <td  id="d-student_idNumber"></td>
+                <td  id="d-user_idNumber"></td>
               </tr>
               <tr>
                 <th scope="row">Địa chỉ:</th>
-                <td  id="d-student_placeAddress"></td>
+                <td  id="d-user_placeAddress"></td>
               </tr>
             </tbody>
           </table>
@@ -174,41 +179,41 @@
           <h5 class="modal-title" id="updateModalLabel">Nhập nhật thông tin sinh viên</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="/admin/student/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
+        <form action="/admin/user/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
           <div class="modal-body">
             <div class="mb-3">
-              <label for="student_id">ID</label>
-                <input type="text" class="form-control" id="u-student_id" name="student_id" readonly />
+              <label for="user_id">ID</label>
+                <input type="text" class="form-control" id="u-user_id" name="user_id" readonly />
             </div>
             <div class="mb-3">
-              <label for="student_name">Tên học viên</label>
-                <input type="text" class="form-control" id="u-student_name" name="student_name" />
+              <label for="user_name">Tên học viên</label>
+                <input type="text" class="form-control" id="u-user_name" name="user_name" />
             </div>
             <div class="row">
               <div class="col-md">
                 <div class="mb-3">
-                  <label for="student_email">Email</label>
-                  <input type="text" class="form-control" id="u-student_email" name="student_email" />
+                  <label for="user_email">Email</label>
+                  <input type="text" class="form-control" id="u-user_email" name="user_email" />
                 </div>
               </div>
               <div class="col-md">
                 <div class="mb-3">
-                  <label for="student_phoneNumber">Số điện thoại</label>
-                  <input type="text" class="form-control" id="u-student_phoneNumber" name="student_phoneNumber">
+                  <label for="user_phoneNumber">Số điện thoại</label>
+                  <input type="text" class="form-control" id="u-user_phoneNumber" name="user_phoneNumber">
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-md">
                 <div class="mb-3">
-                  <label for="student_birth">Ngày sinh</label>
-                  <input type="text" class="form-control" id="u-student_birth" name="student_birth">
+                  <label for="user_birth">Ngày sinh</label>
+                  <input type="text" class="form-control" id="u-user_birth" name="user_birth">
                 </div>
               </div>
               <div class="col-md">
                 <div class="mb-3">
-                  <label for="student_gender">Giới tính</label>
-                  <select class="form-control" id="u-student_gender" name="student_gender"> 
+                  <label for="user_gender">Giới tính</label>
+                  <select class="form-control" id="u-user_gender" name="user_gender"> 
                     <option value = "1">Nam</option>
                     <option value = "0">Nữ</option>
                   </select>
@@ -216,14 +221,14 @@
               </div>
               <div class="col-md">
                 <div class="mb-3">
-                  <label for="student_idNumber">Số căn cước công dân</label>
-                  <input type="text" class="form-control" id="u-student_idNumber" name="student_idNumber">
+                  <label for="user_idNumber">Số căn cước công dân</label>
+                  <input type="text" class="form-control" id="u-user_idNumber" name="user_idNumber">
                 </div>
               </div>
             </div>
             <div class="mb-3">
-              <label for="student_placeAddress">Địa chỉ</label>
-              <input type="text" class="form-control" id="u-student_placeAddress" name="student_placeAddress" >
+              <label for="user_placeAddress">Địa chỉ</label>
+              <input type="text" class="form-control" id="u-user_placeAddress" name="user_placeAddress" >
             </div>
           </div>
           <div class="modal-footer">
@@ -235,44 +240,48 @@
     </div>
   </div>
   <!-- script form vendor -->
-  <%- include('../layouts/scripts.ejs'); %>
+  <%- include('../../layouts/scripts.ejs'); %>
   <!-- Page's scripts -->
   
   <script>
     $(document).ready(function(){
-      $("#u-student_birth" ).datepicker({
+      var userTable = $("#userTable").DataTable({
+        sort:false,
+      })
+
+      $("#u-user_birth" ).datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat: "dd/mm/yy",
         yearRange: "1960:2021",
         defaultDate: "03/09/1999"
       });
-      var student_tempList=[],
+      var user_tempList=[],
         account_tempList=[];
       let getdata = async function(id) {
         $.ajax({
-          url:'/admin/student/get-data',
+          url:'/admin/user/get-data',
           method:'post',
           data:{
             id
           },
           success: function(res){
-            if (typeof student_tempList[id] == 'undefined'){
-              student_tempList[id] = res.student_info;
+            if (typeof user_tempList[id] == 'undefined'){
+              user_tempList[id] = res.user_info;
               account_tempList[id] = res.account_info;
-              console.log(student_tempList[id])
+              console.log(user_tempList[id])
               console.log(account_tempList[id])
             }
           }
         })
       }
       //Xem thông tin chi tiết sinh viên
-      $(".btn-detail").on('click', async function(event){
+      $(".fa-external-link-alt").on('click', async function(event){
         event.preventDefault();
-        let id = $(this).attr('student_id');
+        let id = $(this).attr('user_id');
         await getdata(id);
-        for (const [key, value] of Object.entries(student_tempList[id])) {
-          if (key == "student_gender"){
+        for (const [key, value] of Object.entries(user_tempList[id])) {
+          if (key == "user_gender"){
             $('#d-'+key).text((value == 1)? "Nam": "Nữ");
           }else 
             $('#d-'+key).text(value);
@@ -283,23 +292,23 @@
         $("#detailModal").modal('show');
       })
       //Cập nhật thông tin sinh viên 
-      $(".btn-update").on('click',function(event){
+      $(".fa-edit").on('click',function(event){
         event.preventDefault;
-        let id = $(this).attr('student_id');
+        let id = $(this).attr('user_id');
         $.ajax({
-          url:'/admin/student/get-data',
+          url:'/admin/user/get-data',
           method:'post',
           data:{
             id
           },
           success: function(res){
-            if (typeof student_tempList[id] == 'undefined'){
-              student_tempList[id] = res.student_info;
+            if (typeof user_tempList[id] == 'undefined'){
+              user_tempList[id] = res.user_info;
               account_tempList[id] = res.account_info;
             }
-            for (const [key, value] of Object.entries(student_tempList[id])) {
-              if (key == "student_gender"){
-                $("#u-student_gender option[value="+value+"]").attr('selected','selected');
+            for (const [key, value] of Object.entries(user_tempList[id])) {
+              if (key == "user_gender"){
+                $("#u-user_gender option[value="+value+"]").attr('selected','selected');
               }else 
                 $('#u-'+key).val(value);
             }

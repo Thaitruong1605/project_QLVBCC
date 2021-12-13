@@ -9,67 +9,105 @@
     <%= title %>
   </title>
   <!-- styles from vendors  -->
-  <%- include('../layouts/styles.ejs'); %>
-
+  <%- include('../../layouts/styles.ejs'); %>
+  <style>
+    .col-form-label{
+      width: 120px;
+    }
+  </style>
 </head>
 
 <body>
-  <%- include('../partials/navbar.ejs') %>
-  <%- include('../../partials/alert.ejs') %>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-2 px-0">
-        <%- include('../partials/sidebar.ejs'); %>
+      <div class="col-1" style="width: fit-content;padding :0;">
+        <%- include('../partials/sidebar')%>
       </div>
-      <div class="col-md-10 px-0">
-        <div class="container">
-          <!-- main content -->
-          <h3 class = "pt-3">Danh sách tài khoản</h3>
+      <div class="col p-0 pt-3 bg-light" id="contentAdmin" style="height: 100vh;">
+        <!-- main content -->
+        <div class="px-3" >
+          <div class="d-flex justify-content-between">
+            <span class = "h4 fw-bold" style="color: #3D6395;">QUẢN LÝ TÀI KHOẢN</span>
+          </div>
           <hr >
-          <div class="table-responsive">
-            <table class="table">
-              <caption>List of accounts</caption>
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Tên đăng nhập</th>
-                  <th scope="col">ID</th>
-                  <th scope="col">Địa chỉ</th>
-                  <th scope="col">Loại tài khoản</th>
-                  <th scope="col">Trạng thái</th>
-                  <th scope="col">Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% let i=1 ;%>
-                  <% account_list.forEach(function(account){ %>
-                    <tr>
-                      <th scope="row">
-                        <%= i++; %>
-                      </th>
-                      <th>
-                        <%= account.account_username %>
-                      </th>
-                      <td>
-                        <%= account.student_id %>
-                        <%= account.school_id %>
-                      </td>
-                      <td>
-                        <%= account.account_address %>
-                      </td>
-                      <td>
-                        <%= account.account_type %>
-                      </td>
-                      <td>
-                        <%= account.account_status %>
-                      </td>
-                      <td>
-                        <button class="btn btn-warning btn-update" account_username="<%= account.account_username %>">Sửa</button>
-                      </td>
-                    </tr>
-                    <% }); %>
-              </tbody>
-            </table>
+          <div class="btn-group dropend pb-1" id="filter">
+            <button class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-filter"></i>
+            </button>
+            <div class="dropdown-menu px-2" style="width: max-content;">
+              <div class="row g-1">
+                <div class="col mb-1 input-group">
+                  <select class="form-control" id="slt_type" style="width: 200px;">
+                    <option value="">Loại tài khoản</option>
+                    <option value="admin">admin</option>
+                    <option value="school">school</option>
+                    <option value="user">user</option>
+                  </select>
+                </div>
+                <div class="col mb-1 input-group">
+                  <select class="form-control" id="slt_status" style="width: 200px;">
+                    <option value="">Trạng thái</option>
+                    <option value="active">active</option>
+                    <option value="lock">lock</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col mb-1 input-group">
+                <input class="form-control" id="txt_search" style="width: 200px;" value="" placeholder="Tìm kiếm... "/>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow">
+            <div class="card-body">
+              <table class="table" id="accountTable">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Tên đăng nhập</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Địa chỉ</th>
+                    <th scope="col">Loại</th>
+                    <th scope="col">Trạng thái</th>
+                    <th scope="col" style="width:20px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% let i=1 ;%>
+                    <% account_list.forEach(function(account){ %>
+                      <tr>
+                        <th scope="row">
+                          <%= i++; %>
+                        </th>
+                        <th>
+                          <%= account.account_username %>
+                        </th>
+                        <td>
+                          <%= account.user_id %>
+                          <%= (account.issuer_id == null)? account.school_id : account.issuer_id %>
+                        </td>
+                        <td>
+                          <%= (account.account_address != null)? account.account_address:"(NULL)" %>
+                        </td>
+                        <td>
+                          <%= account.account_type %>
+                        </td>
+                        <td>
+                          <% if (account.account_status == 'lock') { %>
+                            <span class="text-danger fw-bold">clock</span>
+                          <%}else {%>
+                            <span class="text-success fw-bold">active</span>
+                          <%}%>
+                        </td>
+                        <td>
+                          <i class="fas fa-edit" account_username="<%= account.account_username %>"></i>
+                          <!-- <button class="btn btn-outline-warning btn-update" >Sửa</button> -->
+                        </td>
+                      </tr>
+                      <% }); %>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -81,7 +119,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="updateModalLabel">Sửa thông tin tài khoản</h5>
+          <h5 class="modal-title" id="updateModalLabel">Thay đổi trạng thái tài khoản</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form action="/admin/account/update" method="POST" name="frmCreate" id="frmCreate" novalidate="novalidate">
@@ -123,13 +161,29 @@
   </div>
 
   <!-- script form vendor -->
-  <%- include('../layouts/scripts.ejs'); %>
+  <%- include('../../layouts/scripts.ejs'); %>
   <!-- Page's scripts -->
   
   <script>
     var account_tempList=[];
-
     $(document).ready(function(){
+      var table = $("#accountTable").DataTable({
+        info:false,
+        sort:false,
+      })
+      $(document).on("keyup change clear","#txt_search", function (){
+        console.log($(this).val());
+        // $("#accountTable input[1]").search($(this).val())
+        table.search($(this).val()).draw()
+      })
+      $(document).on("change","#slt_type", function (){
+        console.log($(this).val());
+        table.column(4).search($(this).val()).draw()
+      })
+      $(document).on("change","#slt_status", function (){
+        console.log($(this).val());
+        table.column(5).search($(this).val()).draw()
+      })
       let getdata = async function(username) {
         await $.ajax({
           url:'/admin/account/get-data',
@@ -143,7 +197,7 @@
         });
       };
 
-      $('.btn-update').on('click', async function(){
+      $('.fa-edit').on('click', async function(){
         var username = $(this).attr('account_username');
         if (typeof account_tempList[username] == 'undefined' ){
           await getdata(username);
@@ -152,6 +206,7 @@
         $("#u-account_status option[value="+account_tempList[username].account_status+"]").attr('selected','selected');
         $("#updateModal").modal('show');
       })
+      $("#accountTable_filter").hide()
     })
   </script>
 </body>

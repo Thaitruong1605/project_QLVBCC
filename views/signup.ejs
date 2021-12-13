@@ -11,84 +11,85 @@
   <%- include('./partials/header.ejs') %>
   <%- include('./partials/alert.ejs') %>
   <!-- FLASH  -->
-  <div class="container">
-    <div class="row">
-        <div class="col-md-2"></div>
+  <div class="container-fluid">
+    <div class="row d-flex justify-content-center">
         <div class="col-md-8">
-            <h5 class="text-center ">Thông tin cá nhân sinh viên</h5>
-            <form name="frmSignup" id="frmSignup" action="/signup" method="POST" >
-                <div class="mb-3">
-                    <label for="account_address">Địa chỉ tài khoản: </label>
-                    <input type="text" name="account_address" id="account_address" value="" class="form-control" readonly/>
-                    <button id="connectWallet" type="button" class="btn btn-primary">Connect wallet</button>
-                </div>
-                <div class="mb-3">
-                    <label for="account_username">Tên đăng nhập: </label>
-                    <input type="text" name="account_username" id="account_username" value="" class="form-control" />
-                </div>
-                <div class="row">
-                    <div class="col-md">
-                        <div class="mb-3">
-                            <label for="account_password">Mật khẩu: </label>
-                            <input type="password" name="account_password" id="account_password" value="" class="form-control" />
+            <h5 class="text-center mt-2">Đăng ký tài khoản người dùng</h5>
+            <div class="card">
+                <div class="card-body">
+                    <form name="frmSignup" id="frmSignup" action="/signup" method="POST" >
+                        <div class="input-group mb-3">
+                            <input type="text" name="account_address" id="account_address" value="" class="form-control" placeholder="Vui lòng kết nối với metamark..." readonly/>
+                            <button id="connectWallet" type="button" class="btn btn-primary">Connect wallet</button>
                         </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="mb-3">
-                            <label for="account_password2">Nhập lại mật khẩu: </label>
-                            <input type="password" name="account_password2" id="account_password2" value="" class="form-control" />
+                        <div id="form-info" class="row">
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label class="form-label" for="account_username">Tên đăng nhập </label class="form-label" >
+                                    <input type="text" name="account_username" id="account_username" value="" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label"  for="account_password">Mật khẩu </label class="form-label" >
+                                    <input type="password" autocomplete="new-password" name="account_password" id="account_password" value="" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label"  for="account_password2">Nhập lại mật khẩu </label class="form-label" >
+                                    <input type="password" autocomplete="new-password" name="account_password2" id="account_password2" value="" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label class="form-label"  for="user_name">Họ tên </label class="form-label" >
+                                    <input type="text" name="user_name" id="user_name" value="" class="form-control" />
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label class="form-label"  for="user_email">Email </label class="form-label" >
+                                            <input type="text" autocomplete="email" name="user_email" id="user_email" value="" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label class="form-label"  for="user_phoneNumber">Số điện thoại </label class="form-label" >
+                                            <input type="text" name="user_phoneNumber" id="user_phoneNumber" value="" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md">
+                                        <div class="mb-3">
+                                            <label class="form-label"  for="user_idNumber">Căn cước công dân </label class="form-label" >
+                                            <input type="text" name="user_idNumber" id="user_idNumber" value="" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="mb-3">
+                                            <label class="form-label"  for="user_birth">Ngày sinh </label class="form-label" >
+                                            <input type="text" name="user_birth" id="user_birth" value="03/09/1999" class="form-control" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="mb-3">
+                                            <label class="form-label"  for="user_birth">Giới tính </label class="form-label" >
+                                            <select class="form-control" name="user_gender">
+                                                <option value="1" selected>Nam</option>
+                                                <option value="0">Nữ</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label"  for="user_placeAddress">Địa chỉ </label class="form-label" >
+                                    <textarea class="form-control" name="user_placeAddress" id="user_placeAddress"> </textarea>
+                                </div>
+                            </div>
+                            <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
-                <h6 class="border-start border-3 ps-3">Đăng ký tài khoản sinh viên</h6>
-                <div class="mb-3">
-                    <label for="user_name">Họ tên: </label>
-                    <input type="text" name="user_name" id="user_name" value="" class="form-control" />
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="mb-3">
-                            <label for="user_email">Email: </label>
-                            <input type="text" name="user_email" id="user_email" value="" class="form-control" />
-                        </div>
-
-                    </div>
-                    <div class="col">
-                        <div class="mb-3">
-                            <label for="user_phoneNumber">Số điện thoại: </label>
-                            <input type="text" name="user_phoneNumber" id="user_phoneNumber" value="" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md">
-                        <div class="mb-3">
-                            <label for="user_idNumber">Số căn cước công dân: </label>
-                            <input type="text" name="user_idNumber" id="user_idNumber" value="" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="mb-3">
-                            <label for="user_birth">Ngày sinh: </label>
-                            <input type="text" name="user_birth" id="user_birth" value="03/09/1999" class="form-control" autocomplete="off"/>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="mb-3">
-                            <label for="user_birth">Giới tính: </label>
-                            <select class="form-control" name="user_gender">
-                                <option value="1" selected>Nam</option>
-                                <option value="0">Nữ</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="user_placeAddress">Địa chỉ: </label>
-                    <input type="text" name="user_placeAddress" id="user_placeAddress" value="" class="form-control" />
-                </div>
-                <button type="submit" name="btnSave" id="btnSave" class="btn btn-primary">Đăng ký</button>
-            </form>
+            </div>
+           
         </div>
     </div>
   </div>
@@ -102,12 +103,14 @@
                 yearRange: "1960:2021",
                 defaultDate: "03/09/1999"
             });
+            $("#form-info").hide()
             $('#connectWallet').on('click',async function(){
                 if (window.ethereum) {
                     try {
                         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                         $('#account_address').attr('value', accounts);
-                        console.log(accounts);
+                        // console.log(accounts);
+                        $("#form-info").show(100)
                     } catch (error) {
                         console.log(error);
                     }

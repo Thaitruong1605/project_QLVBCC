@@ -15,38 +15,15 @@
     font-family: 'OpenSans-SemiBold';
     src: url('/fonts/Open_Sans/static/OpenSans/OpenSans-SemiBold.ttf');
   }
-  .nav-active{
-    border: solid 1px rgba(0,0,0,.15);
-    border-bottom:  none;
-    box-shadow: inset 0px 0px 10px rgba(0,0,0,.15);
-    border-radius: 10px 10px 0 0;
-  }
-  #cert_card{
-    position: relative; width: 40vw; padding: 5px; height: fit-content;
-  }
-  #cert_card img{
-    width: 100%;position: relative;margin: auto;
-  }
-  #cert_template {
-    position: absolute;
-    top: 4vw;  
-    left: 0; 
-    right: 0; 
-    bottom: 0; 
-    font-size: 1.1vw;
-  }
+
   #cert_template span{
     color: orange;
-  }
-  #cert_template .text-center{
-    padding-bottom: 0.2vw!important;
-
   }
   .font-header {
     font-family: 'OpenSans-SemiBold';
   }
   .cert_title {
-    font-size: 1.5vw;
+    font-size: 2vw;
     font-family: UVNCoDien;
     color: #3ca6ba!important;
   }
@@ -76,5 +53,11 @@
   .fa-edit:hover{
     color: #ffc107;
     cursor: pointer;
+  }
+  #sidebarAdmin, #contentAdmin {
+    overflow-y: scroll;
+  }
+  ::-webkit-scrollbar {
+    display: none;
   }
 </style>

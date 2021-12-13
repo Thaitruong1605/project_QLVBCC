@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
   var certNumber, issuerNumber, countList = {};
   const sysI = await SystemContract.deployed();
   // I. Create school intance 
-  const schAddr = "0x70cE91A72dbE08aaD8766aE09E977d559C13B806"; // test
+  const schAddr = req.user.account_address ;
   const schCA = await sysI.getSchoolContractAddr(schAddr);
   var schI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/School.json'))['abi'], schCA);
   // II. list transactions 
@@ -34,8 +34,9 @@ router.get("/", async (req, res) => {
     return event;
   })
   var transactionList = []
+  console.log(data);
   console.log(Object.keys(data).length)
-  for (i= Object.keys(data).length-2; i>= 0; i-- ){
+  for (i= Object.keys(data).length-1; i>= 0; i-- ){
     console.log(data[i].returnValues._certHash);
     transactionList.push({
       transactionHash: data[i].transactionHash,
@@ -44,6 +45,9 @@ router.get("/", async (req, res) => {
       blockNumber: data[i].blockNumber,
       timestamp: moment.unix((await web3.eth.getBlock(data[i].blockNumber)).timestamp).format("DD/MM/YYYY, hh:mm:ss a")
     })
+    if (data[i].event == "addedCertificate") {
+      transactionList[transactionList.length-1].event = `addedCertificate(${data[i].returnValues._certNumber})`
+    }
   }
   try {
     await certificateModel.count_groupByIssuer(req.user.school_id).then(function(data){
@@ -72,6 +76,7 @@ router.get("/", async (req, res) => {
   }catch(err){
     console.log(err)
   }
+  console.log(transactionList)
   return res.render("./school",{title:"Dashboard", page:"Dashboard", certNumber, issuerNumber, countList, transactionList});
 });
 router.get("/dashboard", (req,res)=> {

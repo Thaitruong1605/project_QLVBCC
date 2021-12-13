@@ -16,10 +16,11 @@ let createUser = async (req, res) => {
     account_status:"active",
     account_type:"user"
   }
+  console.log(account);
   //Kiểm tra username 
   if ( await signupModel.isExist_username(account.account_username)) error.push("Tên đăng nhập đã tồn tại!");
   else if ( typeof account.account_address == 'undefined') error.push("Vui lỏng kết nối với ví điện tử!");
-  else if ((account.account_username).length < 6 || (account.account_username).length > 12) error.push("Tên đăng nhập có từ 6 đến 12 ký tự!");
+  else if ((account.account_username).length < 4 || (account.account_username).length > 12) error.push("Tên đăng nhập có từ 4 đến 12 ký tự!");
   else if (!validator.isAlphanumeric(account.account_username)) error.push("Tên đang nhập không được có ký tự đặc biệt!");
   else if (account.account_username.indexOf(" ") > 0 ) error.push("Tên đang nhập không được có khoản trắng!");
   //Kiểm tra password
@@ -36,6 +37,7 @@ let createUser = async (req, res) => {
     user_email: req.body.user_email,
     user_idNumber: req.body.user_idNumber
   }
+  console.log(user);
   if (
     user.user_name == "" ||
     user.user_placeAddress == "" ||
@@ -55,28 +57,28 @@ let createUser = async (req, res) => {
   if (await signupModel.isExist_idNumber(user.user_idNumber)) error.push("Số căn cước đã được đăng ký!");
 
   if (error && error.length > 0) {
-      req.flash("error", error);
-      res.redirect("/admin/user");
+    req.flash("error", error);
+    console.log(error)
+    res.redirect("/signup");
   } else {
-    // try{
-    //   await systemContract.methods.addUser(req.body.account_address,user.user_idNumber).call({from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
-    // }catch(err){console.log(err)}
       try {
         await signupModel.add_user(user, req.body.account_address);
       } catch (err) {
         console.log(err);
-        return res.redirect("/admin/user");
+        req.flash("error","Thêm thông tin người dùng thất bại!");
+        return res.redirect("/signup");
       }
       try {
         await signupModel.get_user_id(user.user_email).then(async function(data){
           account.user_id = data; 
           try {
             await signupModel.add_account(account);
-            req.flash("msg","Thêm tài khoản thành công!");
+            req.flash("msg",`Tạo tài khoản ${account.account_username} thành công!`);
             res.redirect("/");
           }catch(err){
             console.log(err);
-            return res.redirect("/");
+            req.flash("error","Thêm tài khoản thất bại!");
+            return res.redirect("/signup");
           }
         })
       }catch(err){

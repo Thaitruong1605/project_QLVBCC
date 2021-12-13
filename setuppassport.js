@@ -17,6 +17,9 @@ module.exports = function () {
       var account = await loginModel.findAccount(username);
       // password= await bcrypt.hashSync(password, saltRounds);
       if (await bcrypt.compareSync(password, account.account_password)){
+        if (account.account_status == "lock"){
+          return done(null, false, { message: "Tài khoản đã bị khoá!" });
+        }
         return done(null, account);
       }
       return done(null, false, { message: "Sai mật khẩu!" });

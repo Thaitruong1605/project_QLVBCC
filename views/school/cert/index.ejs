@@ -105,8 +105,10 @@
                         <td><%=cert.user_name%></td>
                         <td><%=cert.issuer_id%></td>
                         <td>
-                          <% if (cert.status == 'incorrect') {%>
+                          <% if (cert.status == 'deactivate') {%>
                             <span class="text-danger fw-bold"><%= cert.status %></span>  
+                          <% } else if (cert.status == 'incorrect') {%>
+                            <span class="text-warning fw-bold"><%= cert.status %></span>  
                           <% } else if (cert.status == 'checking') { %>
                             <span class="text-info fw-bold"><%= cert.status %></span>  
                           <%} else  {%>
@@ -201,20 +203,29 @@
             `)
           $('.modal-header').removeClass('bg-danger');
           $('.modal-header').removeClass('bg-success');
+          $('.modal-header').removeClass('bg-warning');
           $('.modal-header').addClass('bg-info');
         }else if (checkingCert[number] == 'incorrect'){
-          $('.modal-header').removeClass('bg-success');
-          $('.modal-header').removeClass('bg-info');
-          $('.modal-header').addClass('bg-danger');
-        }else {
           $('.modal-footer').html('');
+          $('.modal-header').removeClass('bg-success');
           $('.modal-header').removeClass('bg-danger');
           $('.modal-header').removeClass('bg-info');
+          $('.modal-header').addClass('bg-warning');
+        } else if (checkingCert[number] == 'deactivate'){
+          $('.modal-footer').html('');
+          $('.modal-header').removeClass('bg-success');
+          $('.modal-header').removeClass('bg-info');
+          $('.modal-header').removeClass('bg-warning');
+          $('.modal-header').addClass('bg-danger');
+        }else {
+          $('.modal-footer').html(`<a class="btn btn-danger" href="/school/cert/deactivate?number=${number}">Thu hồi</a>`)
+          $('.modal-header').removeClass('bg-danger');
+          $('.modal-header').removeClass('bg-info');
+          $('.modal-header').removeClass('bg-warning');
           $('.modal-header').addClass('bg-success');
         }
         for (const [key, value] of Object.entries(cert_info[number])) {
           $(`#${key}`).text(value);
-          
         }
         $("#certDetailModal").modal("show");
       })

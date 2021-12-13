@@ -96,15 +96,44 @@ let select_recentlyCert = (issuer_id) => {
     );
   });
 };
-
+let isExist_cert = (user_idNumber, cn_id) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT number FROM certificates
+      WHERE user_idNumber = '${user_idNumber}' AND 
+        cn_id ='${cn_id}'`,
+      function (err, results) {
+        if (err) {
+          reject();
+        } else {
+          resolve(results != []);
+        }
+      }
+    );
+  });
+}
 let create = (data) => {
   return new Promise((resolve, reject) => {
     conn.query("INSERT INTO certificates SET ?", data, function (err) {
-      // console.log(this.sql);
       if (err) {
         reject();
       } else {
         resolve("A new row has been created!");
+      }
+    });
+  });
+};
+let get_numberByType = () => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT ck_name, c.number  FROM certkind ck
+      JOIN ( SELECT COUNT(NUMBER) AS number, ck_id
+        FROM certificates
+        GROUP BY ck_id ) AS c ON ck.ck_id = c.ck_id`,
+      function (err,results) {
+      if (err) { reject(); } 
+      else {
+        resolve(results);
       }
     });
   });
@@ -157,13 +186,28 @@ let get_ipfs_hashbyhash = (hash) => {
 let get_ipfs_hash = (number) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "SELECT ipfs_hash FROM certificates  WHERE number=?",
+      "SELECT ipfs_hash FROM certificates WHERE number=?",
       [number],
       function (err, results) {
         if (err) {
           reject();
         } else {
           resolve(results[0].ipfs_hash);
+        }
+      }
+    );
+  });
+};
+let get_idNumberByHash = (hash) => {
+  return new Promise((resolve, reject) => {
+    conn.query(
+      "SELECT user_idNumber FROM certificates WHERE hash=?",
+      [hash],
+      function (err, results) {
+        if (err) {
+          reject();
+        } else {
+          resolve(results[0].user_idNumber);
         }
       }
     );
@@ -206,7 +250,7 @@ let cert_search = (cn_id,number,user_name,regno) => {
       `SELECT cn.cn_name, c.user_name, ipfs_hash, user_birth, number, regno
       FROM certificates c
       LEFT JOIN certname cn ON c.cn_id = cn.cn_id
-      WHERE c.cn_id = ? AND status = 'Done' AND 
+      WHERE c.cn_id = ? AND (status = 'done' OR status = 'deactivate') AND 
       ( number = ? OR user_name = ? OR regno = ?)`,
       [cn_id,number,user_name,regno],
       function (err, results) {
@@ -226,7 +270,6 @@ let check_cert = (numberList, regnoList) => {
       FROM certificates
       WHERE NUMBER IN `+numberList+`
         OR regno IN `+regnoList
-      
       ,function(err,data){
         if(err){
           console.log(err);
@@ -470,14 +513,16 @@ let list_cert = (data) => {
 }
 module.exports = {
   select_byschool,select_byIdNumber,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,countall,count_groupByIssuer,select_recentlyCert,
-  get_certformipfs,
+  get_certformipfs,get_idNumberByHash,
   cert_search,
   create,
+  get_numberByType,
   update,
   get_ipfs_hash,
   update_ipfs_hash,
   delete_byNumber,
   certname_get, certname_getbyschool, certname_create, certname_update, certname_remove,certname_getbyKindId,
   certkind_get, certkind_getbyschool, certkind_create, certkind_update, certkind_remove,
-  list_cert
+  list_cert,
+  isExist_cert
 };

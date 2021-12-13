@@ -22,7 +22,7 @@ let update = async (req, res) => {
     res.redirect('/admin/account');
   }else{
     try {
-      await accountModel.update(req.body.account_username,account_info);
+      await accountModel.update(account_info, req.body.account_username);
       req.flash("msg","Cập nhật tài khoản thành công!");
       res.redirect("/admin/account");
     }catch(err) {

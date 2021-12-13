@@ -13,19 +13,11 @@ const contract = require('@truffle/contract');
 
 var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
 SystemContract.setProvider(provider);
-var StudentContract = contract(JSON.parse(fs.readFileSync('./src/abis/Student.json')));
-StudentContract.setProvider(provider);
 
-router.get('/test',async (req, res)=>{
-  // const systemInstance = await SystemContract.deployed();
-  // const userInstance = await StudentContract.new('0x19f7b3A4805F98aF3799B79f1178f752b9683017',{from:"0x3E5C773519D38EB7996A5cADFDb8C8256889cB79"});
-
-  // console.log(userInstance.address)
-})
 router.get('/', (req, res) => {
   try{
     userModel.select().then(function(data){
-      return res.render('./admin/functions/user',{title:'Danh sách sinh viên', user_list:data, moment, page:'User'});
+      return res.render('./admin/functions/user',{title:'Danh sách sinh viên', user_list:data, moment, page:'user'});
     })
   }catch(err){
     console.log(err);
@@ -36,7 +28,7 @@ router.get('/update', (req, res) => {
   if( typeof req.query.id !== 'undefined'){
     try{
       require('../../models/userModel').select_byId(req.query.id).then(function(data){
-        return res.render('./admin/functions/user/update',{title:'Cập nhật sinh viên', user:data, moment, page:'User'});
+        return res.render('./admin/functions/user/update',{title:'Cập nhật sinh viên', user:data, moment, page:'user'});
       })
     }catch(err){
       console.log(err);
@@ -58,29 +50,50 @@ router.get('/delete', async (req, res) => {
   }
 })
 router.get('/auth',async (req, res)=>{
-  if (typeof req.query.user_id == 'undefined'){
-    req.flash('Hành động không hợp lệ!')
-  }else {
+  //1. get user info.
+  var  user_idNumber = req.query.user_idNumber;
+  var user_id = req.query.user_id;
+  var account_address;
+  try {
+    await accountModel.get_accountById(user_id).then(function(data){
+      return account_address = data.account_address;
+    })
+  }catch(err){console.log(err)}
+  
+  console.log(user_idNumber);
+  //2. deploy / transferOwnership smart contract.
+  const systemInstance = await SystemContract.deployed();
+  var userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
+
+  if (userCA == '0x0000000000000000000000000000000000000000'){
     try{
-      await userModel.auth(req.query.user_id);
-      var account = await accountModel.get_accountById(req.query.user_id);
-      console.log(account);
-      const systemInstance = await SystemContract.deployed();
-      try {
-        console.log(systemInstance.address);
-        console.log(account.account_address);
-        const userInstance = await StudentContract.new(account.account_address,systemInstance.address,{from:"0x3E5C773519D38EB7996A5cADFDb8C8256889cB79"});
-        console.log(userInstance.address) 
-        await systemInstance.addStudent(account.account_address, req.query.user_idNumber,userInstance.address,{from:'0x3E5C773519D38EB7996A5cADFDb8C8256889cB79'});
-        req.flash('Xác thực sinh viên thành công');
-      }catch (err){
-        console.log(err);
-      }
-    }catch(err){
-      console.log(err);
-    }
+      await systemInstance.createUserContractWithIDNumber(user_idNumber, systemInstance.address ,{from: process.env.SYSTEM_ADDRESS });
+    }catch(err){ console.log(err); return; }
+    userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
   }
-  res.redirect('/admin/user');
+
+  var UserContract = contract(JSON.parse(fs.readFileSync('./src/abis/User.json')));
+  UserContract.setProvider(provider);
+
+  const userI = await UserContract.at(userCA)
+  console.log({
+    account_address, user_idNumber, userCA,
+  })
+  // transferOwnership
+  try {
+    await userI.transferOwnership(account_address,{from: process.env.SYSTEM_ADDRESS});
+  }catch (err){console.log(err); return;}
+  // ADD user to blockchain
+  try {
+    await systemInstance.addUser(account_address, user_idNumber, userCA, {from: process.env.SYSTEM_ADDRESS });
+  }catch (err){console.log(err); return;}
+  // 3. 
+  try {
+    await userModel.auth(user_idNumber)
+  }catch(err){console.log(err); return }
+
+  req.flash("msg","Xác thực tài khoản thành công!");
+  return res.send({result:"redirect",url:"/admin/user"});
 })
 // POST -----------------------------------------
 router.post('/get-data', async (req, res) => {
