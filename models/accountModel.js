@@ -87,6 +87,18 @@ let remove = (account_username) => {
         )
     });
 };
+let removeSchoolAccounts = (school_id) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'DELETE FROM accounts WHERE school_id=?', 
+            [school_id],
+            function(err){
+                if (err) { console.log(err); reject();}
+                resolve('A new account has been deleted!');
+            }
+        )
+    });
+}
 let removeByIssuerId = (issuer_id) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
@@ -120,5 +132,6 @@ module.exports = {
     create,
     update,
     remove,
-    removeByIssuerId
+    removeByIssuerId,
+    removeSchoolAccounts
 }

@@ -9,60 +9,27 @@ contract Ownable {
     address indexed newOwner
   );
 
-  /**
-  * @dev The Ownable constructor sets the original `owner` of the contract to the sender
-  * account.
-  */
   constructor() public {
     _owner = msg.sender;
     emit OwnershipTransferred(address(0), _owner);
   }
-
-  /**
-  * @return the address of the owner.
-  */
   function owner() public view returns(address) {
     return _owner;
   }
-
-  /**
-  * @dev Throws if called by any account other than the owner.
-  */
   modifier onlyOwner() {
     require(isOwner());
     _;
   }
-
-  /**
-  * @return true if `msg.sender` is the owner of the contract.
-  */
   function isOwner() public view returns(bool) {
     return msg.sender == _owner;
   }
-
-  /**
-  * @dev Allows the current owner to relinquish control of the contract.
-  * @notice Renouncing to ownership will leave the contract without an owner.
-  * It will not be possible to call the functions with the `onlyOwner`
-  * modifier anymore.
-  */
   function renounceOwnership() public onlyOwner {
     emit OwnershipTransferred(_owner, address(0));
     _owner = address(0);
   }
-
-  /**
-  * @dev Allows the current owner to transfer control of the contract to a newOwner.
-  * @param newOwner The address to transfer ownership to.
-  */
   function transferOwnership(address newOwner) public onlyOwner {
     _transferOwnership(newOwner);
   }
-
-  /**
-  * @dev Transfers control of the contract to a newOwner.
-  * @param newOwner The address to transfer ownership to.
-  */
   function _transferOwnership(address newOwner) internal {
     require(newOwner != address(0));
     emit OwnershipTransferred(_owner, newOwner);
@@ -78,10 +45,10 @@ contract System is Ownable{
 
   mapping (string => address) public idnumberToContract;
 
-  event addedSchool(address newSchool, address newContract);
+  event addedSchool(string schoolCode, address newSchool, address newContract);
   event changedSchoolContract(address _schoolAddr, address _contractAddr);
   
-  event addedUser(address newUser, address newContract);
+  event addedUser(string idnumber, address newUser, address newContract);
   event changedUserContract(address _userAddr,address _contractAddr);
 
   event createdUserContractWithIDNumber(string _idnumber);
@@ -115,13 +82,14 @@ contract System is Ownable{
     }
     return false;
   }
-  function addSchool( string memory name, string memory addressPlace, string memory phoneNumber, string memory idnumber, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
+  function addSchool( string memory name,string memory code, string memory addressPlace, string memory phoneNumber, string memory email, string memory fax, string memory website, address schoolAddr)public onlyOwner(){
     require(!(_isSchool(schoolAddr)));
     schoolAddresses.push(schoolAddr);
-    School schoolContract = new School(name, addressPlace, phoneNumber, idnumber, fax, website, schoolAddr);
+    School schoolContract = new School(name, code, addressPlace, phoneNumber, email, fax, website, schoolAddr);
     mapSchool[schoolAddr] = address(schoolContract);
-    emit addedSchool(schoolAddr, address(schoolContract));
+    emit addedSchool(code, schoolAddr, address(schoolContract));
   }
+  
   function changeSchoolContract(address _schoolAddr, address _contractAddr) public onlyOwner(){
     for(uint i = 0 ; i< schoolAddresses.length; i++){
       if (schoolAddresses[i] == _schoolAddr){
@@ -137,15 +105,11 @@ contract System is Ownable{
     }
     return mapSchool[_schoolAddr];
   }
-  // STUDENT CONTRACT -----------------------------------
   function addUser(address _userAddr, string memory _idnumber, address _userCA) public onlyOwner(){
-    // check if userAddress is exist
-    // require (idnumberToContract[_idnumber] != address(0));
     userAddresses.push(_userAddr);
-    // push user address to array
     idnumberToContract[_idnumber] = _userCA;
     mapUser[_userAddr] = _userCA;
-    emit addedUser(_userAddr, _userCA);
+    emit addedUser(_idnumber, _userAddr, _userCA);
   }
   function changeUserContract(address _userAddr, address _contractAddr) public onlyOwner(){
     for (uint i = 0 ; i< userAddresses.length; i++){
@@ -168,14 +132,14 @@ contract System is Ownable{
   function getContractbyIDNumber (string memory _idnumber) public view returns(address){
     return idnumberToContract[_idnumber];
   }
-  
 } 
 
 contract School is Ownable{
   string public name;
+  string public code;
   string public addressPlace;
   string public phoneNumber;
-  string public idnumber;
+  string public email;
   string public fax; 
   string public website;
   
@@ -184,28 +148,25 @@ contract School is Ownable{
 
   constructor(
     string memory _name,
+    string memory _code,
     string memory _addressPlace,
     string memory _phoneNumber,
-    string memory _idnumber,
+    string memory _email,
     string memory _fax,
     string memory _website,
     address schAddr
     ) public {
       name = _name;
+      code = _code;
       addressPlace = _addressPlace;
       phoneNumber = _phoneNumber;
-      idnumber = _idnumber;
+      email = _email;
       fax = _fax;
       website = _website;
       transferOwnership(schAddr);
     }
-  function getSchool() public view{
-    name;
-    addressPlace;
-    phoneNumber;
-    idnumber;
-    fax; 
-    website;
+  function getSchool() public view returns (string memory, string memory, string memory, string memory, string memory, string memory, string memory){
+    return (name, code, addressPlace ,phoneNumber , email, fax, website);
   }
   function addCertificate(bytes32 _hashedCert,string memory _certNumber,string memory _ipfs, address userCAddr) public onlyOwner(){
     User userI = User(userCAddr);
@@ -229,8 +190,8 @@ contract User is Ownable{
     string ipfs;
   }
 
-  bytes32[] public certificateList; // mang hashed_cert
-  mapping (bytes32 => Certificate) mapCertificates; // hashed_cert => Certificate
+  bytes32[] public certificateList;
+  mapping (bytes32 => Certificate) mapCertificates;
   System public system;
 
   event addedCertificate(string _certNumber, bytes32 _certHash, string _ipfs);
@@ -255,9 +216,9 @@ contract User is Ownable{
     mapCertificates[_certHash].state = uint8(0);
     emit deactivatedCertificate( _certHash);
   }
-  function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32,  string memory){
+  function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32, string memory){
     Certificate storage cert = mapCertificates[_certHash];
-    return (cert.state, cert.schoolAddress, cert.certHash, cert.ipfs );
+    return (cert.state, cert.schoolAddress, cert.certHash, cert.ipfs);
   }
   function getAllCertificate() public view returns(Certificate[] memory) {
     Certificate[] memory returnData = new Certificate[](certificateList.length);

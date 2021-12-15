@@ -21,7 +21,7 @@ router.use('/account', require('./account'));
 
 router.get('/', async (req, res) => {
   let account_number, cert_number, eventList;
-  var sysI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'], "0x0176aABd5df10420f68e4ADA22D9E7bD37A3f9a1");
+  var sysI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'], process.env.SYSTEM_CONTRACT_ADDRESS);
   // II. list transactions 
   // let addedUser_trans = [];
   var data = await sysI.getPastEvents('allEvents',{
@@ -31,16 +31,23 @@ router.get('/', async (req, res) => {
     if(error) console.log(error);
     return  event
   })  
+  console.log(data);
   var transactionList = []
-  console.log(Object.keys(data).length)
-  for (i= Object.keys(data).length-2; i>= 0; i-- ){
-    console.log(data[i].returnValues._certHash);
-    transactionList.push({
+  
+  for (i= Object.keys(data).length-1; i>= 0; i-- ){
+    console.log(data[i].returnValues);
+    var tmp = {
       transactionHash: data[i].transactionHash,
       event: data[i].event,
       blockNumber: data[i].blockNumber,
       timestamp: moment.unix((await web3.eth.getBlock(data[i].blockNumber)).timestamp).format("DD/MM/YYYY, hh:mm:ss a")
-    })
+    }
+    if (data[i].event == "addedSchool") {
+      tmp.event = `addedSchool(${data[i].returnValues.schoolCode})`;
+    } else if (data[i].event == "addedUser") {
+      tmp.event = `addedUser(${data[i].returnValues.idnumber})`;
+    }
+    transactionList.push(tmp)
   }
   try { 
     await accountModel.number_school_user().then(function(data){

@@ -3,7 +3,7 @@ const conn = require('../dbconnect');
 let school_select = () => {
   return new Promise((resolve, reject) => {
     conn.query(
-      'SELECT school_id, school_code, school_name, school_placeAddress, school_website, school_email, school_phoneNumber, school_fax, school_createTime, school_modifyTime FROM schools',
+      'SELECT * FROM schools',
       function (err, results) {
         if (err) {
           console.log(err);reject(err);
@@ -18,7 +18,7 @@ let school_select = () => {
 let school_selectbyId = (id) => {
   return new Promise(async (resolve, reject) => {
     conn.query(
-      'SELECT school_id, school_code, school_name, school_placeAddress, school_website, school_email, school_phoneNumber, school_fax, school_createTime, school_modifyTime FROM schools WHERE school_id = ?',
+      'SELECT * FROM schools WHERE school_id = ?',
       id, 
       function (err, results) {
         if (err) {
