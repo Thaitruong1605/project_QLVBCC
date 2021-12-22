@@ -12,8 +12,7 @@ const Web3 = require('web3');
 const provider = new Web3.providers.HttpProvider('http://localhost:7545');
 const web3 = new Web3( provider );
 
-var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
-SystemContract.setProvider(provider);
+const sysI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'], process.env.SYSTEM_CONTRACT_ADDRESS);
 
 router.use('/school', require('./school'));
 router.use('/user', require('./user'));
@@ -21,24 +20,38 @@ router.use('/account', require('./account'));
 
 router.get('/', async (req, res) => {
   let account_number, cert_number, eventList;
-  var sysI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/System.json'))['abi'], process.env.SYSTEM_CONTRACT_ADDRESS);
   // II. list transactions 
-  // let addedUser_trans = [];
-  var data = await sysI.getPastEvents('allEvents',{
+  let data = await sysI.getPastEvents('allEvents',{
     fromBlock: '0',
     toBlock: 'latest'
   },async function(error, event){ 
     if(error) console.log(error);
     return  event
   })  
-  console.log(data);
-  var transactionList = []
-  
-  for (i= Object.keys(data).length-1; i>= 0; i-- ){
-    console.log(data[i].returnValues);
+  let transactionList = []
+  // await data.forEach(async function(tran){
+  //   let tmp = {
+  //     transactionHash: tran.transactionHash,
+  //     event: tran.event,
+  //     eventName: tran.event,
+  //     blockNumber: tran.blockNumber,
+  //     timestamp: moment.unix((await web3.eth.getBlock(tran.blockNumber)).timestamp).format("DD/MM/YYYY, hh:mm:ss a")
+  //   }
+  //   if (tran.event == "addedSchool") {
+  //     tmp.event = `addedSchool(${tran.returnValues.schoolCode})`;
+  //   } else if (tran.event == "addedUser") {
+  //     tmp.event = `addedUser(${tran.returnValues.idnumber})`;
+  //   }
+  //   try {
+
+  //     await transactionList.push(tmp)
+  //   }catch(err){console.log(err)}
+  // })
+  for (i= data.length-1; i>= 0; i-- ){
     var tmp = {
       transactionHash: data[i].transactionHash,
       event: data[i].event,
+      eventName: data[i].event,
       blockNumber: data[i].blockNumber,
       timestamp: moment.unix((await web3.eth.getBlock(data[i].blockNumber)).timestamp).format("DD/MM/YYYY, hh:mm:ss a")
     }
@@ -65,5 +78,20 @@ router.get('/', async (req, res) => {
 })
 router.get('/dashboard', (req, res) => {
   res.redirect('/admin');
+})
+
+router.post("/get-event-detail", async (req, res) => {
+  let eventName = req.body.eventName
+  let transactionHash = req.body.transactionHash;
+  let event =  await sysI.getPastEvents(eventName, {
+    fromBlock: 0,
+    toBlock: 'latest'
+  }).then(function(events){
+    events.forEach(function(row){
+      if ( row.transactionHash == transactionHash){
+          return res.send({ event: row }) 
+      }
+    })
+  });
 })
 module.exports = router

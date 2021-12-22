@@ -18,7 +18,9 @@
       -moz-user-select: none;
       user-select: none;
     }
-   
+    td{
+      word-break: break-all;
+    }
     .transactionHash {
       max-width: 250px;
       overflow: hidden;
@@ -61,36 +63,36 @@
                   <canvas id="accountChart"></canvas>
                 </div>
               </div>
-              </div>
-              <div class="col-8">
-                <div class="card shadow h-100">
-                  <div class="card-header fw-bold" style="color: #3D6395;">
-                    GIAO DỊCH CỦA HỆ THỐNG
-                  </div>
-                  <div class="card-body">
-                    <table class="table" id="transactionTable">
-                      <thead>
+            </div>
+            <div class="col-8">
+              <div class="card shadow h-100">
+                <div class="card-header fw-bold" style="color: #3D6395;">
+                  GIAO DỊCH CỦA HỆ THỐNG
+                </div>
+                <div class="card-body">
+                  <table class="table" id="transactionTable">
+                    <thead>
+                      <tr>
+                        <th>transactionHash</th>
+                        <th>block</th>
+                        <th>event</th>
+                        <th>time</th>
+                        <th class="text-end"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <%transactionList.forEach(function(row){%>
                         <tr>
-                          <th>transactionHash</th>
-                          <th>block</th>
-                          <th>event</th>
-                          <th>time</th>
+                          <td class="transactionHash" title="<%= row.transactionHash %>"><%= row.transactionHash %> </td>
+                          <td><%= row.blockNumber %> </td>
+                          <td class="eventName"><%= row.event %> </td>
+                          <td><%= row.timestamp %> </td>
+                          <td><i class="fas fa-external-link-alt" transactionHash= "<%= row.transactionHash %>" eventName="<%= row.eventName %>"></i></td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        <%console.log(transactionList)%>
-                        <%transactionList.forEach(function(row){%>
-                          <tr>
-                            <td class="transactionHash" title="<%= row.transactionHash %>"><%= row.transactionHash %> </td>
-                            <td><%= row.blockNumber %> </td>
-                            <td class="eventName"><%= row.event %> </td>
-                            <td><%= row.timestamp %> </td>
-                          </tr>
-                          
-                        <%})%>
-                      </tbody>
-                    </table>
-                  </div>
+                        
+                      <%})%>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -100,7 +102,21 @@
     </div>
   </div>
   
-
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Chi tiết giao dịch</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" >
+            <table id="transactionDetail" style="display: block">
+              
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- script form vendor -->
   <%- include('../layouts/scripts.ejs'); %>
   <!-- Page's scripts -->
@@ -131,10 +147,51 @@
       document.getElementById('accountChart'),
       config
     );
-
-    $("#transactionTable").DataTable({
-      sort:false
+    let eventList = {};
+    $(document).ready(function(){
+      $("#transactionTable").DataTable({
+        sort:false
+      })
+      $(document).on("click", ".fa-external-link-alt", async function(event){
+        event.preventDefault;
+        let eventName = $(this).attr("eventName"), transactionHash = $(this).attr("transactionHash");
+        if (typeof eventList[transactionHash] == "undefined"){
+          await $.ajax({
+            url: "/admin/get-event-detail",
+            method: "POST",
+            data: {
+              eventName,
+              transactionHash
+            },success: function(res){
+              eventList[transactionHash] = res.event;
+            }
+          });
+        }
+        console.log(eventList[transactionHash])
+        let html = "";
+        for (const [key, value] of Object.entries(eventList[transactionHash])) {
+          if (key == "returnValues" || key == "raw"){
+            html += `<tr>
+              <th><b>${key}: </b>   </th>
+              <td>`;
+            for (const [key1, value1] of Object.entries(value)) {
+              if(isNaN(key1))
+                html += `"<i>${key1}</i>":  "${value1}"<br />`;
+            }
+            html += `</td>
+              </tr>`;
+          }else {
+            html += `<tr>
+              <th><b>${key}: </b></th>
+              <td>${value}</td> 
+            </tr>`
+          }
+        }
+        $("#transactionDetail").html(html);
+        $("#editModal").modal("show")
+      })
     })
+  
   </script>
 </body>
 

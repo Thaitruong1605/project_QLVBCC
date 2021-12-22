@@ -13,6 +13,7 @@
             <li><a href="/user/danh-sach-chung-chi" class="nav-link pe-4 link-<%= (page == "danh-sach-chung-chi" )? "secondary":"dark" %>">Danh sách chứng chỉ</a></li>
             <li><a href="/user/thong-tin-ca-nhan" class="nav-link pe-4 link-<%= (page == "thong-tin-ca-nhan" )? "secondary":"dark" %>">Thông tin cá nhân</a></li>
             <li><a href="/user/doi-mat-khau" class="nav-link pe-4 link-<%= (page == "doi-mat-khau" )? "secondary":"dark" %>">Đổi mật khẩu</a></li>
+            <li><a href="/user/lich-su-giao-dich" class="nav-link pe-4 link-<%= (page == "lich-su-giao-dich" )? "secondary":"dark" %>">Lịch sử giao dịch</a></li>
           <% }else { %>
           <li><a href="/<%= currentUser.account_type %>" class="nav-link pe-4 link-<%= (page != "tra-cuu" )? "secondary":"dark" %>">Quản lý</a></li>
           <% } %>
@@ -34,7 +35,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="loginModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="loginModalLabel">Đăng nhập</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="/login" method="POST">

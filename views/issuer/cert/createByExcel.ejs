@@ -19,6 +19,7 @@
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <select class="form-control" name="cert_kind" id="cert_kind">
+              <option value=""></option>
               <% kindlist.forEach(function(kind){%>
                 <option value="<%= kind.ck_id%>"><%= kind.ck_name%></option>
               <%}) %>

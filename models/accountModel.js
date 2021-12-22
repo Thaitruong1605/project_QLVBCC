@@ -50,7 +50,6 @@ let number_school_user = () => {
         )
     });
 }
-
 let create = (account_inf) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
@@ -111,6 +110,18 @@ let removeByIssuerId = (issuer_id) => {
         )
     });
 };
+let removeByUserId = (user_id) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'DELETE FROM accounts WHERE user_id=?', 
+            [user_id],
+            function(err){
+                if (err) { console.log(err); reject();}
+                resolve('A new account has been deleted!');
+            }
+        )
+    });
+};
 let get_password = (account_username) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
@@ -123,6 +134,18 @@ let get_password = (account_username) => {
         )
     });
 };
+let update_school = (account_inf, school_id) => {
+    return new Promise(async (resolve, reject) => {
+        conn.query(
+            'UPDATE accounts SET ? WHERE school_id =?', 
+            [account_inf, school_id],
+            function(err){
+                if (err) { console.log(err); reject();}
+                resolve('A new account has been updated!');
+            }
+        )
+    });
+};
 module.exports = {
     select,
     get_accountById,
@@ -131,7 +154,9 @@ module.exports = {
     number_school_user,
     create,
     update,
+    update_school,
     remove,
     removeByIssuerId,
+    removeByUserId,
     removeSchoolAccounts
 }

@@ -16,11 +16,11 @@
   <%- include('../../partials/header') %>
   <%- include('../../partials/alert') %>
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-2 border-end">
+    <div class="row cols-row-2">
+      <div class="col-1 border-end" style="width: auto;">
         <%- include('../partials/sidebar')%>
       </div>
-      <div class="col-10 px-5">
+      <div class="col px-5">
         <div class="row">
           <div class="col">
             <div class="btn-group dropend">
@@ -246,6 +246,7 @@
           success: function(res){
             var certList= res.certList,
             html = ``,i =1;
+            console.log(certList)
             $("#count").text('Có '+certList.length+' kết quả phù hợp:')
             certList.forEach(function(elt){
               html+= `<tr>

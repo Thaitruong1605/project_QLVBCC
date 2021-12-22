@@ -198,11 +198,11 @@ let get_ipfs_hash = (number) => {
     );
   });
 };
-let get_idNumberByHash = (hash) => {
+let get_idNumberByCertNumber = (number) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      "SELECT user_idNumber FROM certificates WHERE hash=?",
-      [hash],
+      "SELECT user_idNumber FROM certificates WHERE number=?",
+      [number],
       function (err, results) {
         if (err) {
           reject();
@@ -491,7 +491,7 @@ let count_groupByIssuer = (school_id)=>{
 let list_cert = (data) => {
   return new Promise((resolve, reject) => {
     conn.query(
-      `SELECT c.number, c.regno, cn.cn_name, a.account_username, c.user_name, c.status, c.createTime FROM certificates c
+      `SELECT * FROM certificates c
       LEFT JOIN certname cn ON c.cn_id = cn.cn_id
       LEFT JOIN accounts a ON a.issuer_id = c.issuer_id
           WHERE c.cn_id LIKE '%${data.cn_id}%' AND
@@ -501,7 +501,7 @@ let list_cert = (data) => {
           regno LIKE '%${data.regno}%' AND
           number LIKE '%${data.number}%'`,
       function(err, results){
-        console.log(this.sql);
+        console.log(this.sql)
         if (err){
           console.log(err);
           reject();
@@ -511,9 +511,24 @@ let list_cert = (data) => {
     )
   })
 }
+let isExistNumber = (number) =>{
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT number FROM certificates
+      WHERE number = '${number}'`,
+      function(err, results){
+        if (err){
+          console.log(err);
+          reject();
+        }
+        resolve(typeof results[0] != "undefined");
+      }
+    )
+  })
+}
 module.exports = {
   select_byschool,select_byIdNumber,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,countall,count_groupByIssuer,select_recentlyCert,
-  get_certformipfs,get_idNumberByHash,
+  get_certformipfs,get_idNumberByCertNumber,
   cert_search,
   create,
   get_numberByType,
@@ -524,5 +539,6 @@ module.exports = {
   certname_get, certname_getbyschool, certname_create, certname_update, certname_remove,certname_getbyKindId,
   certkind_get, certkind_getbyschool, certkind_create, certkind_update, certkind_remove,
   list_cert,
-  isExist_cert
+  isExist_cert,
+  isExistNumber
 };

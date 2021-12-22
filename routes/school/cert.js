@@ -88,12 +88,8 @@ router.get("/", async (req, res) => {
     });
   } catch (err) { console.log(err); return res.redirect('/school'); }
 
-  if (kindlist !='' && namelist !=''){
-    return res.render("./school/cert/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment ,kindList});
-  }
-
-  req.flash('err','Không thể truy cập');
-  return res.redirect('/school');
+  
+  return res.render("./school/cert/", {page:'Certificate', title:'Danh sách chứng chỉ', kindlist, namelist, certlist, moment ,kindList});
 });
 router.get("/issue", async (req, res) => {
   if(typeof req.query.number == 'undefined '){
@@ -107,6 +103,7 @@ router.get("/issue", async (req, res) => {
   var userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
   if (userCA == '0x0000000000000000000000000000000000000000'){
     try{
+      console.log("await systemInstance.createUserContractWithIDNumber(user_idNumber, systemInstance.address ,{from: process.env.SYSTEM_ADDRESS });");
       await systemInstance.createUserContractWithIDNumber(user_idNumber, systemInstance.address ,{from: process.env.SYSTEM_ADDRESS });
     }catch(err){
       console.log(err);
@@ -140,7 +137,7 @@ router.get("/issue", async (req, res) => {
 
     // 5. push certhash to blockchain. 
     try {
-      await schI.addCertificate('0x'+hashed_data, req.query.number, userCA, {from: req.user.account_address});
+      await schI.addCertificate('0x'+hashed_data, req.query.number, ipfs_hash, userCA, {from: req.user.account_address});
     }catch (err){
       console.log(err);
     }
@@ -244,11 +241,7 @@ router.get('/certname',async (req, res) => {
   }catch(err){
     console.log(err);
   }
-  if (kind_list == '' && name_list == ''){
-    return res.redirect('/school');
-  }else {
-    return res.render('./school/cert/certname',{page:'Certname',title:'Danh sách tên chứng chỉ',kind_list, name_list})
-  }
+  return res.render('./school/cert/certname',{page:'Certname',title:'Danh sách loại chứng chỉ',kind_list, name_list})
 })
 router.post('/certname/create', async (req, res) => {
   if(req.body.cn_name == ''){

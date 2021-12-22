@@ -18,36 +18,34 @@ const contract = require('@truffle/contract');
 var SystemContract = contract(JSON.parse(fs.readFileSync('./src/abis/System.json')));
 SystemContract.setProvider(provider);
 
-// var UserContract = contract(JSON.parse(fs.readFileSync('./src/abis/User.json')));
-// UserContract.setProvider(provider)
 router.get('/', async (req, res)=> {
   res.redirect('/user/danh-sach-chung-chi');
 })
-router.get('/danh-sach-giao-dich',async (req, res) => {
-  let user_idNumber;
-  try {
-    await userModel.select_idNumberbyId(req.user.user_id).then(function(data){
-      return user_idNumber = data;
-    })
-  }catch(err){
-    console.log(err)
-  }
-  const sysI = await SystemContract.deployed();
-  let userCA;
-  try{
-    userCA = await sysI.getUserContractAddr(user_idNumber);
-  }catch(err){ console.log(err); return; }
-  var userI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/User.json'))['abi'], userCA);
+// router.get('/danh-sach-giao-dich',async (req, res) => {
+//   let user_idNumber;
+//   try {
+//     await userModel.select_idNumberbyId(req.user.user_id).then(function(data){
+//       return user_idNumber = data;
+//     })
+//   }catch(err){
+//     console.log(err)
+//   }
+//   const sysI = await SystemContract.deployed();
+//   let userCA;
+//   try{
+//     userCA = await sysI.getUserContractAddr(user_idNumber);
+//   }catch(err){ console.log(err); return; }
+//   var userI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/User.json'))['abi'], userCA);
 
-  let data = await userI.getPastEvents('allEvents',{
-    fromBlock: 0
-  },async function(error, event){ 
-    if(error) console.log(error);
-    return event;
-  })
-  console.log(data);
+//   let data = await userI.getPastEvents('allEvents',{
+//     fromBlock: 0
+//   },async function(error, event){ 
+//     if(error) console.log(error);
+//     return event;
+//   })
+//   console.log(data);
 
-})
+// })
 router.get('/danh-sach-chung-chi',async (req, res) => {
   var user_idNumber
   try {
@@ -137,6 +135,37 @@ router.post('/update-info', async(req, res)=>{
   }
   return res.status(200).send({result: 'redirect', url:'/user/thong-tin-ca-nhan'})
 })
+router.get("/lich-su-giao-dich", async (req, res)=> {
+  const sysI = await SystemContract.deployed();
+  // I. Create school intance 
+  const userAddr = req.user.account_address ;
+  const schCA = await sysI.getUserContractAddr(userAddr);
 
+  var userI = new web3.eth.Contract(JSON.parse(fs.readFileSync('./src/abis/User.json'))['abi'], schCA);
+  // II. list transactions 
+  var data = await userI.getPastEvents('allEvents',{
+    fromBlock: 0
+  },async function(error, event){ 
+    if(error) console.log(error);
+    return event;
+  })
+  var transactionList = []
+
+  for (i= Object.keys(data).length-1; i>= 0; i-- ){
+    transactionList.push({
+      transactionHash: data[i].transactionHash,
+      returnValues: data[i].returnValues,
+      event: data[i].event,
+      blockNumber: data[i].blockNumber,
+      timestamp: moment.unix((await web3.eth.getBlock(data[i].blockNumber)).timestamp).format("DD/MM/YYYY, hh:mm:ss a")
+    })
+    // if (data[i].event == "addedCertificate") {
+    //   transactionList[transactionList.length-1].event = `addedCertificate(${data[i].returnValues._certNumber})`
+    // }else if (data[i].event == "deactivatedCertificate") {
+    //   transactionList[transactionList.length-1].event = `deactivatedCertificate(${data[i].returnValues._certNumber})`
+    // }
+  }
+  return res.render("./user/transactions",{title:"Lịch sử giao dịch",transactionList, page:"lich-su-giao-dich"}); 
+})
 
 module.exports = router;

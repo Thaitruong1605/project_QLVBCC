@@ -127,9 +127,10 @@ router.post('/verification', async (req, res) => {
 })
 router.post('/check-hash', async (req, res) => {
   var hash = req.body.hash,
+  number = req.body.number,
   user_idNumber;
   try {
-    await certificateModel.get_idNumberByHash(hash).then(function(data){
+    await certificateModel.get_idNumberByCertNumber(number).then(function(data){
       return user_idNumber = data
     })
   }catch(err){
@@ -138,12 +139,14 @@ router.post('/check-hash', async (req, res) => {
   console.log(user_idNumber)
   const systemInstance = await SystemContract.deployed();
   var userCA = await systemInstance.getContractbyIDNumber(user_idNumber);
-  
-  var UserContract = contract(JSON.parse(fs.readFileSync('./src/abis/User.json')));
+  if (userCA == "0x0000000000000000000000000000000000000000"){
+    return res.send({status: -1})
+  }
+  let UserContract = contract(JSON.parse(fs.readFileSync('./src/abis/User.json')));
   UserContract.setProvider(provider); // set provider.
-  var userI = await UserContract.at(userCA);
-  var rlt ;
-  var certStatus = -1; // 1 - Đã xác thực; 0 - Thu hồi;
+  let userI = await UserContract.at(userCA);
+  let rlt ;
+  let certStatus = -1; // 1 - Đã xác thực; 0 - Thu hồi;
   try {
     rlt = await userI.viewCertificate(hash);
   }catch (err){ throw(err)

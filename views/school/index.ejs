@@ -16,38 +16,48 @@
   <%- include('../partials/header') %>
   <%- include('../partials/alert') %>
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-2 border-end">
+    <div class="row cols-row-2">
+      <div class="col-1 border-end" style="width: auto;">
         <%- include('./partials/sidebar')%>
       </div>
-      <div class="col-10 px-5">
+      <div class="col px-5">
         <div class="row">
           <div class="col">
             <div class="card mt-3">
               <div class="card-header">
-                TÀi KHOẢN NHẬP CHỨNG CHỈ - Số lượng: <%= issuerNumber%>
+                THÔNG TIN CƠ SỞ ĐÀO TẠO TỪ BLOCKCHAIN
               </div>
               <div class="card-body">
                 <table class="table" id="issuerTable">
-                  <thead>
-                    <tr>
-                      <th scope="col">Tài khoản</th>
-                      <th scope="col">Chi tiết</th>
-                    </tr>
-                  </thead>
                   <tbody>
-                    <% for (const [key, value] of Object.entries(countList)) { %>
-                      <tr>
-                        <td scope="row"><%= key %></td>
-                        <% var data = value %>
-                        <td>
-                          <% var i =0 ;for (const [key, value] of Object.entries(data)) { %>
-                            <%= (key != "null")? key+': '+ value : "0" %><%= (i < Object.keys(data).length -1)? ";":""%>
-                            <%i++;%>
-                          <% } %>
-                        </td>
-                      </tr>
-                    <% } %>
+                    <tr>
+                      <th>Tên trường: </th>
+                      <td><%= schoolInfo[0]%></td>
+                    </tr>
+                    <tr>
+                      <th>Mã trường: </th>
+                      <td><%= schoolInfo[1]%></td>
+                    </tr>
+                    <tr>
+                      <th>Địa chỉ: </th>
+                      <td><%= schoolInfo[2]%></td>
+                    </tr>
+                    <tr>
+                      <th>Số điện thoại: </th>
+                      <td><%= schoolInfo[3]%></td>
+                    </tr>
+                    <tr>
+                      <th>Email: </th>
+                      <td><%= schoolInfo[4]%></td>
+                    </tr>
+                    <tr>
+                      <th>Fax: </th>
+                      <td><%= schoolInfo[5]%></td>
+                    </tr>
+                    <tr>
+                      <th>Website: </th>
+                      <td><a href="http://<%=schoolInfo[6]%>"><%= schoolInfo[6]%></a></td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -110,13 +120,6 @@
   <%- include('../layouts/scripts') %> 
   <script src="/vendors/chart.js/Chart.min.js"></script>
   <script>
-    $('#issuerTable').DataTable({
-      searching: false,
-      pageLength: 5,
-      lengthChange: false,
-      ordering: false,
-      info: false
-    })
     var table_transaction = $("#table-transaction").DataTable({
       pageLength: 10, 
       lengthChange: false,

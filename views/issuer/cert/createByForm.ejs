@@ -147,6 +147,18 @@
           $('#cn_id').html(html);
         }
       })
+      $("#number").on(" keyup", async function (event) {
+        console.log($(this).val());
+        await $.ajax ({
+          method: "POST",
+          url:"/issuer/check-cert-number",
+          data: {
+            number: $(this).val()
+          },success: function(res){
+            console.log(res);
+          }
+        })
+      })
     })
   </script>
 </body>

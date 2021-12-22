@@ -33,7 +33,6 @@
                 <div class="row g-1">
                   <div class="col">
                     <select id="ck_id" class="form-control">
-                      <option value=''>Chọn loại chứng chỉ</option>
                       <% kindlist.forEach((row) => {%>
                         <option value='<%= row['ck_id'] %>'><%= row['ck_name'] %></option>
                       <% }) %>
@@ -41,7 +40,6 @@
                   </div>
                   <div class="col">
                     <select id="cn_id" name="cn_id" class="form-control">
-                      <option value=''>Chọn tên chứng chỉ</option>
                     </select>
                   </div>
                 </div>
@@ -65,7 +63,7 @@
                   </div>
                 </div>
                 <div class="col-auto text-end">
-                  <button type="button" id="btn-submit"  class="btn btn-primary mt-1"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
+                  <button type="button" id="btn-submit" disabled class="btn btn-primary mt-1"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden></span> Tìm kiếm <i class="fas fa-search"></i></button>
                 </div>
                 <span id="count"></span>
               </form>
@@ -77,7 +75,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="table-responsive">
-                  <table class="table">
+                  <table class="table" id="table-certList">
                     <thead>
                       <tr>
                         <th scope="col">Số</th>
@@ -91,7 +89,7 @@
                         <th scope="col"></th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id ="certList">
                       <% cert_list.forEach(function(row){%>
                         <tr>
                           <th scope="row"><%= row.number %></th>
@@ -102,16 +100,18 @@
                           <td><%= row.user_idNumber %></td>
                           <td>
                             <% if (row.status == 'incorrect') {%>
+                              <span class="text-awarning fw-bold"><%= row.status %></span>  
+                            <% } else if (row.status == 'deactivate') { %>
                               <span class="text-danger fw-bold"><%= row.status %></span>  
                             <% } else if (row.status == 'checking') { %>
-                              <span class="text-warning fw-bold"><%= row.status %></span>  
+                              <span class="text-info fw-bold"><%= row.status %></span>  
                             <%} else  {%>
                               <span class="text-success fw-bold"><%= row.status %></span>  
                             <% } %>
                           </td> 
-                          <td class="date-format"><%= moment(row.createTime).format("DD-MM-YYYY, h:mm:ss a") %></td>
+                          <td class="date-format"><%= moment(row.createTime).format("DD/MM/YYYY, h:mm:ss a") %></td>
                           <td>
-                            <i class="fas fa-external-link-alt btn-detail pe-2" number="<%=row.number%>"></i>
+                            <i class="fas fa-external-link-alt btn-detail" number="<%=row.number%>"></i>
                             <% if(row.ipfs_hash == null){ %>
                               <i class="fas fa-trash btn-delete" number="<%=row.number%>"></i>
                             <% } %>
@@ -139,6 +139,10 @@
     var nameList = [],
     cert_info= [];
     $(document).ready(function(){
+      $("#table-certList").DataTable({
+        searching: false,
+        sort: false,
+      });
       $( "#toDate" ).val(moment(Date.now()).format("DD/MM/YYYY"));
       $( "#fromDate, #toDate" ).datepicker({
         changeMonth: true,
@@ -147,8 +151,9 @@
         yearRange: "1960:2021",
         defaultDate: $(this).attr('value')
       });
-      $( "#ck_id" ).change(function() {
+      $("#ck_id").change(function() {
         $( "#ck_id option:selected" ).each(async function(event) {
+          
           event.preventDefault;
           var ck_id = $(this).attr('value');
           if (ck_id != '') {
@@ -171,10 +176,14 @@
           }else {
             $('#cn_id').html();
           }
-
+          
         });
       }).trigger( "change" );
-      $('.btn-detail').on('click', async function(event){
+      $("#cn_id").on("click",function(){
+        $("#btn-submit").attr({"disabled":false});
+
+      })
+      $(document).on("click" , '.btn-detail', async function(event){
         let number= $(this).attr('number');
         if (cert_info[number] == undefined){
           event.preventDefault;
@@ -233,7 +242,7 @@
           }
         }
       })
-      $('.btn-delete').on('click',function(event){
+      $(document).on("click" , '.btn-delete', function(event){
         if (confirm("Bạn có chắc chắn xoá! Hành động này không thể hoàn tác.")){
           event.preventDefault;
           $.ajax({
@@ -251,7 +260,52 @@
           })
         }
       })
-      
+      $("#btn-submit").on('click',async function(event){
+        event.preventDefault;
+        await $.ajax({
+          method: "POST",
+          url: "/issuer/list-cert",
+          data: $("#filterForm").serialize(),
+          success: function(res){
+            var certList= res.certList,
+            html = ``,i =1;
+            console.log(certList)
+            $("#count").text('Có '+certList.length+' kết quả phù hợp:')
+            certList.forEach(function(elt){
+              html+= `<tr>
+                <th>${elt['number']}</th>
+                <th>${elt['regno']}</th>
+                <td>${elt['cn_name']}</td>
+                <td>${elt['user_name']}</td>
+                <td>${moment(elt['user_birth']).format("DD/MM/YYYY")}</td>
+                <td>${elt['user_idNumber']}</td>
+                <td>`;
+                if (elt['status'] == 'incorrect') {
+                  html+= `<span class="text-danger fw-bold">${elt['status']}</span>`
+                } else if (elt['status'] == 'deactivate'){
+                  html+= `<span class="text-danger fw-bold">${elt['status']}</span>`  
+                } else if (elt['status'] == 'checking'){
+                  html+= `<span class="text-info fw-bold">${elt['status']}</span>`  
+                }else  {
+                  html+= `<span class="text-success fw-bold">${elt['status']}</span>`  
+                }
+              html += `</td>
+                <td>${moment(elt['createTime']).format("DD/MM/YYYY, h:mm:ss a")}</td>
+                <td>`;
+              html += `
+                <i class="fas fa-external-link-alt btn-detail pe-1" number="${elt['number']}"></i>`;
+                console.log(elt['ipfs_hash'])
+              if( elt['ipfs_hash'] == null){
+                html += `<i class="fas fa-trash btn-delete" number="${elt['number']}"></i>`;
+              }
+              html += `</td>
+              </tr>`
+            })
+            $('#certList').html(html).fadeIn(2000);
+            $(".spinner-border").attr('hidden',true).parent().attr('disabled',false)
+          }
+        })
+      })
       $(document).on("click","#cert_submit", function(e){
         var cert_info = {
           number: $("#number").children("input").val(),

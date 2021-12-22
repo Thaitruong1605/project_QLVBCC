@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles') %>
+  <style>
+    .col-form-label {
+      width: 170px;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/alert') %>
+  <div class="container-fluid">
+    <div class="row cols-row-2">
+      <div class="col-1 border-end" style="width: auto;">
+        <%- include('./partials/sidebar')%>
+      </div>
+      <div class="col px-5">
+        <div class="row">
+          <div class="col">
+            <div class="card mt-3 px-3 shadow">
+              <div class="card-body">
+                <form action="/school/doi-mat-khau" method="POST" id="resetPasswordFrm"> 
+                  <div class="row g-3 pe-2">
+                    <label for="old_password" class="col-form-label col-1" >Mật khẩu cũ</label>
+                    <input type="password" class="form-control col" autocomplete="none" name="old_password" id="old_password" value="" />
+                  </div>
+                  <hr />
+                  <div class="row g-3 pb-1 pe-2">
+                    <label for="new_password" class="col-form-label col-1">Mật khẩu mới</label>
+                    <input type="password" class="form-control col" autocomplete="none" name="new_password" id="new_password" value="" />
+                  </div>
+                  <div class="row g-3 pe-2">
+                    <label for="new_repassword" class="col-form-label col-1">Nhập lại mật khẩu</label>
+                    <input type="password" class="form-control col" autocomplete="none" name="new_repassword" id="new_repassword" value="" />
+                  </div>
+                  <br/>
+                  <div class="d-flex justify-content-end">
+                    <button type="reset" class="btn btn-outline-secondary me-2">Đặt lại</button>
+                    <button type="submit" class="btn btn-outline-warning">Thay đổi</button>
+                  </div>
+                </form> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/scripts') %>
+
+  <script>
+    
+  </script>
+</body>
+</html>

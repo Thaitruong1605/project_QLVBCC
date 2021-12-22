@@ -31,11 +31,8 @@ client.pin.add("QmeGAVddnBSnKc1DLE7DLV9uuTqo5F7QbaveTjr45JUdQn").then((res) => {
   // console.log(res)
 });
 router.get('/',async (req, res)=> {
-  res.redirect('/issuer/dashboard');
+  res.redirect('/issuer/cert');
 });
-router.get('/dashboard',async (req, res)=> {
-  res.render('./issuer/', {title:"Dashboard", page:"dashboard"})
-})
 // Quan ly chung chi -------------------------------------------
 router.get('/cert', async (req, res)=> {
   
@@ -126,7 +123,7 @@ router.post("/cert/create-by-excel", async (req, res) => {
       cn_id: req.body.cn_id.trim(),
       ck_id: req.body.ck_id.trim(),
       issuer_id: req.user.issuer_id,
-      hash: hashed_data,
+      // hash: hashed_data,
       user_idNumber: elt.user_idNumber.trim(),
       user_name: elt.user_name.trim(),
       user_birth: moment(elt.user_dayofbirth.trim(),'DD/MM/YYYY').format(),
@@ -192,7 +189,7 @@ router.post("/cert/create", async (req, res) => {
   let isExist = false;
   try {
     await certificateModel.isExist_cert(data.user_idNumber, data.cn_id).then(function(data){
-      return isExist = data;
+      return isExist = (data[0] == "");
     })
   }catch (err) { console.log(err)}
 
@@ -212,7 +209,7 @@ router.post("/cert/create", async (req, res) => {
     cn_id: req.body.cn_id.trim(),
     ck_id: req.body.ck_id.trim(),
     issuer_id: req.user.issuer_id,
-    hash: hashed_data,
+    // hash: hashed_data,
     user_idNumber: req.body.user_idNumber.trim(),
     user_name: req.body.user_name.trim(),
     user_birth: moment(req.body.user_dayofbirth.trim(),'DD/MM/YYYY').format(),
@@ -238,35 +235,6 @@ router.post("/cert/create", async (req, res) => {
     }
   );
 });
-router.get("/cert/update", async (req,res )=> {
-  if (typeof req.query.number == 'undefined'){
-    return res.redirect("/issuer/cert");
-  }
-  var kindList, cert_info, nameList;
-  try{
-    await certificateModel.certkind_getbyschool(req.user.school_id).then(function(data){
-      return kindList =data;
-    })
-  }catch(err){
-    console.log(err);
-  }
-  try{
-    await certificateModel.select_byNumber(req.query.number).then(function(data){
-      return cert_info = data;
-    })
-  }catch(err){
-    console.log(err);
-  }
-  try{
-    await certificateModel.certname_getbyKindId(cert_info.ck_id).then(function(data){
-      return nameList = data;
-    })
-  }catch(err){
-    console.log(err);
-  }
-  var cert_data = JSON.parse(await fs.readFileSync('./public/cert/cert_' + req.query.number+'.json'));
-  res.render('./issuer/cert/update',{page:'update', title:'Cập nhật chứng chỉ', cert_data, cert_info , kindList, nameList});
-})
 router.post("/cert/update", async (req, res) => {
   var data = req.body;
   var data = {
@@ -363,6 +331,7 @@ router.post('/cert/delete', async(req, res)=>{
 })
 router.post('/cert/get-certname', async (req, res)=> {
   await certificateModel.certname_getbyKindId(req.body.ck_id).then(function(data){
+    console.log(data)
     res.send({nameList:data});
   })
 })
@@ -387,5 +356,30 @@ router.post('/isExist_cert',async (req, res)=> {
       return res.send({data});
     })
   }catch (err){console.log (err) }
+})
+router.post('/list-cert', async (req, res) => {
+  data = {
+    cn_id: req.body.cn_id,
+    fromDate: moment(req.body.fromDate,'DD/MM/YYYY').format(),
+    toDate: moment(req.body.toDate,'DD/MM/YYYY').format(),
+    user_name: req.body.user_name,
+    number: req.body.number,
+    regno: req.body.regno,
+  }
+  try {
+    await certificateModel.list_cert(data).then(function(results){
+      return res.send({certList:results});
+    })
+  }catch(err){
+    console.log(err);
+  }
+})
+router.post("/check-cert-number", async (req, res)=> {
+  console.log(req.body.number);
+  try {
+    await certificateModel.isExistNumber(req.body.number).then(function(data){
+      console.log(data);
+    })
+  }catch(err){console.log(err); return;}
 })
 module.exports = router;

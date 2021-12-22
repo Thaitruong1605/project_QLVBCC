@@ -28,6 +28,7 @@
 </head>
 
 <body>
+  <%- include('../../partials/alert')%>
   <div class="container-fluid">
     <div class="row">
       <div class="col-1" style="width: fit-content;padding :0;">
@@ -38,9 +39,6 @@
         <div class="px-3" >
           <div class="d-flex justify-content-between">
             <span class = "h4 fw-bold" style="color: #3D6395;">QUẢN LÝ NGƯỜI DÙNG</span>
-            <button type="button" class="btn btn-sm btn-info text-white" data-bs-toggle="modal" data-bs-target="#createModal">
-              Thêm mới
-            </button>
           </div>
           <hr >
           <div class="card shadow">
@@ -81,10 +79,13 @@
                         </td>
                         <td class="text-end">
                           <% if (!user.user_isAuth) { %>
-                            <a href="/admin/user/auth?user_id=<%= user.user_id %>&user_idNumber=<%= user.user_idNumber %>" class="btn btn-primary" >Xác thực</a>
+                            <a href="/admin/user/auth?user_id=<%= user.user_id %>&user_idNumber=<%= user.user_idNumber %>" class="btn btn-primary btn-sm" >Xác thực</a>
                           <%}%>
-                          <i class="fas fa-external-link-alt pe-2" user_id="<%= user.user_id %>"></i>
-                          <i class="fas fa-edit" user_id="<%= user.user_id %>"></i>
+                          <i class="fas fa-external-link-alt ps-2" user_id="<%= user.user_id %>"></i>
+                          <% if (!user.user_isAuth) { %>
+                            <i class="fas fa-edit ps-2" user_id="<%= user.user_id %>"></i>
+                            <i class="fas fa-trash ps-2" user_id="<%= user.user_id %>"></i>
+                          <%}%>
                         </td>
                       </tr>
                       <% }); %>
@@ -259,7 +260,7 @@
       var user_tempList=[],
         account_tempList=[];
       let getdata = async function(id) {
-        $.ajax({
+        await $.ajax({
           url:'/admin/user/get-data',
           method:'post',
           data:{
@@ -292,10 +293,10 @@
         $("#detailModal").modal('show');
       })
       //Cập nhật thông tin sinh viên 
-      $(".fa-edit").on('click',function(event){
+      $(".fa-edit").on('click',async function(event){
         event.preventDefault;
         let id = $(this).attr('user_id');
-        $.ajax({
+        await $.ajax({
           url:'/admin/user/get-data',
           method:'post',
           data:{
@@ -313,6 +314,22 @@
                 $('#u-'+key).val(value);
             }
             $("#updateModal").modal('show');
+          }
+        })
+      })
+
+      $(".fa-trash").on("click",async function(event){
+        event.preventDefault;
+        let id = $(this).attr('user_id');
+        await $.ajax({
+          url:'/admin/user/delete',
+          method:'post',
+          data:{
+            id
+          },success: function(res){
+            if (res.result == "redirect"){
+              window.location.replace(res.url);
+            }
           }
         })
       })

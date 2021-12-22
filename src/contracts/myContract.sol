@@ -177,7 +177,7 @@ contract School is Ownable{
   function deactivateCertificate(bytes32 _certHash, string memory _certNumber, address userCAddr) public onlyOwner(){
     User userI = User(userCAddr);
     require (address(userI) != address(0));
-    userI.deactivateCertificate(_certHash);
+    userI.deactivateCertificate(_certHash, _certNumber);
     emit deactivatedCertificate(userCAddr, _certNumber, _certHash);
   }
 }
@@ -195,7 +195,7 @@ contract User is Ownable{
   System public system;
 
   event addedCertificate(string _certNumber, bytes32 _certHash, string _ipfs);
-  event deactivatedCertificate(bytes32 _certHash);
+  event deactivatedCertificate(string _certNumber);
 
   constructor(address userAddr, address _sysCA) public {
     system = System(_sysCA);
@@ -211,10 +211,10 @@ contract User is Ownable{
     certificateList.push(_hashedCert);
     emit addedCertificate(_certNumber, _hashedCert, _ipfs);
   }
-  function deactivateCertificate(bytes32 _certHash) public onlySchool(){
+  function deactivateCertificate(bytes32 _certHash, string memory _certNumber) public onlySchool(){
     require( mapCertificates[_certHash].schoolAddress == msg.sender);
     mapCertificates[_certHash].state = uint8(0);
-    emit deactivatedCertificate( _certHash);
+    emit deactivatedCertificate(_certNumber);
   }
   function viewCertificate(bytes32 _certHash) public view returns(uint8, address, bytes32, string memory){
     Certificate storage cert = mapCertificates[_certHash];

@@ -24,30 +24,31 @@ router.get('/', (req, res) => {
     return res.redirect('/admin');
   }
 })
-router.get('/update', (req, res) => {
-  if( typeof req.query.id !== 'undefined'){
-    try{
-      require('../../models/userModel').select_byId(req.query.id).then(function(data){
-        return res.render('./admin/functions/user/update',{title:'Cập nhật sinh viên', user:data, moment, page:'user'});
-      })
-    }catch(err){
-      console.log(err);
-      req.flash('error',err);
-      return res.redirect('/admin/user');
-    }
-  }
-})
-router.get('/delete', async (req, res) => {
-  if( typeof req.query.id !== 'undefined'){
-    try{
-      await userModel.remove(id);
-      req.flash('msg','Xoá sinh viên thành công!');
-      return res.redirect('/admin/user');
-    }catch(err){
-      console.log(err);
-      return res.redirect('/admin/user');
-    }
-  }
+// router.get('/update', (req, res) => {
+//   if( typeof req.query.id !== 'undefined'){
+//     try{
+//       require('../../models/userModel').select_byId(req.query.id).then(function(data){
+//         return res.render('./admin/functions/user/update',{title:'Cập nhật sinh viên', user:data, moment, page:'user'});
+//       })
+//     }catch(err){
+//       console.log(err);
+//       req.flash('error',err);
+//       return res.redirect('/admin/user');
+//     }
+//   }
+// })
+router.post('/delete', async (req, res) => {
+  let id = req.body.id;
+  try {
+    await accountModel.removeByUserId(id);
+  }catch(err){ console.log(err); }
+  try{
+    await userModel.remove(id);
+  }catch(err){ console.log(err); req.flash("error",`Xoá tài khoản người dùng "${id}" thất bại`); return res.send({result:"redirect", url:"/admin/user"});}
+  
+  req.flash("msg",`Xoá tài khoản người dùng "${id}" thành công`);
+
+  return res.send({result:"redirect", url:"/admin/user"});
 })
 router.get('/auth',async (req, res)=>{
   //1. get user info.
@@ -93,7 +94,7 @@ router.get('/auth',async (req, res)=>{
   }catch(err){console.log(err); return }
 
   req.flash("msg","Xác thực tài khoản thành công!");
-  return res.send({result:"redirect",url:"/admin/user"});
+  return res.redirect("/admin/user");
 })
 // POST -----------------------------------------
 router.post('/get-data', async (req, res) => {

@@ -13,7 +13,7 @@ let createUser = async (req, res) => {
     account_address: req.body.account_address,
     account_username: req.body.account_username,
     account_password: "",
-    account_status:"active",
+    account_status:"lock",
     account_type:"user"
   }
   console.log(account);

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <%- include('../layouts/styles') %>
+  <style>
+    .col-form-label{
+      width: 170px;
+    }
+    #resetPasswordFrm{
+      max-width: 500px;
+    }
+    .form-control{
+      width: 340px;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <%- include('../partials/header') %>
+  <%- include('../partials/alert') %>
+  <div class="container">
+    <div class="row row-cols-auto d-flex justify-content-center">
+      <div class="col">
+        <div class="card mt-3 px-3 shadow">
+          <div class="card-body">
+            <% console.log(transactionList); %>
+            <table class="table" id="transactionTable">
+              <thead>
+                <tr>
+                  <th>Transactio nHash</th>
+                  <th>Block</th>
+                  <th>Event</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% console.log(transactionList)%>
+                <% transactionList.forEach(function(row){%>
+                  <tr>
+                    <td style="word-break: break-all;"><%= row.transactionHash %></td>
+                    <td><%= row.blockNumber %></td>
+                    <td><b><%= row.event %></b> <br/>
+                    <% for(const[key,value] of Object.entries(row.returnValues)){ if (isNaN(key)){%>
+                      <i><%=key%></i>: <%=value%> <br/>
+                    <% }} %></td>
+                    <td><%= row.timestamp %></td>
+                  </tr>
+                <%})%>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>    
+
+  <%- include('../layouts/scripts') %>
+  <script>
+    $("#transactionTable").DataTable({
+
+    })
+  </script>
+</body>
+</html>

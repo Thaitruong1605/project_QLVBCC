@@ -65,6 +65,9 @@ router.get("/valid", async (req, res)=>{
       {from: process.env.SYSTEM_ADDRESS});
   }catch(err){console.log(err); return;}
   try {
+    await accountModel.update_school({account_status:"active"},school_id);
+  }catch(err){console.log(err);}
+  try {
     await schoolModel.school_update(school_id, {isValid: 1});
     req.flash("msg",`Tạo mới hợp đồng thông minh cho "${school_info.school_name}" thành công!`);
   }catch(err){
@@ -105,7 +108,7 @@ router.post('/create',async (req, res) => {
     account_username: req.body.account_username.trim(),
     account_type:"school",
     account_password: req.body.account_password.trim(),
-    account_status: req.body.account_status.trim(),
+    account_status: "lock",
   }
   
   if (account_info.account_username == '' || account_info.account_password == '' ){ error.push("Vui lòng nhập thông tin đăng nhập!"); }

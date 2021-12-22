@@ -4,7 +4,7 @@ const issuerModel = require('../../models/issuerModel');
 const accountModel = require('../../models/accountModel');
 
 var Accounts = require('web3-eth-accounts');
-var accounts = new Accounts('HTTP://127.0.0.1:7545');
+// var accounts = new Accounts('HTTP://127.0.0.1:7545');
 
 const bcrypt = require('bcrypt');
 const moment = require('moment');
@@ -21,18 +21,15 @@ router.get('/', async(req, res) => {
     return res.redirect('/school');
   }
 });
-
 router.post('/update', async (req, res) => {
   var error = [];
 
   var issuer_info = {
-    school_id: req.user.school_id, 
     issuer_name: req.body.issuer_name, 
     issuer_phoneNumber: req.body.issuer_phoneNumber, 
     issuer_email: req.body.issuer_email, 
   }
   if (
-    issuer_info.shool_id == '' ||
     issuer_info.issuer_name == '' ||
     issuer_info.issuer_phoneNumber == '' ||
     issuer_info.issuer_email == ''
@@ -91,7 +88,7 @@ router.post('/create', async (req, res) => {
       account_type: 'issuer',
       account_password: await bcrypt.hashSync(req.body.account_password, saltRounds),
       school_id: req.user.school_id,
-      account_address: accounts.create()
+      account_address: "NULL"
     }
   }
   if (error != ''){
