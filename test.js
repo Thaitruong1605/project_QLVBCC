@@ -6,6 +6,7 @@ var schCA = await sysI.getSchoolContractAddr('0xa0fEC0106eAe31874cEfF9E35B4eC5bd
 let schI = await School.at(schCA);
 
 var userCA = await sysI.getContractbyIDNumber('111111111111');
+var userCA = await sysI.getContractbyIDNumber('331833000');
 
 await schI.addCertificate('0xa63ecc09dbb327c5f785ede8cb5c7e2a80c7ee8b5a353b02a1601ff28ec6d55c','35','ipfs',userCA,{from: '0xa0fEC0106eAe31874cEfF9E35B4eC5bdD0a0FA67'});
 await schI.addCertificate('0xa63ecc09dbb327c5f785ede8cb5c7e2a80c7ee8b5a353b02a1601ff28ec6d552','311','ipfs2',userCA,{from: '0xa0fEC0106eAe31874cEfF9E35B4eC5bdD0a0FA67'});
