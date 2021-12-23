@@ -110,10 +110,25 @@
                         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                         $('#account_address').attr('value', accounts);
                         // console.log(accounts);
-                        $("#form-info").show(100)
                     } catch (error) {
                         console.log(error);
                     }
+                    try {
+                        await $.ajax({
+                            method:"POST",
+                            url:"/check-address",
+                            data:{
+                                account_address: $('#account_address').attr('value')
+                            },success: function(res){
+                                
+                                if (res.result){
+                                    $("#form-info").show(100)
+                                }else {
+                                    alert("Địa chỉ đã được sử dụng!");
+                                }
+                            }
+                        })
+                    }catch(err){console.log(err)}
                 }else {
                     alert("Vui lòng kết nối với netmark");
                 }

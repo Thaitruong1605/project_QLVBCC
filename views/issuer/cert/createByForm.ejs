@@ -98,7 +98,7 @@
             </div>
           </div>
           
-          <button type="submit" class="btn btn-primary">Tạo chứng chỉ</button>
+          <button type="submit" id="submit" class="btn btn-primary">Tạo chứng chỉ</button>
         </form>
       </div>  
     </div>
@@ -147,15 +147,39 @@
           $('#cn_id').html(html);
         }
       })
-      $("#number").on(" keyup", async function (event) {
-        console.log($(this).val());
+      $("#number").on("focusout", async function (event) {
+        console.log($(this).val())
         await $.ajax ({
           method: "POST",
           url:"/issuer/check-cert-number",
           data: {
             number: $(this).val()
           },success: function(res){
-            console.log(res);
+            console.log(res)
+            if (res.result){
+              alert("Số hiệu đã tồn tại!");
+              $("#submit").attr("disabled",true)
+            }else {
+              $("#submit").attr("disabled",false)
+            }
+          }
+        })
+      })
+      $("#regno").on("focusout", async function (event) {
+        console.log($(this).val())
+        await $.ajax ({
+          method: "POST",
+          url:"/issuer/check-cert-regno",
+          data: {
+            number: $(this).val()
+          },success: function(res){
+            console.log(res)
+            if (res.result){
+              alert("Số vào sổ đã tồn tại!");
+              $("#submit").attr("disabled",true)
+            }else {
+              $("#submit").attr("disabled",false)
+            }
           }
         })
       })

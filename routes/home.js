@@ -10,6 +10,7 @@ const fs = require("fs"); // file system
 
 const certificateModel = require('../models/certificateModel')
 const schoolModel = require('../models/schoolModel')
+const accountModel = require('../models/accountModel')
 
 const Web3 = require ('web3');
 const provider = new Web3.providers.HttpProvider('http://localhost:7545');
@@ -161,7 +162,6 @@ router.post('/check-hash', async (req, res) => {
   console.log("Chứng thực văn bằng: "+ certStatus)
   res.send({status: certStatus})
 })
-//qrscan 
 router.post('/get-certkind', async (req, res)=>{
   // console.log(req.body.school_id);
   try{
@@ -196,5 +196,13 @@ router.post('/get-detai-by-ipfs', async (req, res) => {
       }else res.send();
     }
   );
+})
+router.post('/check-address', async (req, res) => {
+  var account_address = req.body.account_address;
+  try {
+    await accountModel.isExistAddr(account_address).then(function(data){
+      return res.send({result: data})
+    })
+  }catch(err){console.log(err);}
 })
 module.exports = router;

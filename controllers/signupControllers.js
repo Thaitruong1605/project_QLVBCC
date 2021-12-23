@@ -1,4 +1,5 @@
 const signupModel = require("../models/signupModel");
+const accountModel= require("../models/accountModel");
 const validator = require("validator");
 const moment = require("moment");
 const bcrypt = require("bcrypt");
@@ -28,6 +29,7 @@ let createUser = async (req, res) => {
   else {
     account.account_password= await bcrypt.hashSync(req.body.account_password, saltRounds);
   }
+  
   var user={
     user_name: req.body.user_name,
     user_placeAddress: req.body.user_placeAddress,

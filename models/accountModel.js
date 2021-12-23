@@ -25,6 +25,18 @@ let get_accountByUsername = (account_username) => {
         )
     });
 }
+let isExistAddr = (address) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `SELECT account_address FROM accounts 
+            WHERE account_address = '${address}' `,
+            function (err, results) {
+                if (err) { console.log(err); reject(); }
+                resolve(typeof results[0] == "undefined");
+            }
+        )
+    });
+}
 let get_accountById = (id) => {
     return new Promise((resolve, reject) => {
         conn.query(
@@ -134,12 +146,16 @@ let get_password = (account_username) => {
         )
     });
 };
-let update_school = (account_inf, school_id) => {
+let update_byID = (account_inf, id) => {
     return new Promise(async (resolve, reject) => {
         conn.query(
-            'UPDATE accounts SET ? WHERE school_id =?', 
-            [account_inf, school_id],
+            `UPDATE accounts SET ? 
+                WHERE user_id = '${id}' OR 
+                school_id = '${id}' OR 
+                issuer_id = '${id}'  `, 
+            [account_inf],
             function(err){
+                console.log(this.sql);
                 if (err) { console.log(err); reject();}
                 resolve('A new account has been updated!');
             }
@@ -152,9 +168,10 @@ module.exports = {
     get_accountByUsername,
     get_password,
     number_school_user,
+    isExistAddr,
     create,
     update,
-    update_school,
+    update_byID,
     remove,
     removeByIssuerId,
     removeByUserId,

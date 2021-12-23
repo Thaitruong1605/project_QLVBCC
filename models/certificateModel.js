@@ -526,6 +526,21 @@ let isExistNumber = (number) =>{
     )
   })
 }
+let isExistNumberRegno = (regno) =>{
+  return new Promise((resolve, reject) => {
+    conn.query(
+      `SELECT regno FROM certificates
+      WHERE regno = '${regno}'`,
+      function(err, results){
+        if (err){
+          console.log(err);
+          reject();
+        }
+        resolve(typeof results[0] != "undefined");
+      }
+    )
+  })
+}
 module.exports = {
   select_byschool,select_byIdNumber,select_byissuer,select_byNumber,get_ipfs_hashbyhash,check_cert,countall,count_groupByIssuer,select_recentlyCert,
   get_certformipfs,get_idNumberByCertNumber,
@@ -540,5 +555,6 @@ module.exports = {
   certkind_get, certkind_getbyschool, certkind_create, certkind_update, certkind_remove,
   list_cert,
   isExist_cert,
-  isExistNumber
+  isExistNumber,
+  isExistNumberRegno
 };

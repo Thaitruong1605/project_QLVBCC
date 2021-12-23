@@ -87,8 +87,7 @@ router.post('/create', async (req, res) => {
       account_status: 'active', 
       account_type: 'issuer',
       account_password: await bcrypt.hashSync(req.body.account_password, saltRounds),
-      school_id: req.user.school_id,
-      account_address: "NULL"
+      school_id: req.user.school_id
     }
   }
   if (error != ''){
@@ -99,7 +98,8 @@ router.post('/create', async (req, res) => {
     await issuerModel.create(issuer_info);
   }catch (err){
     console.log(err);
-    return res.redirect('/school/issuer');
+      req.flash('err','Thêm thông tin người phát hành thất bại!');
+      return res.redirect('/school/issuer');
   }
   try{
     await issuerModel.getIdbyEmail(req.body.issuer_email).then(async function(data){
@@ -110,6 +110,7 @@ router.post('/create', async (req, res) => {
         return res.redirect('/school/issuer');
       }catch(err){
         console.log(err);
+        req.flash('err','Thêm tài khoản người phát hành thất bại!');
         return res.redirect('/school/issuer');
       }
     })

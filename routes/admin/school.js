@@ -65,7 +65,7 @@ router.get("/valid", async (req, res)=>{
       {from: process.env.SYSTEM_ADDRESS});
   }catch(err){console.log(err); return;}
   try {
-    await accountModel.update_school({account_status:"active"},school_id);
+    await accountModel.update_byID({account_status:"active"},school_id);
   }catch(err){console.log(err);}
   try {
     await schoolModel.school_update(school_id, {isValid: 1});
